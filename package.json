@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "axios": "^0.21.4",
-    "luxon": "^1.28.0",
+    "luxon": "^2.5.2",
     "popper.js": "^1.16.1",
     "showdown": "^2.0.0",
     "tippy.js": "^4.3.5"
