@@ -19,4 +19,4 @@ export default class Priority extends Constant {
 
 const values = Object.values(Priority);
 
-api.mod.priorities = Object.fromEntries(Object.entries(Priority));
+api.mod.priority = Object.fromEntries(Object.entries(Priority));

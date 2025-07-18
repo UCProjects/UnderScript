@@ -31,4 +31,4 @@ export default class Item extends Constant {
 
 const items = Object.values(Item);
 
-api.mod.items = Object.fromEntries(Object.entries(Item));
+api.mod.item = Object.fromEntries(Object.entries(Item));
