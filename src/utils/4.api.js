@@ -29,7 +29,11 @@ export const mod = new Proxy(modules, {
     }
     return Reflect.get(o, key, r);
   },
-  set() {},
+  set(o, key, val, r) {
+    if (key in o) return false;
+    register(key, val, true);
+    return Reflect.set(o, key, val, r);
+  },
 });
 
 window.underscript = new Proxy(underscript, {
