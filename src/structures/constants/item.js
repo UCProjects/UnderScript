@@ -1,3 +1,4 @@
+import * as api from 'src/utils/4.api.js';
 import Constant from './constant.js';
 
 export default class Item extends Constant {
@@ -21,10 +22,13 @@ export default class Item extends Constant {
   static EMOTE = new Item('Emote', 'emote', 'reward-emote');
   static PROFILE = new Item('Profile Skin', 'Profile', 'profile skin', 'profile', 'reward-profile-skin');
 
-  static find(name) {
+  static find(value) {
+    if (value instanceof Item) return value;
     // eslint-disable-next-line no-use-before-define
-    return items.find((item) => item.equals(name));
+    return items.find((item) => item.equals(value));
   }
 }
 
 const items = Object.values(Item);
+
+api.mod.items = Object.fromEntries(Object.entries(Item));
