@@ -5,6 +5,7 @@ import style from 'src/utils/style.js';
 import onPage from 'src/utils/onPage.js';
 import { max } from 'src/utils/cardHelper.js';
 import Translation from 'src/structures/constants/translation.ts';
+import Priority from 'src/structures/constants/priority.js';
 import { getTranslationArray } from '../underscript/translation.js';
 
 export const crafting = onPage('Crafting');
@@ -114,7 +115,7 @@ eventManager.on(':preload:Decks :preload:Crafting', () => {
     if (setting.value()) return this.super(card);
     const results = new Map();
     return filters.reduce((removed, func) => {
-      if (!func) return removed;
+      if (typeof func !== 'function') return removed;
       const val = func.call(this, card, removed, Object.fromEntries(results));
       const key = func.displayName || func.name;
       if (typeof val === 'boolean') {
@@ -161,6 +162,7 @@ function ownSelect() {
 }
 
 filters.push(
+  Priority.FIRST,
   // function isRemoved(card) {
   //   // Shiny, Rarity, Type, Extension, Search
   //   return this.super(card);
@@ -213,6 +215,8 @@ filters.push(
       !card.tribes.some((t) => includes($.i18n(`tribe-${t.toLowerCase().replace(/_/g, '-')}`)))
     );
   },
+  Priority.HIGHEST,
+  Priority.HIGH,
   crafting && function baseGenFilter(card, removed) {
     if (removed || $('.rarityInput:checked').length) return null;
     return ['BASE', 'TOKEN'].includes(card.rarity);
@@ -233,4 +237,8 @@ filters.push(
       default: return false;
     }
   },
+  Priority.NORMAL,
+  Priority.LOW,
+  Priority.LOWEST,
+  Priority.LAST,
 );

@@ -1,5 +1,6 @@
 import wrap from 'src/utils/2.pokemon.js';
 import { registerModule } from 'src/utils/plugin.js';
+import Priority from 'src/structures/constants/priority.js';
 import { crafting, decks, filters } from '../library/filter.js';
 
 wrap(() => {
@@ -7,7 +8,9 @@ wrap(() => {
   const name = 'addFilter';
   let counter = 0;
   function mod(plugin) {
-    return (filter) => {
+    return (filter, priority = Priority.NORMAL) => {
+      const fixedPriority = Priority.get(priority);
+      if (!fixedPriority) throw new Error('Must pass a valid priority');
       if (typeof filter !== 'function') throw new Error('Must pass a function');
       counter += 1;
       const functionName = filter.displayName || filter.name || `filter${counter}`;
@@ -20,7 +23,8 @@ wrap(() => {
         return undefined;
       }
       customFilter.displayName = `${plugin.name}:${functionName}`;
-      filters.push(customFilter);
+      const index = filters.indexOf(fixedPriority);
+      filters.splice(index, 0, customFilter);
     };
   }
 
