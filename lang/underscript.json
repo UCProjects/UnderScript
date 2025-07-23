@@ -51,7 +51,7 @@
     "underscript.general.refresh": "Refresh Page",
     "underscript.general.settings": "Open Settings",
     "underscript.general.storage.load": "Click to load ($1)",
-    "underscript.general.storage.load.note": [
+    "underscript.general.storage.note": [
       "* Right Click to name deck",
       "* Shift Click to re-save deck",
       "* CTRL Click to erase deck"
