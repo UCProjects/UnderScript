@@ -23,7 +23,7 @@
     "SHIFT: Non-shiny mode"
   ],
   "storage.load": "Click to load ($1)",
-  "storage.load.note": [
+  "storage.note": [
     "* Right Click to name deck",
     "* Shift Click to re-save deck",
     "* CTRL Click to erase deck"
