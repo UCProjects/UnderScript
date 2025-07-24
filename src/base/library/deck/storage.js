@@ -55,10 +55,9 @@ onPage('Decks', function deckStorage() {
         .addClass('btn btn-sm btn-danger btn-storage'));
     }
 
-    buttons.forEach((button) => {
-      container.append(button);
-    });
+    container.append(buttons);
 
+    $('#deckCardsCanvas').prev('br').remove();
     $('#deckCardsCanvas').before(container);
 
     eventManager.on('Deck:Soul', loadStorage);
@@ -168,14 +167,13 @@ onPage('Decks', function deckStorage() {
     }
 
     function loadStorage() {
-      buttons.forEach((b, i) => loadButton(i));
+      buttons.forEach(loadButton);
     }
 
-    function loadButton(i) {
+    function loadButton(button, i) {
       const soul = global('soul');
       const deckKey = getKey(i);
       const nameKey = `${deckKey}.name`;
-      const button = buttons[i];
       button.off('.deckStorage'); // Remove any lingering events
       function refreshHover() {
         hover.hide();
