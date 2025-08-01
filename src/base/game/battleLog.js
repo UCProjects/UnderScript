@@ -11,6 +11,7 @@ import find from 'src/utils/find.js';
 import merge from 'src/utils/merge.js';
 import { window } from 'src/utils/1.variables.js';
 import { cardName } from 'src/utils/cardHelper.js';
+import extractImageName from 'src/utils/extractImageName';
 
 /* eslint-disable no-use-before-define */
 settings.register({
@@ -100,7 +101,9 @@ eventManager.on('GameStart', function battleLogger() {
     },
     card: function makeCard(card) {
       const c = $('<span>');
-      c.html(cardName(card));
+      extractImageName(true);
+      c.text(cardName(card));
+      extractImageName(false);
       c.css('text-decoration', 'underline');
 
       const d = $('<div>');
