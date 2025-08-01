@@ -1,5 +1,13 @@
 # UnderScript Changelog
 
+## Version 0.63.5 (2025-08-01)
+1. Added `underscript.item`
+1. Added `underscript.priority`
+1. Added priority to `plugin.addFilter()`
+1. Removed extra spacing in deck storage
+1. Fixed "Grand Prize" in battle log
+1. Fixed searching for "Grand Prize" in collection
+
 ## Version 0.63.4 (2025-07-11)
 1. Improved Deck/Crafting filters
 1. Added `results` to `addFilter` callback
