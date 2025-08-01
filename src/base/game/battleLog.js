@@ -100,7 +100,7 @@ eventManager.on('GameStart', function battleLogger() {
     },
     card: function makeCard(card) {
       const c = $('<span>');
-      c.text(cardName(card));
+      c.html(cardName(card));
       c.css('text-decoration', 'underline');
 
       const d = $('<div>');
