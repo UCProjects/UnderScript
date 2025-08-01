@@ -6,6 +6,7 @@ import onPage from 'src/utils/onPage.js';
 import { max } from 'src/utils/cardHelper.js';
 import Translation from 'src/structures/constants/translation.ts';
 import Priority from 'src/structures/constants/priority.js';
+import extractImageName from 'src/utils/extractImageName';
 import { getTranslationArray } from '../underscript/translation.js';
 
 export const crafting = onPage('Crafting');
@@ -208,12 +209,15 @@ filters.push(
     function includes(dirty) {
       return dirty.replace(/(<.*?>)/g, '').toLowerCase().includes(text);
     }
-    return (
+    extractImageName(true);
+    const result = (
       !includes($.i18n(`card-name-${card.id}`, 1)) &&
       !includes($.i18n(`card-${card.id}`)) &&
       !(card.soul?.name && includes($.i18n(`soul-${card.soul.name.toLowerCase().replace(/_/g, '-')}`))) &&
       !card.tribes.some((t) => includes($.i18n(`tribe-${t.toLowerCase().replace(/_/g, '-')}`)))
     );
+    extractImageName(false);
+    return result;
   },
   Priority.HIGHEST,
   Priority.HIGH,
