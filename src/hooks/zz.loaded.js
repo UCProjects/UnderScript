@@ -20,7 +20,7 @@ function done() {
   eventManager.singleton.emit(`:load:${page}`);
 }
 
-if (location.host.includes('undercards.net')) {
+if (!location.host.includes('feildmaster')) {
   console.log(`UnderScript(v${scriptVersion}): Loaded`); // eslint-disable-line no-console
   if (document.title.includes('Undercards')) {
     register();
