@@ -1,5 +1,8 @@
 # UnderScript Changelog
 
+## Version 0.63.6 (2025-08-15)
+1. Minor bug fixes
+
 ## Version 0.63.5 (2025-08-01)
 1. Added `underscript.item`
 1. Added `underscript.priority`

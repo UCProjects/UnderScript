@@ -16,9 +16,10 @@ export function global(...key) {
 }
 
 export function globalSet(key, value, {
+  force = false,
   throws = true,
 } = {}) {
-  if (!hasOwn(window, key)) {
+  if (!force && !hasOwn(window, key)) {
     const msg = `[${key}] does not exist`;
     if (throws) throw new Error(msg);
     return debug(msg);
