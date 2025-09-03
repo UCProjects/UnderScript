@@ -1,5 +1,8 @@
 # UnderScript Changelog
 
+## Version 0.63.8 (2025-09-03)
+1. Fix battle log (for realsies)
+
 ## Version 0.63.7 (2025-09-02)
 1. Fix battle log
 

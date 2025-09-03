@@ -142,10 +142,10 @@ eventManager.on('GameStart', function battleLogger() {
       monsters[card.id] = card;
     });
     you.level = data.yourLevel;
-    you.class = data.yourSoul.name ?? data.yourSoul;
+    you.class = window.yourSoul?.name ?? data.yourSoul;
     you.rank = data.yourRank;
     enemy.level = data.enemyLevel;
-    enemy.class = data.enemySoul.name ?? data.enemySoul;
+    enemy.class = window.enemySoul?.name ?? data.enemySoul;
     enemy.rank = data.enemyRank;
     // yourArtifacts, yourAvatar {id, image, name, rarity, ucpCost}, division, oldDivision, profileSkin {id, name, image, ucpCost}
     debug({ you, enemy }, 'debugging.game');
