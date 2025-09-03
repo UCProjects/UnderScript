@@ -13,6 +13,7 @@ const setting = settings.register({
   page: 'Game',
 });
 
+const ignoreModes = ['BOSS', 'STORY', 'TUTORIAL'];
 eventManager.on('GameStart', () => {
   eventManager.on('connect', (data) => {
     const val = sessionStorage.getItem(`underscript.bgm.${data.gameId}`);
@@ -20,7 +21,7 @@ eventManager.on('GameStart', () => {
       const path = isApril() && !aprilFools.value() ? IMAGES : 'images';
       $('body').css('background-image', `url('${path}/backgrounds/${val}.png')`);
       // Check special skins
-      if (data.gameType !== 'BOSS' && global('profileSkinsEnabled')) {
+      if (!ignoreModes.includes(data.gameType) && global('profileSkinsEnabled')) {
         global('checkSpecialProfileSkin')(JSON.parse(data.yourProfileSkin));
       }
     }
