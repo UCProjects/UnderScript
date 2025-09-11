@@ -2,7 +2,6 @@ import eventManager from 'src/utils/eventManager.js';
 import * as settings from 'src/utils/settings/index.js';
 import { global, globalSet } from 'src/utils/global.js';
 import { isApril, AUDIO } from 'src/utils/isApril.js';
-import { window } from 'src/utils/1.variables.js';
 import { isSoftDisabled } from '../vanilla/aprilFools.js';
 
 const baseVolumeSettings = { type: 'slider', page: 'Audio', max: 0.5, step: 0.01, default: 0.2, reset: true };
@@ -184,8 +183,7 @@ function createAudio(path, {
   return audio;
 }
 
-eventManager.on(':preload', () => {
-  if (typeof window.playMusic !== 'function') return;
+eventManager.on('connect:before', () => {
   active = true;
   // Override sound functions
   globalSet('playMusic', overrideResult);
