@@ -2,6 +2,7 @@ import eventManager from 'src/utils/eventManager.js';
 import * as settings from 'src/utils/settings/index.js';
 import { global, globalSet } from 'src/utils/global.js';
 import { isApril, AUDIO } from 'src/utils/isApril.js';
+import { window } from 'src/utils/1.variables.js';
 import { isSoftDisabled } from '../vanilla/aprilFools.js';
 
 const baseVolumeSettings = { type: 'slider', page: 'Audio', max: 0.5, step: 0.01, default: 0.2, reset: true };
@@ -112,7 +113,7 @@ function overrideResult(name) {
   if (!resultEnabled.value() || !data.name || event.canceled) return;
   pauseMusic();
   if (!enable.value()) {
-    this.super(data.name);
+    this.super(data.name, resultVolume.value());
     return;
   }
   createAudio(`/${musicPath()}/${data.name}.ogg`, {
@@ -127,7 +128,7 @@ function overrideMusic(name) {
   if (!bgmEnabled.value() || !data.name || event.canceled) return;
   pauseMusic();
   if (!enable.value()) {
-    this.super(data.name);
+    this.super(data.name, bgmVolume.value());
     return;
   }
   createAudio(`/${musicPath()}/themes/${data.name}.ogg`, {
@@ -141,7 +142,7 @@ function overrideSound(name) {
   const event = eventManager.cancelable.emit('playSound', data);
   if (!soundEnabled.value() || !data.name || event.canceled) return;
   if (!enable.value()) {
-    this.super(data.name);
+    this.super(data.name, soundVolume.value());
     return;
   }
   createAudio(`/sounds/${data.name}.wav`, {
@@ -155,7 +156,7 @@ function overrideJingle(name = '') {
   if (!jingleEnabled.value() || !data.name || event.canceled) return;
   pauseMusic();
   if (!enable.value()) {
-    this.super(data.name);
+    this.super(data.name, jingleVolume.value());
     return;
   }
   createAudio(`/${musicPath()}/cards/${data.name.replace(/ /g, '_')}.ogg`, {
@@ -173,21 +174,18 @@ function createAudio(path, {
   play = true,
 }) {
   const audio = new Audio(path);
-  audio.volume = parseFloat(volume);
+  audio.volume = volume;
+  audio.loop = repeat;
   if (listener) {
     audio.addEventListener('ended', listener, false);
-  } else if (repeat) {
-    audio.addEventListener('ended', function ended() {
-      this.currentTime = 0;
-      this.play();
-    }, false);
   }
   if (set) globalSet(set, audio);
   if (play) audio.play();
   return audio;
 }
 
-eventManager.on('connect', () => {
+eventManager.on(':preload', () => {
+  if (typeof window.playMusic !== 'function') return;
   active = true;
   // Override sound functions
   globalSet('playMusic', overrideResult);

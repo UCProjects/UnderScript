@@ -1,5 +1,8 @@
 # UnderScript Changelog
 
+## Version 0.63.9 (2025-09-10)
+1. Fixed in-game audio
+
 ## Version 0.63.8 (2025-09-03)
 1. Fix battle log (for realsies)
 
