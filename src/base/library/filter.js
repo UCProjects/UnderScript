@@ -136,7 +136,7 @@ function mergeShiny() {
 function allTribeButton() {
   return $(`
   <label>
-    <input type="checkbox" id="allTribeInput" onchange="applyFilters(); showPage(currentPage);">
+    <input type="checkbox" id="allTribeInput" onchange="applyFilters(); showPage(0);">
     <img src="images/tribes/ALL.png">
   </label>`);
 }
@@ -144,7 +144,7 @@ function allTribeButton() {
 function shinyButton() {
   return $(`
   <label>
-    <input type="checkbox" id="shinyInput" onchange="applyFilters(); showPage(currentPage);">
+    <input type="checkbox" id="shinyInput" onchange="applyFilters(); showPage(0);">
     <span class="rainbowText">S</span>
   </label>`);
 }
