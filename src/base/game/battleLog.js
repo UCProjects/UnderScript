@@ -12,6 +12,7 @@ import merge from 'src/utils/merge.js';
 import { window } from 'src/utils/1.variables.js';
 import { cardName } from 'src/utils/cardHelper.js';
 import extractImageName from 'src/utils/extractImageName';
+import { translateText } from 'src/utils/translate.js';
 
 /* eslint-disable no-use-before-define */
 settings.register({
@@ -130,6 +131,12 @@ eventManager.on('GameStart', function battleLogger() {
     debug(data, 'debugging.raw.game');
     const you = JSON.parse(data.you);
     const enemy = JSON.parse(data.enemy);
+    if (you.username.startsWith('story-')) {
+      you.username = translateText(you.username);
+    }
+    if (enemy.username.startsWith('story-')) {
+      enemy.username = translateText(enemy.username);
+    }
     // Set gold
     const gold = JSON.parse(data.golds);
     you.gold = gold[you.id];
