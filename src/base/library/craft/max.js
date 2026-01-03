@@ -6,6 +6,7 @@ import onPage from 'src/utils/onPage.js';
 import * as hover from 'src/utils/hover.js';
 import * as cardHelper from 'src/utils/cardHelper.js';
 import Translation from 'src/structures/constants/translation.js';
+import isCtrl from 'src/utils/isCtrl.js';
 import setBypass from './protection.js';
 
 const setting = settings.register({
@@ -50,7 +51,7 @@ onPage('Crafting', function craftMax() {
     card.off('click').on('click.script', (e) => {
       const id = parseInt(card.attr('id'), 10);
       const shiny = card.hasClass('shiny');
-      if (e.ctrlKey) {
+      if (isCtrl(e)) {
         hover.hide();
         const count = max - cardHelper.quantity(el);
         if (count <= 0) return;

@@ -11,6 +11,7 @@ import { cardName } from 'src/utils/cardHelper.js';
 import { translateText } from 'src/utils/translate';
 import { getTranslationArray } from 'src/base/underscript/translation';
 import Translation from 'src/structures/constants/translation.ts';
+import isCtrl from 'src/utils/isCtrl';
 
 // TODO: translation
 const setting = settings.register({
@@ -220,10 +221,11 @@ onPage('Decks', function deckStorage() {
             saveButton();
             return;
           }
-          if (e.ctrlKey && e.shiftKey) { // Crazy people...
+          const ctrlKey = isCtrl(e);
+          if (ctrlKey && e.shiftKey) { // Crazy people...
             return;
           }
-          if (e.ctrlKey) { // ERASE
+          if (ctrlKey) { // ERASE
             localStorage.removeItem(nameKey);
             localStorage.removeItem(deckKey);
             refreshHover(); // Update

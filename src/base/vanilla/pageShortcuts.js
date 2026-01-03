@@ -3,6 +3,7 @@ import * as settings from 'src/utils/settings/index.js';
 import { global, globalSet } from 'src/utils/global.js';
 import * as hover from 'src/utils/hover.js';
 import Translation from 'src/structures/constants/translation.ts';
+import isCtrl from 'src/utils/isCtrl';
 
 const disable = settings.register({
   name: Translation.Setting('page.jump'),
@@ -10,7 +11,7 @@ const disable = settings.register({
 });
 
 function ignoring(e) {
-  const ignore = disable.value() || !e.ctrlKey;
+  const ignore = disable.value() || !isCtrl(e);
   if (ignore && [0, global('getMaxPage')()].includes(global('currentPage'))) hover.hide();
   return ignore;
 }

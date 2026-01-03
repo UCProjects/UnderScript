@@ -11,6 +11,7 @@ import { getCollection } from 'src/utils/user.js';
 import { buttonCSS as css, window } from 'src/utils/1.variables.js';
 import Item from 'src/structures/constants/item.js';
 import length from 'src/utils/length';
+import isCtrl from 'src/utils/isCtrl';
 
 onPage('Packs', async function quickOpenPack() {
   const collection = await getCollection();
@@ -281,7 +282,7 @@ onPage('Packs', async function quickOpenPack() {
     });
     // TODO: translation
     $('[id^="btnOpen"]').on('click.script', (event) => {
-      autoOpen = event.ctrlKey;
+      autoOpen = isCtrl(event);
       const type = $(event.target).prop('id').substring(7);
       const count = autoOpen ? 1 : parseInt($(`#nb${type}Packs`).text(), 10);
       if (event.shiftKey) {

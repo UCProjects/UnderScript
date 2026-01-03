@@ -9,6 +9,7 @@ import ignoreUser from 'src/utils/ignoreUser.js';
 import decode from 'src/utils/decode.js';
 import { buttonCSS, window } from 'src/utils/1.variables.js';
 import Translation from 'src/structures/constants/translation.ts';
+import isCtrl from 'src/utils/isCtrl';
 
 const setting = settings.register({
   name: Translation.Setting('chat.rightclick'),
@@ -98,7 +99,7 @@ eventManager.on('jQuery', () => {
     mute.append(' ', muteTime);
 
     function open(event) {
-      if (event.ctrlKey || setting.value()) return;
+      if (isCtrl(event) || setting.value()) return;
       if (toast) {
         toast.close('opened');
       }

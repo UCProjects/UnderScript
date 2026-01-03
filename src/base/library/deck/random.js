@@ -102,8 +102,8 @@ eventManager.on(':preload:Decks', () => {
   clearDeck.after(' ', button);
 });
 
-function getMode({ ctrlKey = false, shiftKey = false }) {
-  if (ctrlKey) return true;
+function getMode({ ctrlKey = false, metaKey = false, shiftKey = false }) {
+  if (ctrlKey || metaKey) return true;
   if (shiftKey) return false;
   return undefined;
 }
