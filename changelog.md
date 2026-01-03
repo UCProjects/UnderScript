@@ -1,5 +1,9 @@
 # UnderScript Changelog
 
+## Version 0.63.11 (2026-01-03)
+1. Fixed chat ping highlight conflicting with base game
+1. Fixed mac support for "control" key (use meta instead)
+
 ## Version 0.63.10 (2026-01-01)
 1. Fixed filters not resetting to first page
 1. Fixed battle log not translating story username
