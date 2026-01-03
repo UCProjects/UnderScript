@@ -10,7 +10,7 @@ import style from 'src/utils/style.js';
 
 import { pingExtras } from './toast.js';
 
-style.add('.highlight { color: yellow; }');
+style.add('.us-ping { color: yellow; }');
 
 const setting = settings.register({
   name: Translation.Setting('ping'),
@@ -18,7 +18,7 @@ const setting = settings.register({
   page: 'Chat',
 });
 
-const mask = '<span class="highlight">$1</span>';
+const mask = '<span class="us-ping">$1</span>';
 
 let disabled = false;
 let notified = false;
