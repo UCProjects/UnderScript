@@ -45,5 +45,5 @@ wrap(() => {
     };
   }
 
-  registerModule(name, mod, 'events', 'settings');
+  registerModule(name, mod, 'events', 'settings', 'enabled?');
 });
