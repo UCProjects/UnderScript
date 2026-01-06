@@ -1,3 +1,4 @@
+import luxon from 'luxon';
 import showdown from 'showdown';
 import axios from 'axios';
 import { scriptVersion } from 'src/utils/1.variables.js';
@@ -39,13 +40,6 @@ function getMarkdown() {
   }
   return changelog.markdown;
 }
-function getAxios() {
-  if (!changelog.axios) {
-    // TODO: get from github?
-    changelog.axios = axios.create({ baseURL: 'https://unpkg.com/' });
-  }
-  return changelog.axios;
-}
 
 function open(message) {
   BootstrapDialog.show({
@@ -61,25 +55,23 @@ function open(message) {
   });
 }
 
-export function get(version = 'latest', short = false) {
+export async function get(version = 'latest', short = false) {
   const cache = version.includes('.');
   const key = `${version}${short ? '_short' : ''}`;
   if (cache && changelog[key]) return Promise.resolve(changelog[key]);
 
-  const extension = `underscript@${version}/changelog.md`;
-  return getAxios().get(extension).then(({ data: text }) => {
-    const first = text.indexOf(`\n## ${cache ? `Version ${version}` : ''}`);
-    let end;
-    if (!~first) throw new Error('Invalid Changelog');
-    if (short) {
-      const index = text.indexOf('\n## ', first + 1);
-      if (index !== -1) end = index;
-    }
-    const parsedHTML = getMarkdown().makeHtml(text.substring(first, end).trim()).replace(/\r?\n/g, '');
-    // Cache results
-    if (cache) changelog[key] = parsedHTML;
-    return parsedHTML;
-  });
+  if (version === 'latest') {
+    const { data } = await axios.get('https://raw.githubusercontent.com/UCProjects/UnderScript/refs/heads/master/changelog.md');
+
+    return getMarkdown().makeHtml(data.substring(data.indexOf('##'))).replace(/\r?\n/g, '');
+  }
+
+  const { data: { body: text, name, published_at: published } } = await axios.get(`https://api.github.com/repos/UCProjects/UnderScript/releases/tags/${version}}`);
+  const date = luxon.DateTime.fromISO(published).toLocaleString(luxon.DateTime.DATE_MED);
+  const parsedHTML = getMarkdown().makeHtml(`## ${name} (${date})\n${text}`).replace(/\r?\n/g, '');
+  // Cache results
+  if (cache) changelog[key] = parsedHTML;
+  return parsedHTML;
 }
 
 export function load(version = 'latest', short = false) {
