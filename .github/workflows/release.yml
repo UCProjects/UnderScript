@@ -39,6 +39,8 @@ jobs:
       env:
         INPUT_VERSION: ${{ needs.check.outputs.version }}
       run: node ./scripts/changelog/index.cjs
+    - name: Build
+      run: npm run build
     - name: Tag and Release
       uses: softprops/action-gh-release@v1
       with:
@@ -64,6 +66,8 @@ jobs:
         registry-url: "https://registry.npmjs.org"
     - name: Install dependencies
       run: npm install
+    - name: Build
+      run: npm run build
     - name: Tag and Release
       uses: softprops/action-gh-release@v1
       with:
