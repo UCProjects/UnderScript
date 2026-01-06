@@ -58,20 +58,25 @@ function open(message) {
 export async function get(version = 'latest', short = false) {
   const cache = version.includes('.');
   const key = `${version}${short ? '_short' : ''}`;
-  if (cache && changelog[key]) return Promise.resolve(changelog[key]);
+  if (changelog[key]) return changelog[key];
 
-  if (version === 'latest') {
-    const { data } = await axios.get('https://raw.githubusercontent.com/UCProjects/UnderScript/refs/heads/master/changelog.md');
-
-    return getMarkdown().makeHtml(data.substring(data.indexOf('##'))).replace(/\r?\n/g, '');
+  function getHtml(text) {
+    const parsedHTML = getMarkdown().makeHtml(text).replace(/\r?\n/g, '');
+    // Cache results
+    if (cache) changelog[key] = parsedHTML;
+    return parsedHTML;
   }
 
-  const { data: { body: text, name, published_at: published } } = await axios.get(`https://api.github.com/repos/UCProjects/UnderScript/releases/tags/${version}}`);
-  const date = luxon.DateTime.fromISO(published).toLocaleString(luxon.DateTime.DATE_MED);
-  const parsedHTML = getMarkdown().makeHtml(`## ${name} (${date})\n${text}`).replace(/\r?\n/g, '');
-  // Cache results
-  if (cache) changelog[key] = parsedHTML;
-  return parsedHTML;
+  if (short) {
+    const { data: { body: text, name, published_at: published } } = await axios.get(`https://api.github.com/repos/UCProjects/UnderScript/releases/tags/${version}`);
+    const date = luxon.DateTime.fromISO(published).toLocaleString(luxon.DateTime.DATE_MED);
+    return getHtml(`## ${name} (${date})\n${text}`);
+  }
+
+  const { data } = await axios.get('https://raw.githubusercontent.com/UCProjects/UnderScript/refs/heads/master/changelog.md');
+  const start = data.indexOf(`\n## ${cache ? `Version ${version}` : ''}`);
+  if (!~start) throw new Error('Invalid Changelog');
+  return getHtml(data.substring(start));
 }
 
 export function load(version = 'latest', short = false) {

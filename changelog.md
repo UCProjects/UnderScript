@@ -1,5 +1,8 @@
 # UnderScript Changelog
 
+## Version 0.63.15 (2026-01-06)
+1. Fixed the changelog
+
 ## Version 0.63.14 (2026-01-06)
 Apparently UnderScript updates were broken and the past few releases didn't go through. Here's the changes:
 1. Fixed filters not resetting to first page
