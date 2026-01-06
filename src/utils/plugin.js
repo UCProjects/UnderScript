@@ -14,8 +14,14 @@ function load({ name, mod, dependencies = [], runs = 0 }, methods, local) {
   }
   const required = dependencies.filter((module) => methods[module.replace('?', '')] === undefined);
   if (required.length) {
-    if (runs < 5) local.push({ name, mod, dependencies: required, runs: runs + 1 });
-    return;
+    if (runs < 5) {
+      local.push({ name, mod, dependencies: required, runs: runs + 1 });
+      return;
+    }
+    if (dependencies.some((module) => !module.endsWith('?'))) {
+      return;
+    }
+    // Remaining are optional
   }
   try {
     const val = mod(methods);
