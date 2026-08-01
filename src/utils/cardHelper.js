@@ -1,8 +1,16 @@
 /* eslint-disable no-param-reassign */
 import * as api from './4.api.js';
 import { debug } from './debug.js';
-import { global } from './global.js';
+import eventManager from './eventManager.js';
 import { translateText } from './translate.js';
+
+const cardMap = new Map();
+
+eventManager.on('allCardsReady', (allCards) => {
+  allCards.forEach((card) => {
+    cardMap.set(card.id, card);
+  });
+});
 
 const unset = [undefined, null];
 export function max(rarity) { // eslint-disable-line no-shadow
@@ -155,8 +163,8 @@ export function dustGain(r, s) {
 }
 
 export function getCardData(id) {
-  const cards = global('allCards').filter((card) => card.id === parseInt(id, 10));
-  if (cards.length) return cards[0];
+  const card = cardMap.get(Number(id));
+  if (card) return card;
   throw new Error(`Unknown card ${id}`);
 }
 
