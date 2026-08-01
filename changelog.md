@@ -1,6 +1,6 @@
 # UnderScript Changelog
 
-## Version 0.63.17 (2026-07-31)
+## Version 0.63.18 (2026-07-31)
 1. Fixed some bugs that crashed UnderScript
 1. Fixed UnderScript stalling games
 1. Fixed styles related to game chat
