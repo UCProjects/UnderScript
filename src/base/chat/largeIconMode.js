@@ -19,12 +19,11 @@ function update() {
   if (styles) {
     styles.remove();
   }
-  if (setting.value()) {
+  if (!setting.value()) {
     styles.append(
-      '.message-group { clear: both; }',
-      '.chat-messages .avatarGroup { float: left; padding-right: 10px; }',
-      '.chat-messages li .avatar, .chat-messages li .rainbowAvatar { height: 45px; }',
-      '.chat-message { display: block; }',
+      '.chat-messages li.message-group .avatar, .chat-messages li.message-group .rainbowAvatar, .chat-messages li.message-group .avatarGroup { height: 24px; width: 24px }',
+      '.chat-message-header { padding-left: 30px; }',
+      '.chat-message { display: block; text-indent: 0 !important; }',
     );
   }
 }
@@ -43,7 +42,7 @@ eventManager.on('ChatDetected', () => {
   };
 
   infoToast({
-    text: `There's a new Large Icon mode setting for chat`,
+    text: `There's a Large Icon Mode chat setting`,
     className: 'dismissable',
     buttons,
   }, 'underscript.notice.largeIcons', '1');
