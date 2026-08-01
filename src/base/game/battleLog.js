@@ -455,10 +455,9 @@ eventManager.on('GameStart', function battleLogger() {
       const ha = $('<div class=\'handle\'>History</div>');
       const lo = $('<div id=\'log\'></div>');
       // Positional math -- not working anymore??
-      const mainContent = $('div.mainContent');
+      const mainContent = $('div.gameContent');
       mainContent.css('position', 'initial');
       const pos = parseInt(mainContent.css('width'), 10) + parseInt(mainContent.css('margin-left'), 10);
-      mainContent.css('position', '');
       hi.css({
         width: `${window.innerWidth - pos - 20}px`,
       });
