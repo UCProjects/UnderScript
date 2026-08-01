@@ -24,7 +24,7 @@ style.add(`
     color: #333;
     border: 1px dashed #000;
     position: absolute;
-    z-index: 20;
+    z-index: 1000;
     text-align: center;
     border-radius: 10px;
   }
