@@ -178,7 +178,7 @@ function createAudio(path, {
   if (listener) {
     audio.addEventListener('ended', listener, false);
   }
-  if (set) globalSet(set, audio);
+  if (set) globalSet(set, audio, { throws: false });
   if (play) audio.play();
   return audio;
 }
