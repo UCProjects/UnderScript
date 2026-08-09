@@ -22,7 +22,7 @@ function done() {
 
 if (!location.host.includes('feildmaster')) {
   console.log(`UnderScript(v${scriptVersion}): Loaded`); // eslint-disable-line no-console
-  if (document.title.includes('Undercards')) {
+  if (document.contentType === 'text/html' && !document.title.includes('Just a moment')) {
     register();
   }
 }
