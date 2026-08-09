@@ -1,6 +1,7 @@
 import * as settings from 'src/utils/settings/index.js';
 import onPage from 'src/utils/onPage.js';
 import Translation from 'src/structures/constants/translation.ts';
+import { global } from 'src/utils/global.js';
 
 [
   {
@@ -42,9 +43,44 @@ import Translation from 'src/structures/constants/translation.ts';
     category: 'Game',
   },
   {
+    name: Translation.Setting('vanilla.game.music.volume'),
+    key: 'gameMusicVolume',
+    type: 'slider',
+    category: 'Game',
+    onChange(val) {
+      const audio = global('UCAudio', { throws: false });
+      audio?.setMusicVolume(val / 100, false);
+    },
+  },
+  {
+    name: Translation.Setting('vanilla.game.jingle'),
+    key: 'gameJinglesDisabled',
+    category: 'Game',
+  },
+  {
+    name: Translation.Setting('vanilla.game.jingle.volume'),
+    key: 'gameJingleVolume',
+    type: 'slider',
+    category: 'Game',
+    onChange(val) {
+      const audio = global('UCAudio', { throws: false });
+      audio?.setJingleVolume(val / 100, false);
+    },
+  },
+  {
     name: Translation.Setting('vanilla.game.sound'),
     key: 'gameSoundsDisabled',
     category: 'Game',
+  },
+  {
+    name: Translation.Setting('vanilla.game.sound.volume'),
+    key: 'gameSoundsVolume',
+    type: 'slider',
+    category: 'Game',
+    onChange(val) {
+      const audio = global('UCAudio', { throws: false });
+      audio?.setEffectsVolume(val / 100, false);
+    },
   },
   {
     name: Translation.Setting('vanilla.game.profile'),
@@ -78,7 +114,8 @@ import Translation from 'src/structures/constants/translation.ts';
     category: 'Animation',
   },
   { key: 'deckBeginnerInfo' },
-  { key: 'firstVisit' },
+  { key: 'craftBeginnerInfo' },
+  { key: 'first' },
   { key: 'playDeck' },
   // { key: 'cardsVersion' }, // no-export?
   // { key: 'allCards' }, // no-export?
@@ -86,7 +123,7 @@ import Translation from 'src/structures/constants/translation.ts';
   // { key: 'browser' },
   // { key: 'leaderboardPage' },
   // { key: 'chat' },
-  // { key: 'language' },
+  // { key: 'open-public-chats' },
   // { key: '' },
   // TODO: Add missing keys
 ].forEach((setting) => {
