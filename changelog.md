@@ -1,5 +1,9 @@
 # UnderScript Changelog
 
+## Version 0.63.19 (2026-08-08)
+1. Fixed UnderScript not loading for some pages
+1. Added new Vanilla Settings (volume)
+
 ## Version 0.63.18 (2026-07-31)
 1. Fixed some bugs that crashed UnderScript
 1. Fixed UnderScript stalling games
