@@ -83,3 +83,25 @@
   opacity: 0.6;
   font-size: 0.85em;
 }
+
+.settings .modal-dialog {
+  width: min(800px, 90vw);
+}
+
+.settings .modal-body {
+  max-height: none;
+  overflow-y: visible;
+}
+
+.settings .tabbedView {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.settings .tabContent {
+  position: sticky;
+  top: 0;
+  height: 70vh;
+  overflow-y: auto;
+  contain: layout paint;
+}

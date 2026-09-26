@@ -1,0 +1,130 @@
+/* Wrapper */
+.tabbedView {
+  --tab-label-max-width: 160px;
+  --tab-label-gap: 5px;
+  --tab-count: 1;
+
+  display: grid;
+  grid-template-columns: repeat(var(--tab-count), minmax(0, max-content)) 1fr;
+  grid-template-rows: min-content 1fr;
+  column-gap: var(--tab-label-gap);
+  align-content: start;
+}
+
+.tabbedView.left,
+.tabbedView.right {
+  grid-template-rows: repeat(var(--tab-count), min-content) 1fr;
+}
+
+.tabbedView.left {
+  grid-template-columns: fit-content(var(--tab-label-max-width)) 1fr;
+}
+
+.tabbedView.right {
+  grid-template-columns: 1fr fit-content(var(--tab-label-max-width));
+}
+
+.tabButton {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+.tabContent {
+  display: none;
+}
+
+.tabbedView > .tabContent {
+  grid-row: 2;
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.tabbedView.left > .tabContent {
+  grid-column: 2;
+  grid-row: 1 / -1;
+  min-width: 0;
+}
+
+.tabbedView.right > .tabContent {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  min-width: 0;
+}
+
+/* Labels */
+.tabLabel {
+  display: block;
+  padding: 2px 5px;
+  border: 1px solid white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tabLabel.end {
+  order: 1;
+}
+
+.tabbedView > .tabLabel {
+  grid-row: 1;
+  box-sizing: border-box;
+}
+
+.tabbedView.left > .tabLabel {
+  grid-column: 1;
+  grid-row: auto;
+}
+
+.tabbedView.right > .tabLabel {
+  grid-column: 2;
+  grid-row: auto;
+  order: 3;
+}
+
+.tabbedView.right > .tabLabel.end {
+  order: 4;
+}
+
+.tabButton:checked + .tabLabel {
+  background-color: rgb(68, 100, 189);
+}
+
+.tabButton:focus-visible + .tabLabel {
+  outline: 2px solid rgb(68, 100, 189);
+  outline-offset: 1px;
+}
+
+.tabButton:checked + .tabLabel + .tabContent {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.tabButton:checked + .tabLabel + .tabContent.nested {
+  display: contents;
+}
+
+.tabContent.nested > .tabbedView {
+  display: contents;
+}
+
+.tabbedView.left > .tabContent.nested > .tabbedView > .tabLabel {
+  grid-column: 1;
+  grid-row: auto;
+  margin-left: 12px;
+  border-left: 3px solid rgb(68, 100, 189);
+}
+
+.tabbedView.left > .tabContent.nested > .tabbedView > .tabContent {
+  grid-column: 2;
+  grid-row: 1 / -1;
+  min-width: 0;
+}
+
+.tabbedView.left > .tabLabel.end + .tabContent.nested > .tabbedView > .tabLabel {
+  order: 1;
+}

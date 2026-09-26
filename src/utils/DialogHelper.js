@@ -54,8 +54,16 @@ export default class DialogHelper {
     this.#events.on('close', callback);
   }
 
+  onceClose(callback) {
+    this.#events.once('close', callback);
+  }
+
   onOpen(callback) {
     this.#events.on('open', callback);
+  }
+
+  onceOpen(callback) {
+    this.#events.once('open', callback);
   }
 
   appendButton(...buttons) {

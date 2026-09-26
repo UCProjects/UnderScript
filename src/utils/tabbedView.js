@@ -1,22 +1,7 @@
 import style from './style.js';
+import styles from './tabbedView.css';
 
-style.add(
-  // Wrapper
-  '.tabbedView { display: flex; flex-flow: row wrap; align-content: flex-start; }',
-  '.tabbedView.left, .tabbedView.right { flex-flow: column wrap; }',
-  '.tabbedView.right > .tabLabel { order: 3; }',
-  // Hide things that shouldn't be shown
-  '.tabButton, .tabContent { display: none; }',
-  '.tabContent { order: 2; flex: 1 100%; }',
-  // Show current tab
-  '.tabButton:checked + .tabLabel + .tabContent { display: flex; }',
-  // Make the labels look nice
-  '.tabLabel { display: flex; padding: 2px 5px; border: 1px solid white; margin-right: 5px; }',
-  '.tabLabel.end { order: 1; }',
-  '.tabButton:checked + .tabLabel { background-color: rgb(68, 100, 189); }',
-  '.tabbedView.left > .tabLabel {}',
-  '.tabbedView.right > .tabLabel {}',
-);
+style.add(styles);
 
 let groupID = 0;
 
@@ -26,6 +11,7 @@ export default function TabManager() {
   const tabs = [];
   const tabSettings = {
     left: false,
+    right: false,
   };
 
   const view = document.createElement('div');
@@ -99,8 +85,17 @@ export default function TabManager() {
     return wrapper;
   }
 
+  function rowCount() {
+    return tabs.reduce((count, { content }) => {
+      const sub = typeof content?.render === 'function' ? content.tabCount : 0;
+      return count + 1 + sub;
+    }, 0);
+  }
+
   function render(raw = false) {
     view.classList.toggle('left', tabSettings.left);
+    view.classList.toggle('right', tabSettings.right);
+    view.style.setProperty('--tab-count', rowCount());
 
     // Update content of tabs
     tabs.forEach((tab) => {
@@ -115,11 +110,14 @@ export default function TabManager() {
       tab.dirty = false;
 
       let value = tab.content;
+      let nested = false;
       if (typeof value === 'function') {
         value = value();
       } else if (typeof value?.render === 'function') {
+        nested = true;
         value = value.render(true);
       }
+      content.classList.toggle('nested', nested);
 
       if (typeof value === 'string' && value) {
         content.innerHTML = value;
@@ -127,7 +125,7 @@ export default function TabManager() {
         content.innerHTML = '';
         content.appendChild(value);
       } else {
-        if (button.isConnected) {
+        if (button.parentNode === view) {
           view.removeChild(button);
           view.removeChild(label);
           view.removeChild(content);
@@ -140,20 +138,40 @@ export default function TabManager() {
       view.appendChild(content);
     });
 
+    tabs.forEach(({ elements: [button, label, content] }) => {
+      if (button.parentNode !== view) return;
+      view.append(button, label, content);
+    });
+
     if (raw) return view;
     return view.outerHTML;
   }
 
   function settings({
     left = false,
+    right = false,
   }) {
     tabSettings.left = left;
+    tabSettings.right = right;
+  }
+
+  function refreshAll() {
+    tabs.forEach((tab) => {
+      tab.dirty = true;
+      if (typeof tab.content?.refresh === 'function') {
+        tab.content.refresh();
+      }
+    });
   }
 
   return {
     addTab,
     render,
     settings,
+    refresh: refreshAll,
+    get tabCount() {
+      return tabs.length;
+    },
   };
 }
 

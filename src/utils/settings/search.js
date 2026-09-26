@@ -1,87 +1,140 @@
 import Translation from 'src/structures/constants/translation.js';
 import { translateText } from 'src/utils/translate.js';
 
-export default function createSearch(showSetting, settingReg) {
-  const wrapper = $('<div class="setting-search">');
-  const input = $('<input type="text" class="setting-search-input">')
-    .attr('placeholder', translateText(Translation.Setting('search')));
-  const results = $('<ul class="setting-search-results">').hide();
+const decoder = document.createElement('template');
+
+export default function createSearch(showSetting, settingReg, dialog) {
+  const wrapper = document.createElement('div');
+  wrapper.classList.add('setting-search');
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.classList.add('setting-search-input');
+  input.placeholder = translateText(Translation.Setting('search'));
+
+  const results = document.createElement('ul');
+  results.classList.add('setting-search-results');
+  results.hidden = true;
+
   wrapper.append(input, results);
 
   let items = [];
   let activeIndex = -1;
+  let exiting = false;
 
   function close() {
-    results.hide().empty();
+    results.hidden = true;
+    results.replaceChildren();
     items = [];
     activeIndex = -1;
   }
 
   function highlight(index) {
-    results.children().removeClass('active');
     activeIndex = index;
-    if (items[index]) results.children().eq(index).addClass('active');
+    [...results.children].forEach((li, i) => li.classList.toggle('active', i === index));
   }
 
   function select(index) {
     const match = items[index];
     if (!match) return;
     showSetting(match.key, true);
-    input.val('');
+    input.value = '';
     close();
   }
 
+  function toText(html) {
+    decoder.innerHTML = html;
+    return decoder.content.textContent;
+  }
+
   function pageLabel(page) {
-    return page.name || page;
+    return toText(page.name || page);
+  }
+
+  function createResult(setting, index) {
+    const item = document.createElement('li');
+    const name = document.createElement('span');
+    name.classList.add('setting-search-name');
+    name.innerHTML = setting.name;
+    const page = document.createElement('span');
+    page.classList.add('setting-search-page');
+    page.textContent = pageLabel(setting.page);
+    item.append(name, page);
+    item.addEventListener('mousedown', (e) => {
+      e.preventDefault(); // fires before input's blur, so the click isn't lost
+      select(index);
+    });
+    return item;
   }
 
   function search(query) {
     if (!query) return close();
     const q = query.toLowerCase();
     items = Object.values(settingReg)
-      .filter((setting) => !setting.hidden && setting.name.toLowerCase().includes(q))
+      .filter((setting) => !setting.hidden && toText(setting.name).toLowerCase().includes(q))
       .slice(0, 10);
 
-    results.empty();
     if (!items.length) return close();
 
-    items.forEach((setting, index) => {
-      $('<li>')
-        .append($('<span class="setting-search-name">').text(setting.name))
-        .append($('<span class="setting-search-page">').text(pageLabel(setting.page)))
-        .on('mousedown', (e) => {
-          e.preventDefault(); // fires before input's blur, so the click isn't lost
-          select(index);
-        })
-        .appendTo(results);
-    });
-    results.show();
+    results.replaceChildren(...items.map(createResult));
+    results.hidden = false;
     highlight(0);
     return undefined;
   }
 
-  input.on('input', () => search(input.val()));
+  input.addEventListener('input', () => search(input.value));
 
-  input.on('keydown', (e) => {
-    if (!items.length) return;
-    if (e.key === 'ArrowDown') {
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
       e.preventDefault();
+      e.stopPropagation();
+      if (items.length) {
+        close();
+      } else {
+        exiting = true;
+      }
+      return;
+    }
+    if (!items.length) return;
+    if (!['ArrowDown', 'ArrowUp', 'Enter'].includes(e.key)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.key === 'ArrowDown') {
       highlight((activeIndex + 1) % items.length);
     } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
       highlight((activeIndex - 1 + items.length) % items.length);
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
+    } else {
       select(activeIndex);
-    } else if (e.key === 'Escape') {
-      close();
     }
   });
 
-  input.on('blur', () => setTimeout(close, 100));
+  input.addEventListener('keyup', (e) => {
+    if (e.key !== 'Escape') return;
+    e.stopPropagation();
+    if (!exiting) return;
+    exiting = false;
+    input.value = '';
+    input.blur();
+  });
+
+  input.addEventListener('blur', () => setTimeout(close, 100));
+
+  function hotkey(e) {
+    if (e.key !== 'f' || !(e.ctrlKey || e.metaKey) || e.altKey) return;
+    e.preventDefault();
+    input.focus();
+    input.select();
+  }
+
+  document.addEventListener('keydown', hotkey);
+  dialog.onceClose(() => document.removeEventListener('keydown', hotkey));
 
   return {
     el: wrapper,
-    reset: () => { input.val(''); close(); },
+    focus: () => {
+      input.focus();
+      input.select();
+    },
+    reset: () => { input.value = ''; close(); },
   };
 }

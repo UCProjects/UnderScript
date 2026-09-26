@@ -30,25 +30,6 @@ const events = eventEmitter();
 const configs = new Map();
 const dialog = new DialogHelper();
 let updateLock = false;
-let search;
-let settingsContainer;
-
-function getSearch() {
-  if (!search) {
-    search = createSearch(showSetting, settingReg);
-  }
-  return search;
-}
-
-function getSettingsContainer() {
-  if (!settingsContainer) {
-    settingsContainer = $('<div class="settings-search-container">')
-      .append(getSearch().el)
-      .append(getScreen().render(true))
-      .get(0);
-  }
-  return settingsContainer;
-}
 
 /**
  * @returns {tabManager}
@@ -319,16 +300,24 @@ export function open(page = 'main') {
   if (typeof test !== 'string') throw new Error(`Attempted to open unknown page, ${test} (${typeof page})`);
   getPage(page).setActive();
   if (page.name) {
-    getPage('Plugins').setActive();
+    const plugins = getPage('Plugins');
+    plugins.setActive();
+    plugins.refresh();
   }
-  if (isOpen()) {
-    getScreen().render(true);
-    return;
-  }
+  getScreen().render(true);
+  if (isOpen()) return;
   dialog.open({
     title: `${Translation.Setting('title')}`,
-    // size: 'size-wide',
-    message: getSettingsContainer,
+    cssClass: 'underscript-dialog settings',
+    message() {
+      const container = document.createElement('div');
+      container.classList.add('settings-search-container');
+      container.append(
+        createSearch(showSetting, settingReg, dialog).el,
+        getScreen().render(true),
+      );
+      return container;
+    },
   });
 }
 
@@ -478,11 +467,11 @@ function getLogger({ page } = defaultSetting) {
 dialog.onOpen((diag) => {
   events.emit('open');
   eventManager.emit('Settings:open', diag.getModalBody());
-  getSearch().reset();
 });
 
 dialog.onClose(() => {
   events.emit('close');
+  getScreen().refresh();
 });
 
 // TODO: translate page titles on ready
