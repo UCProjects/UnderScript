@@ -104,6 +104,8 @@
   height: 70vh;
   overflow-y: auto;
   contain: layout paint;
+  padding: 12px 3px 8px;
+  box-sizing: border-box;
 }
 
 .setting-description {
