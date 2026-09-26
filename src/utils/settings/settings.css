@@ -16,30 +16,9 @@
   margin-right: 4px;
 }
 
-.mono .modal-body {
-  font-family: monospace;
-  max-height: 500px;
-  overflow-y: auto;
-}
-
-.underscript-dialog .bootstrap-dialog-message {
+.settings-search-container {
   display: flex;
-  flex-wrap: wrap;
-}
-
-.underscript-dialog fieldset {
-  padding: 0.35em 0.625em 0.75em;
-  margin: 0 2px;
-  border: 1px solid silver;
-}
-
-.underscript-dialog legend {
-  padding: 0;
-  border: 0;
-  width: auto;
-  margin: 0;
-  font-family: DTM-Mono, sans-serif;
-  color: white;
+  flex-direction: column;
 }
 
 .underscript-dialog label.disabled {
@@ -49,20 +28,6 @@
 
 .underscript-dialog .target-setting {
   border: 2px solid yellow;
-}
-
-/*
-.underscript-dialog .modal-content {
-  background: #000 url(../images/backgrounds/2.png) -380px -135px;
-}
-.underscript-dialog .modal-content .modal-header,
-.underscript-dialog .modal-body {
-  background-color: transparent;
-}
-*/
-
-.underscript-dialog .modal-footer button.btn {
-  margin-bottom: 5px;
 }
 
 /* TODO: convert reset to a type? for convenience {} */
@@ -77,4 +42,44 @@
 
 .underscript-dialog .reset::after {
   content: ']';
+}
+
+.setting-search {
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.setting-search-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.setting-search-results {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  max-height: 240px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: #222;
+  border: 1px solid white;
+}
+
+.setting-search-results li {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.setting-search-results li.active,
+.setting-search-results li:hover {
+  background-color: rgb(68, 100, 189);
+}
+
+.setting-search-page {
+  opacity: 0.6;
+  font-size: 0.85em;
 }

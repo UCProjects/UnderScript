@@ -1,19 +1,20 @@
 import Translation from 'src/structures/constants/translation.js';
-import eventManager from '../eventManager.js';
-import eventEmitter from '../eventEmitter.js';
-import style from '../style.js';
-import * as menu from '../menu.js';
-import tabManager from '../tabbedView.js';
-import * as hover from '../hover.js';
-import each from '../each.js';
-import wrap from '../2.pokemon.js';
+import eventManager from 'src/utils/eventManager.js';
+import eventEmitter from 'src/utils/eventEmitter.js';
+import style from 'src/utils/style.js';
+import * as menu from 'src/utils/menu.js';
+import tabManager from 'src/utils/tabbedView.js';
+import * as hover from 'src/utils/hover.js';
+import each from 'src/utils/each.js';
+import wrap from 'src/utils/2.pokemon.js';
+import { translateText } from 'src/utils/translate.js';
+import DialogHelper from 'src/utils/DialogHelper.js';
 import AdvancedMap from './types/map2.js';
 import * as types from './types/index.js';
-import { translateText } from '../translate.js';
 import RegisteredSetting from './RegisteredSetting.js';
 import styles from './settings.css';
 import { isSettingType, registry } from './settingRegistry.js';
-import DialogHelper from '../DialogHelper.js';
+import createSearch from './search.js';
 
 const defaultSetting = new RegisteredSetting();
 
@@ -29,6 +30,25 @@ const events = eventEmitter();
 const configs = new Map();
 const dialog = new DialogHelper();
 let updateLock = false;
+let search;
+let settingsContainer;
+
+function getSearch() {
+  if (!search) {
+    search = createSearch(showSetting, settingReg);
+  }
+  return search;
+}
+
+function getSettingsContainer() {
+  if (!settingsContainer) {
+    settingsContainer = $('<div class="settings-search-container">')
+      .append(getSearch().el)
+      .append(getScreen().render(true))
+      .get(0);
+  }
+  return settingsContainer;
+}
 
 /**
  * @returns {tabManager}
@@ -201,6 +221,19 @@ function getMessage(page) {
   return container;
 }
 
+function showSetting(key, scroll) {
+  const setting = settingReg[key];
+  if (!setting) return;
+  const opening = !isOpen();
+  open(setting.page, key);
+  if (!scroll) return;
+  if (opening) {
+    events.once('open', () => events.emit(`scroll:${key}`));
+  } else {
+    events.emit(`scroll:${key}`);
+  }
+}
+
 export function register(data) {
   if (typeof data !== 'string' && !data.key) throw new Error('No key provided');
 
@@ -273,14 +306,7 @@ export function register(data) {
     },
     get disabled() { return registeredSetting.disabled; },
     show(scroll) {
-      const opening = !isOpen();
-      open(page, key);
-      if (!scroll) return;
-      if (opening) {
-        events.once('open', () => events.emit(`scroll:${key}`));
-      } else {
-        events.emit(`scroll:${key}`);
-      }
+      showSetting(key, scroll);
     },
     refresh: () => {
       events.emit(`refresh:${key}`);
@@ -302,9 +328,7 @@ export function open(page = 'main') {
   dialog.open({
     title: `${Translation.Setting('title')}`,
     // size: 'size-wide',
-    message() {
-      return getScreen().render(true);
-    },
+    message: getSettingsContainer,
   });
 }
 
@@ -454,6 +478,7 @@ function getLogger({ page } = defaultSetting) {
 dialog.onOpen((diag) => {
   events.emit('open');
   eventManager.emit('Settings:open', diag.getModalBody());
+  getSearch().reset();
 });
 
 dialog.onClose(() => {
