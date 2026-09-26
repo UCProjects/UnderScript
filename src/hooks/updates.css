@@ -2,6 +2,11 @@
   --silent: dimgray;
 }
 
+.updates .bootstrap-dialog-message {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .updates fieldset.silent {
   border-color: var(--silent);
 }
