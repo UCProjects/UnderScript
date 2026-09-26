@@ -1,5 +1,22 @@
 # UnderScript Changelog
 
+## Unreleased
+### Features
+1. Added "crafting" option for "merge shiny cards" setting
+1. Added a search bar to the settings screen
+1. Added descriptions to settings
+1. Added autocomplete for emotes and chat commands
+### Fixes
+1. You can now surrender in story mode
+1. Fixed "Enable ping toasts" showing twice
+1. Fixed the "Background Priority" setting not loading
+1. Fixed various rank issues
+### Plugins
+1. Fixed "list" setting type
+1. You can now register multiple setting "pages"<extended>
+  - `plugin.settings().page('name').add(setting);`
+</extended>
+
 ## Version 0.63.19 (2026-08-08)
 1. Fixed UnderScript not loading for some pages
 1. Added new Vanilla Settings (volume)
