@@ -65,6 +65,19 @@
       ]
     }
   },
+  "plugins": {
+    "~": "Community Plugins",
+    "author": "Author",
+    "empty": "No plugins listed",
+    "failed": "Unavailable",
+    "install": "Install",
+    "installed": "Installed",
+    "latest": "Latest",
+    "name": "Plugin",
+    "reinstall": "Reinstall",
+    "stale": "Not running",
+    "unavailable": "Plugin list unavailable"
+  },
   "reconnecting": "Reconnecting...",
   "profile": "Profile",
   "ignore": "Ignore",

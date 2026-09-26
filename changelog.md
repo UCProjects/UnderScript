@@ -6,6 +6,7 @@
 1. Added a search bar to the settings screen
 1. Added descriptions to settings
 1. Added autocomplete for emotes and chat commands
+1. Added a community plugin registry to the menu, so you can browse and install plugins
 ### Fixes
 1. You can now surrender in story mode
 1. Fixed "Enable ping toasts" showing twice

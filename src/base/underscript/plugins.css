@@ -1,0 +1,54 @@
+.plugin-registry {
+  --outdated: #5CB85C;
+  --stale: dimgray;
+}
+
+.plugin-registry .modal-body {
+  padding-top: 0;
+}
+
+.plugin-registry table {
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.plugin-registry th,
+.plugin-registry td {
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.plugin-registry th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #000;
+  border-bottom: 2px solid;
+}
+
+.plugin-registry .version,
+.plugin-registry .action {
+  text-align: center;
+}
+
+.plugin-registry .action .btn {
+  width: 100%;
+}
+
+.plugin-registry .empty {
+  text-align: center;
+}
+
+.plugin-registry tr.stale {
+  color: var(--stale);
+}
+
+.plugin-registry .btn-stale {
+  background-color: var(--stale);
+  color: white;
+}
+
+.plugin-registry .outdated {
+  color: var(--outdated);
+}
