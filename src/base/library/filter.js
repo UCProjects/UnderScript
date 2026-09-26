@@ -57,7 +57,7 @@ const shiny = settings.register({
   options: () => {
     const { key } = Translation.Setting('filter.shiny.option');
     const options = getTranslationArray(key);
-    return ['Never (default)', 'Deck', 'Always'].map((val, i) => [
+    return ['Never', 'Deck', 'Crafting', 'Always'].map((val, i) => [
       options[i],
       val,
     ]);
@@ -130,7 +130,12 @@ eventManager.on(':preload:Decks :preload:Crafting', () => {
 });
 
 function mergeShiny() {
-  return shiny.value() === 'Always' || (decks && shiny.value() === 'Deck');
+  switch (shiny.value()) {
+    case 'Always': return true;
+    case 'Deck': return decks;
+    case 'Crafting': return crafting;
+    default: return false;
+  }
 }
 
 function allTribeButton() {
@@ -171,8 +176,9 @@ filters.push(
   // eslint-disable-next-line no-shadow
   function shiny(card, removed) {
     if (removed) return null;
-    if (mergeShiny()) return false;
-    return card.shiny !== $('#shinyInput').prop('checked');
+    const input = $('#shinyInput');
+    if (input.prop('disabled')) return false;
+    return card.shiny !== input.prop('checked');
   },
   function rarity(card, removed) {
     if (removed) return null;

@@ -50,6 +50,7 @@
   "filter.shiny.option": [
     "Never",
     "Deck (Vanilla)",
+    "Crafting",
     "Always"
   ],
   "filter.split": "Split Based and Token",
