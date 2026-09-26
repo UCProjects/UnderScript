@@ -47,6 +47,7 @@ export function getScreen() {
   const tab = screen.addTab('Plugins', screen.plugins, { fold: true });
   tab.setEnd(true); // Plugins go to the bottom of the list
   configs.set('Plugins', {
+    name: 'Plugins',
     page: tab,
   });
 
@@ -122,7 +123,7 @@ function init(page) {
       settings: {},
       page: getPage(page),
     };
-    data.page.setName(name);
+    data.page.setName(translateText(name));
     configs.set(page, data);
     if (page.name) {
       getPage('Plugins').refresh();
@@ -383,8 +384,8 @@ export function open(page = 'main', tab = undefined) {
 export function setDisplayName(name, page = 'main') {
   if (name) {
     init(page).name = name;
-    getPage(page).setName(name);
-    pluginViews.get(page)?.tab.setName(name);
+    getPage(page).setName(translateText(name));
+    pluginViews.get(page)?.tab.setName(translateText(name));
     return true;
   }
   return false;
@@ -534,4 +535,11 @@ dialog.onClose(() => {
   getScreen().refresh();
 });
 
-// TODO: translate page titles on ready
+eventManager.on('translation:loaded', () => {
+  configs.forEach((config, key) => {
+    if (!config.name || !config.page) return;
+    const name = translateText(config.name);
+    config.page.setName(name);
+    pluginViews.get(key)?.tab.setName(name);
+  });
+});
