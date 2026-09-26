@@ -3,6 +3,7 @@ import eventManager from 'src/utils/eventManager.js';
 import { debug } from 'src/utils/debug.js';
 import { global, globalSet } from 'src/utils/global.js';
 import VarStore from 'src/utils/VarStore.js';
+import { attach } from 'src/utils/autocomplete.js';
 import { isActive, updateIfActive } from './session.js';
 
 // TODO: Use Message object
@@ -150,7 +151,9 @@ eventManager.on(':preload', () => {
   eventManager.on('Chat:getHistory', ({ room, roomName: name }) => {
     // Send text hook
     const messages = $(`#${room} .chat-messages`);
-    $(`#${room} input[type="text"]`).keydown(function sending(e) {
+    const input = $(`#${room} input[type="text"]`);
+    attach(input[0], { room });
+    input.keydown(function sending(e) {
       if (e.key !== 'Enter') return;
 
       const data = {
