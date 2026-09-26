@@ -104,6 +104,24 @@
   align-items: stretch;
 }
 
+.tabbedView.single > .tabLabel {
+  display: none;
+}
+
+.tabContent.nested > .tabbedView.single > .tabLabel {
+  display: block;
+}
+
+.tabbedView.single.left,
+.tabbedView.single.right {
+  grid-template-columns: 1fr;
+}
+
+.tabbedView.single.left > .tabContent,
+.tabbedView.single.right > .tabContent {
+  grid-column: 1;
+}
+
 .tabButton:checked + .tabLabel + .tabContent.nested {
   display: contents;
 }

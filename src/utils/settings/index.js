@@ -73,6 +73,14 @@ export function pageToken(page, tab) {
   return byTab.get(tab);
 }
 
+function pageBuilder(key) {
+  return () => {
+    if (!configs.has(key)) return '';
+    const message = getMessage(key);
+    return message.html() ? message[0] : '';
+  };
+}
+
 function getPluginView(plugin) {
   const existing = pluginViews.get(plugin);
   if (existing) return existing;
@@ -81,11 +89,11 @@ function getPluginView(plugin) {
   const config = configs.get(plugin);
   const tab = config?.page ?? getScreen().plugins.addTab(plugin.name, manager);
   tab.setContent(manager);
-  if (config) {
-    manager.addTab(config.name, () => getMessage(plugin)[0]);
-  }
 
-  const view = { tab, manager };
+  const main = manager.addTab(config?.name ?? plugin.name, pageBuilder(plugin));
+  if (config) config.page = main;
+
+  const view = { tab, manager, main };
   pluginViews.set(plugin, view);
   getPage('Plugins').refresh();
   return view;
@@ -96,19 +104,14 @@ function getPage(key) {
   if (config && config.page) {
     return config.page;
   }
-
-  function builder() {
-    return getMessage(key)[0];
-  }
   if (key?.plugin) {
-    return getPluginView(key.plugin).manager.addTab(key.tab, builder);
+    return getPluginView(key.plugin).manager.addTab(key.tab, pageBuilder(key));
   }
   if (pluginViews.has(key)) {
-    return pluginViews.get(key).manager.addTab(key.name, builder);
+    return pluginViews.get(key).main;
   }
   const screen = key.name ? getScreen().plugins : getScreen();
-  const name = key.name || key;
-  return screen.addTab(name, builder);
+  return screen.addTab(key.name || key, pageBuilder(key));
 }
 
 function init(page) {
@@ -349,7 +352,7 @@ export function open(page = 'main', tab = undefined) {
   const test = target.name || target;
   if (typeof test !== 'string') throw new Error(`Attempted to open unknown page, ${test} (${typeof target})`);
   getPage(target).setActive();
-  const plugin = target.plugin;
+  const plugin = target.plugin ?? (pluginViews.has(target) ? target : undefined);
   if (plugin) {
     const view = getPluginView(plugin);
     view.tab.setActive();
@@ -381,6 +384,7 @@ export function setDisplayName(name, page = 'main') {
   if (name) {
     init(page).name = name;
     getPage(page).setName(name);
+    pluginViews.get(page)?.tab.setName(name);
     return true;
   }
   return false;

@@ -139,10 +139,18 @@ export default function TabManager() {
       view.appendChild(content);
     });
 
-    tabs.forEach(({ elements: [button, label, content] }) => {
-      if (button.parentNode !== view) return;
+    const attached = tabs.filter(({ elements: [button] }) => button.parentNode === view);
+    attached.forEach(({ elements: [button, label, content] }) => {
       view.append(button, label, content);
     });
+    view.classList.toggle('single', attached.length === 1);
+
+    if (attached.length && !attached.some((tab) => tab.active)) {
+      tabs.forEach((tab) => { tab.active = false; });
+      const [first] = attached;
+      first.active = true;
+      first.elements[0].checked = true;
+    }
 
     if (raw) return view;
     return view.outerHTML;
