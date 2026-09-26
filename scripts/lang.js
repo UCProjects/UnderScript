@@ -42,10 +42,16 @@ async function bundle(files = []) {
   await Promise.all(files.map(async (file) => {
     const [lang, name] = getFileParts(file);
 
-    Object.entries(await readJSON(file)).forEach(
+    const seen = new Set();
+
+    flatten(await readJSON(file)).forEach(
       ([key, value]) => {
-        if (key.startsWith('//')) return;
-        const fullKey = name === 'vanilla' ? key : `underscript.${name}.${key}`;
+        const prefix = name === 'vanilla' ? '' : `underscript.${name}`;
+        const fullKey = [prefix, key].filter((_) => _).join('.');
+        if (seen.has(fullKey)) {
+          console.warn(`${file} has duplicate key "${fullKey}"`);
+        }
+        seen.add(fullKey);
         assign(ret, lang, fullKey, value);
       },
     );
@@ -62,4 +68,19 @@ function getFileParts(file = '') {
 // Only automatically run if main script...
 if (isMain(import.meta)) {
   main();
+}
+
+/**
+ * Flatten nested objects into dotted keys. `~` refers to the parent key.
+ * @returns {[string, unknown][]}
+ */
+function flatten(obj = {}, prefix = '') {
+  return Object.entries(obj).flatMap(([key, value]) => {
+    if (key.startsWith('//')) return [];
+    const full = key === '~' ? prefix : [prefix, key].filter((_) => _).join('.');
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      return flatten(value, full);
+    }
+    return [[full, value]];
+  });
 }
