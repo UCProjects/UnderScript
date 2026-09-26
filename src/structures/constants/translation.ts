@@ -60,16 +60,19 @@ export default class Translation extends Constant implements TranslationBase {
   static UPDATE = this.General('update', 'Update');
 
   static CATEGORY_AUTO_DECLINE = this.Setting('category.autodecline');
+  static CATEGORY_BOARD_BACKGROUND = this.Setting('category.board.background');
   static CATEGORY_CARD_SKINS = this.Setting('category.card.skins');
   static CATEGORY_CHAT_COMMAND = this.Setting('category.chat.commands');
   static CATEGORY_CHAT_IGNORED = this.Setting('category.chat.ignored');
   static CATEGORY_CHAT_IMPORT = this.Setting('category.chat.import');
   static CATEGORY_CUSTOM = this.Setting('category.custom');
   static CATEGORY_FRIENDSHIP = this.Setting('category.friendship');
+  static CATEGORY_GAME_EMOTES = this.Setting('category.game.emotes');
   static CATEGORY_HOME = this.Setting('category.home');
   static CATEGORY_HOTKEYS = this.Setting('category.hotkeys');
   static CATEGORY_LIBRARY_CRAFTING = this.Setting('category.library.crafting');
   static CATEGORY_MINIGAMES = this.Setting('category.minigames');
+  static CATEGORY_NOTIFICATIONS = this.Setting('category.notifications');
   static CATEGORY_OUTLINE = this.Setting('category.outline');
   static CATEGORY_PLUGINS = this.Setting('category.plugins');
   static CATEGORY_STREAMER = this.Setting('category.streamer');
@@ -78,7 +81,7 @@ export default class Translation extends Constant implements TranslationBase {
   static DISABLE_COMMAND_SETTING = this.Setting('command', 1);
 
   static IGNORED = this.Toast('ignore', 1);
-  static INFO = this.Toast('toast.info', 'Did you know?');
+  static INFO = this.Toast('info', 'Did you know?');
 
   static CANCEL = this.Vanilla('dialog-cancel', 'Cancel');
   static CLOSE = this.Vanilla('dialog-close', 'Close');

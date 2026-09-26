@@ -3,14 +3,15 @@ import { global } from 'src/utils/global.js';
 import onPage from 'src/utils/onPage.js';
 import { infoToast } from 'src/utils/2.toasts.js';
 import { register } from 'src/utils/chatCommands.js';
+import Translation from 'src/structures/constants/translation.js';
 
 let toast;
 
 register({
   command: 'spectate',
-  usage: '[text (optional)]',
-  note: '/spectate [text (optional)]<br/>Output:<br/>You vs Enemy: url [text]',
-  enabled: () => onPage('Game') && global('finish', { throws: false }) === false,
+  usage: Translation.Command('spectate.usage'),
+  note: Translation.Command('spectate.note'),
+  enabled: () => (onPage('Game') || onPage('Spectate')) && global('finish', { throws: false }) === false,
   handler(data) {
     if (typeof gameId === 'undefined' || global('finish')) {
       this.canceled = true;

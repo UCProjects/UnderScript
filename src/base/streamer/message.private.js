@@ -6,20 +6,21 @@ import { debug } from 'src/utils/debug.js';
 import each from 'src/utils/each.js';
 import { buttonCSS as css } from 'src/utils/1.variables.js';
 import { isMod, name as username } from 'src/utils/user';
+import Translation from 'src/structures/constants/translation.js';
 import streaming from './0.streamer.js';
 
 // Toast for private messages while streaming mode is on
-// TODO: translation
 const busyMessage = ':me:is in do not disturb mode'; // TODO: configurable?
+// TODO: translation options
 const allow = 'Allow';
 const hide = 'Hide';
 const silent = 'Hide (silent)';
 const setting = settings.register({
-  name: 'Private Messages',
+  name: Translation.Setting('streamer.pms'),
   key: 'underscript.streamer.pms',
   options: [allow, hide, silent],
   default: hide,
-  category: 'Streamer Mode',
+  category: Translation.CATEGORY_STREAMER,
 });
 
 const toasts = {};

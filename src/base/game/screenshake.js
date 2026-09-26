@@ -2,9 +2,10 @@ import * as settings from 'src/utils/settings/index.js';
 import { globalSet } from 'src/utils/global.js';
 import onPage from 'src/utils/onPage.js';
 import compound from 'src/utils/compoundEvent.js';
+import Translation from 'src/structures/constants/translation.js';
 
 const setting = settings.register({
-  name: 'Disable Screen Shake',
+  name: Translation.Setting('disable.rumble'),
   key: 'underscript.disable.rumble',
   options: ['Never', 'Always', 'Spectate'],
   type: 'select',

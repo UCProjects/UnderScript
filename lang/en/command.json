@@ -1,5 +1,9 @@
 {
   "gg": "Wish your opponent a good game",
   "scroll": "Scroll the chat back to the bottom",
-  "spectate": "Share a spectate link for your current game"
+  "spectate": {
+    "~": "Share a spectate link for your current game",
+    "usage": "[text (optional)]",
+    "note": "/spectate [text (optional)]<br/>Output:<br/>You vs Enemy: url [text]"
+  }
 }

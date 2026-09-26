@@ -3,6 +3,10 @@ import onPage from 'src/utils/onPage.js';
 import Translation from 'src/structures/constants/translation.ts';
 import { global } from 'src/utils/global.js';
 
+const CHAT = Translation.Vanilla('settings-chat');
+const GAME = Translation.Vanilla('settings-in-game');
+const ANIMATION = Translation.Vanilla('settings-animations');
+
 [
   {
     name: Translation.Vanilla('settings-language'),
@@ -20,33 +24,33 @@ import { global } from 'src/utils/global.js';
   {
     name: Translation.Setting('vanilla.chat.rainbow'),
     key: 'chatRainbowDisabled',
-    category: 'Chat',
+    category: CHAT,
   },
   {
     name: Translation.Setting('vanilla.chat.sound'),
     key: 'chatSoundsDisabled',
-    category: 'Chat',
+    category: CHAT,
   },
   {
     name: Translation.Setting('vanilla.chat.avatar'),
     key: 'chatAvatarsDisabled',
-    category: 'Chat',
+    category: CHAT,
   },
   {
     name: Translation.Setting('vanilla.card.shiny'),
     key: 'gameShinyDisabled',
-    category: 'Game',
+    category: GAME,
   },
   {
     name: Translation.Setting('vanilla.game.music'),
     key: 'gameMusicDisabled',
-    category: 'Game',
+    category: GAME,
   },
   {
     name: Translation.Setting('vanilla.game.music.volume'),
     key: 'gameMusicVolume',
     type: 'slider',
-    category: 'Game',
+    category: GAME,
     onChange(val) {
       const audio = global('UCAudio', { throws: false });
       audio?.setMusicVolume(val / 100, false);
@@ -55,13 +59,13 @@ import { global } from 'src/utils/global.js';
   {
     name: Translation.Setting('vanilla.game.jingle'),
     key: 'gameJinglesDisabled',
-    category: 'Game',
+    category: GAME,
   },
   {
     name: Translation.Setting('vanilla.game.jingle.volume'),
     key: 'gameJingleVolume',
     type: 'slider',
-    category: 'Game',
+    category: GAME,
     onChange(val) {
       const audio = global('UCAudio', { throws: false });
       audio?.setJingleVolume(val / 100, false);
@@ -70,13 +74,13 @@ import { global } from 'src/utils/global.js';
   {
     name: Translation.Setting('vanilla.game.sound'),
     key: 'gameSoundsDisabled',
-    category: 'Game',
+    category: GAME,
   },
   {
     name: Translation.Setting('vanilla.game.sound.volume'),
     key: 'gameSoundsVolume',
     type: 'slider',
-    category: 'Game',
+    category: GAME,
     onChange(val) {
       const audio = global('UCAudio', { throws: false });
       audio?.setEffectsVolume(val / 100, false);
@@ -85,33 +89,33 @@ import { global } from 'src/utils/global.js';
   {
     name: Translation.Setting('vanilla.game.profile'),
     key: 'profileSkinsDisabled',
-    category: 'Game',
+    category: GAME,
   },
   {
     name: Translation.Setting('vanilla.game.emote'),
     key: 'gameEmotesDisabled',
-    category: 'Game',
+    category: GAME,
   },
   {
     name: Translation.Setting('vanilla.card.skin'),
     key: 'breakingDisabled',
-    category: 'Game',
+    category: GAME,
   },
   // show hand to friends.......
   {
     name: Translation.Setting('vanilla.game.shake'),
     key: 'shakeDisabled',
-    category: 'Animation',
+    category: ANIMATION,
   },
   {
     name: Translation.Setting('vanilla.game.stats'),
     key: 'statsDisabled',
-    category: 'Animation',
+    category: ANIMATION,
   },
   {
     name: Translation.Setting('vanilla.game.vfx'),
     key: 'vfxDisabled',
-    category: 'Animation',
+    category: ANIMATION,
   },
   { key: 'deckBeginnerInfo' },
   { key: 'craftBeginnerInfo' },
@@ -128,7 +132,7 @@ import { global } from 'src/utils/global.js';
   // TODO: Add missing keys
 ].forEach((setting) => {
   const { name, category } = setting;
-  const refresh = category === 'Game' || category === 'Animation' ?
+  const refresh = category === GAME || category === ANIMATION ?
     () => onPage('Game') || onPage('gameSpectating') :
     undefined;
   settings.register({

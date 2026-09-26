@@ -4,28 +4,29 @@ import { global, globalSet } from 'src/utils/global.js';
 import { debug } from 'src/utils/debug.js';
 import onPage from 'src/utils/onPage.js';
 import compound from 'src/utils/compoundEvent.js';
+import Translation from 'src/structures/constants/translation.js';
 
 // let live = false;
 let self;
 const spectating = onPage('Spectate');
 const spectate = settings.register({
-  name: 'Show when spectating',
+  name: Translation.Setting('emote.spectate'),
   key: 'underscript.emote.spectate',
   default: true,
   page: 'Game',
-  category: 'Emotes',
+  category: Translation.CATEGORY_GAME_EMOTES,
 });
 const friends = settings.register({
-  name: 'Friends only',
+  name: Translation.Setting('emote.friends'),
   key: 'underscript.emote.friends',
   page: 'Game',
-  category: 'Emotes',
+  category: Translation.CATEGORY_GAME_EMOTES,
 });
 const enemy = settings.register({
-  name: 'Disable enemy',
+  name: Translation.Setting('emote.enemy'),
   key: 'underscript.emote.enemy',
   page: 'Game',
-  category: 'Emotes',
+  category: Translation.CATEGORY_GAME_EMOTES,
 });
 
 compound('GameStart', ':preload', () => {

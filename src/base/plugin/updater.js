@@ -8,7 +8,7 @@ const text = Translation.Setting('update.plugin');
 const setting = settings.register({
   name: text,
   key: 'underscript.disable.plugins.update',
-  category: 'Plugins',
+  category: Translation.CATEGORY_PLUGINS,
 });
 
 wrap(() => {

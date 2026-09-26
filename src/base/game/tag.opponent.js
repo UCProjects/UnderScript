@@ -3,9 +3,10 @@ import * as settings from 'src/utils/settings/index.js';
 import { global } from 'src/utils/global.js';
 import style from 'src/utils/style.js';
 import { infoToast } from 'src/utils/2.toasts.js';
+import Translation from 'src/structures/constants/translation.js';
 
 const tag = settings.register({
-  name: 'Highlight <span class="opponent">opponents</span> in chat',
+  name: Translation.Setting('tag.opponent'),
   key: 'underscript.tag.opponent',
   default: true,
   page: 'Chat',

@@ -3,16 +3,17 @@ import * as settings from 'src/utils/settings/index.js';
 import { global } from 'src/utils/global.js';
 import { infoToast } from 'src/utils/2.toasts.js';
 import style from 'src/utils/style.js';
+import Translation from 'src/structures/constants/translation.js';
 
 const tag = settings.register({
-  name: 'Highlight <span class="friend">friends</span> in chat',
+  name: Translation.Setting('tag.friend'),
   key: 'underscript.tag.friend',
   default: true,
   page: 'Chat',
 });
 
 const color = settings.register({
-  name: 'Friend color',
+  name: Translation.Setting('tag.friend.color'),
   key: 'underscript.tag.friend.color',
   type: 'color',
   default: '#b1bfbe',

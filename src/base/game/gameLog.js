@@ -1,6 +1,7 @@
 import eventManager from 'src/utils/eventManager.js';
 import * as settings from 'src/utils/settings/index.js';
 import style from 'src/utils/style.js';
+import Translation from 'src/structures/constants/translation.js';
 
 style.add(
   '#game-history.left { width: 75px; left: -66px; top: 70px; overflow-y: auto; right: initial; height: 426px; }',
@@ -15,7 +16,7 @@ style.add(
 let gameActive = false;
 const BattleLogSetting = 'underscript.disable.logger';
 const setting = settings.register({
-  name: 'Disable Undercards Battle Log',
+  name: Translation.Setting('disable.gamelog'),
   key: 'underscript.disable.gamelog',
   page: 'Game',
   onChange: (to) => {

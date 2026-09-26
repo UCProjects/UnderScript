@@ -4,12 +4,13 @@ import * as settings from 'src/utils/settings/index.js';
 import onPage from 'src/utils/onPage.js';
 import eventManager from 'src/utils/eventManager.js';
 import { fetch } from 'src/utils/quests.js';
+import Translation from 'src/structures/constants/translation.js';
 
 const setting = settings.register({
-  name: 'Disable Quest Toast',
+  name: Translation.Setting('disable.questNotifications'),
   key: 'underscript.disable.questNotifications',
   page: 'Game',
-  category: 'Notifications',
+  category: Translation.CATEGORY_NOTIFICATIONS,
 });
 
 onPage('Game', () => {

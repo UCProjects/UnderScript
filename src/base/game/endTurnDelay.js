@@ -3,15 +3,16 @@ import * as settings from 'src/utils/settings/index.js';
 import { global } from 'src/utils/global.js';
 import { debug } from 'src/utils/debug.js';
 import sleep from 'src/utils/sleep.js';
+import Translation from 'src/structures/constants/translation.js';
 
 const setting = settings.register({
-  name: 'Disable End Turn Waiting',
+  name: Translation.Setting('disable.endTurnDelay'),
   key: 'underscript.disable.endTurnDelay',
   page: 'Game',
 });
 
 settings.register({
-  name: 'End Turn Wait Time',
+  name: Translation.Setting('endTurnDelay'),
   key: 'underscript.endTurnDelay',
   type: 'select',
   options: [],

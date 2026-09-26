@@ -8,7 +8,7 @@ export function register({
   command,
   description = Translation.Command(command, ''),
   usage,
-  note = usage ? `/${command} ${usage}` : `/${command}`,
+  note = () => `/${command}${usage ? ` ${usage}` : ''}`,
   page = 'Chat',
   category = Translation.CATEGORY_CHAT_COMMAND,
   enabled = () => true,

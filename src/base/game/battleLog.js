@@ -13,11 +13,11 @@ import { window } from 'src/utils/1.variables.js';
 import { cardName } from 'src/utils/cardHelper.js';
 import extractImageName from 'src/utils/extractImageName';
 import { translateText } from 'src/utils/translate.js';
+import Translation from 'src/structures/constants/translation.js';
 
 /* eslint-disable no-use-before-define */
 settings.register({
-  // TODO: translation
-  name: 'Disable Battle Log',
+  name: Translation.Setting('disable.logger'),
   key: 'underscript.disable.logger',
   page: 'Game',
   onChange: (to, from) => {
@@ -31,8 +31,7 @@ settings.register({
 });
 
 settings.register({
-  // TODO: translation
-  name: 'Hide Dust Counter',
+  name: Translation.Setting('disable.dust'),
   key: 'underscript.disable.dust',
   type: 'select',
   default: 'spectating',

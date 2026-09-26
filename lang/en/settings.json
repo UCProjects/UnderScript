@@ -41,7 +41,10 @@
     "outline": "Outline",
     "plugins": "Plugins",
     "streamer": "Streamer Mode",
-    "updates": "Updates"
+    "updates": "Updates",
+    "board.background": "Board Background",
+    "game.emotes": "Emotes",
+    "notifications": "Notifications"
   },
   "chat.rightclick": "Disable Chat Context (right click)",
   "command": "Disable $1 command",
@@ -61,7 +64,12 @@
     "~": "Disable Smart Disenchanting",
     "note": "Enable at own risk"
   },
-  "emote.disable": "Disable $1",
+  "emote": {
+    "disable": "Disable $1",
+    "enemy": "Disable enemy",
+    "friends": "Friends only",
+    "spectate": "Show when spectating"
+  },
   "endTurn": {
     "~": "Disable End Turn Hotkey",
     "mouse": "Disable End Turn with Space",
@@ -181,7 +189,8 @@
       "Yes",
       "Yes (silent)",
       "No"
-    ]
+    ],
+    "pms": "Private Messages"
   },
   "title": "UnderScript Configuration",
   "toast": {
@@ -234,5 +243,36 @@
       "vfx": "Disable VFX"
     }
   },
-  "volume.match.found": "Game Found Volume"
+  "volume.match.found": "Game Found Volume",
+  "analytics": {
+    "~": "Send anonymous statistics",
+    "note": "Analytics has been disabled by your adblocker."
+  },
+  "board.priority": {
+    "~": "Priority",
+    "notify": "Notify"
+  },
+  "disable": {
+    "dust": "Hide Dust Counter",
+    "endTurnDelay": "Disable End Turn Waiting",
+    "errorToast": "Disable Error Toast",
+    "gamelog": "Disable Undercards Battle Log",
+    "logger": "Disable Battle Log",
+    "questNotifications": "Disable Quest Toast",
+    "resultToast": "Disable Result Toast",
+    "rumble": "Disable Screen Shake"
+  },
+  "endTurnDelay": "End Turn Wait Time",
+  "persist.bgm": "Persist Arena (Background and Music)",
+  "storage": {
+    "disable": "Disable Deck Storage",
+    "rows": "Deck Storage Rows"
+  },
+  "tag": {
+    "friend": {
+      "~": "Highlight <span class=\"friend\">friends</span> in chat",
+      "color": "Friend color"
+    },
+    "opponent": "Highlight <span class=\"opponent\">opponents</span> in chat"
+  }
 }

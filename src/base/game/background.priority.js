@@ -71,19 +71,19 @@ style.add(
 );
 
 const notify = settings.register({
-  name: 'Notify',
+  name: Translation.Setting('board.priority.notify'),
   key: 'underscript.board.priority.notify',
   default: true,
   page: 'Game',
-  category: 'Board Background',
+  category: Translation.CATEGORY_BOARD_BACKGROUND,
 });
 
 const setting = settings.register({
-  name: 'Priority',
+  name: Translation.Setting('board.priority'),
   key: 'underscript.board.priority',
   type: 'list',
   page: 'Game',
-  category: 'Board Background',
+  category: Translation.CATEGORY_BOARD_BACKGROUND,
   data: levels,
 });
 

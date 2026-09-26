@@ -3,10 +3,11 @@ import * as settings from 'src/utils/settings/index.js';
 import { global } from 'src/utils/global.js';
 import { isApril, IMAGES } from 'src/utils/isApril.js';
 import { window } from 'src/utils/1.variables.js';
+import Translation from 'src/structures/constants/translation.js';
 import { aprilFools } from '../vanilla/aprilFools.js';
 
 const setting = settings.register({
-  name: 'Persist Arena (Background and Music)',
+  name: Translation.Setting('persist.bgm'),
   key: 'underscript.persist.bgm',
   default: true,
   refresh: () => window.gameId !== undefined,

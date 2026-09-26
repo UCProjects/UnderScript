@@ -2,18 +2,18 @@
 import * as settings from 'src/utils/settings/index.js';
 import { scriptVersion, window } from 'src/utils/1.variables.js';
 import eventManager from 'src/utils/eventManager.js';
+import Translation from 'src/structures/constants/translation.js';
 
 // This setting doesn't do anything, nor does the detection work.
-// TODO: translation
 settings.register({
-  name: 'Send anonymous statistics',
+  name: Translation.Setting('analytics'),
   key: 'underscript.analytics',
   default: () => window.GoogleAnalyticsObject !== undefined,
   enabled: () => window.GoogleAnalyticsObject !== undefined,
   hidden: true,
   note: () => {
     if (window.GoogleAnalyticsObject === undefined) {
-      return 'Analytics has been disabled by your adblocker.';
+      return Translation.Setting('analytics.note');
     }
     return undefined;
   },

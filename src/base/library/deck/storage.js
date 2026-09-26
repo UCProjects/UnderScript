@@ -13,20 +13,17 @@ import { getTranslationArray } from 'src/base/underscript/translation';
 import Translation from 'src/structures/constants/translation.ts';
 import isCtrl from 'src/utils/isCtrl';
 
-// TODO: translation
 const setting = settings.register({
-  name: 'Disable Deck Storage',
+  name: Translation.Setting('storage.disable'),
   key: 'underscript.storage.disable',
   refresh: () => onPage('Decks'),
   page: 'Library',
 });
 
 const rows = settings.register({
-  // TODO: translation
-  name: 'Deck Storage Rows',
+  name: Translation.Setting('storage.rows'),
   key: 'underscript.storage.rows',
   type: 'select',
-  // TODO: translation
   options: ['1', '2', '3', '4', '5', '6'],
   refresh: () => onPage('Decks'),
   extraPrefix: 'underscript.deck.',
