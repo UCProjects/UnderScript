@@ -1,162 +1,238 @@
 {
-  "announce": "Announcement",
-  "announce.friendsOnly": "Friends Only",
-  "announce.notSelf": "Ignore Self",
-  "autocomplete": "Visual Autocomplete",
-  "autocomplete.emotes": "Autocomplete: Emotes",
-  "autocomplete.friends": "Autocomplete: Online Friends Only",
+  "announce": {
+    "~": "Announcement",
+    "friendsOnly": "Friends Only",
+    "notSelf": "Ignore Self"
+  },
+  "autocomplete": {
+    "~": "Visual Autocomplete",
+    "emotes": "Autocomplete: Emotes",
+    "friends": "Autocomplete: Online Friends Only"
+  },
   "broadcast": "Disable Broadcast Toast",
-  "card.name.english": "Force English for card names",
-  "card.text.outline": "Add Text Outline",
-  "card.tribe.outline": "Add Tribe Outline",
-  "category.announce.draw": "Legendary Draw",
-  "category.announce.user": "Legendary User",
-  "category.announce.winstreak": "Winstreak",
-  "category.autodecline": "Auto Decline",
-  "category.card.skins": "Card Skins",
-  "category.chat.commands": "Commands",
-  "category.chat.emotes": "Emotes",
-  "category.chat.ignored": "Ignored Users",
-  "category.chat.import": "Import",
-  "category.chat.links": "Trusted Domains",
-  "category.chat.ping": "Ping Me",
-  "category.custom": "Custom",
-  "category.filter": "Filter",
-  "category.friendship": "Friendship",
-  "category.home": "Home",
-  "category.hotkeys": "Hotkeys",
-  "category.library.crafting": "Crafting",
-  "category.minigames": "Minigames",
-  "category.outline": "Outline",
-  "category.plugins": "Plugins",
-  "category.streamer": "Streamer Mode",
-  "category.updates": "Updates",
+  "card": {
+    "name.english": "Force English for card names",
+    "text.outline": "Add Text Outline",
+    "tribe.outline": "Add Tribe Outline"
+  },
+  "category": {
+    "announce": {
+      "draw": "Legendary Draw",
+      "user": "Legendary User",
+      "winstreak": "Winstreak"
+    },
+    "autodecline": "Auto Decline",
+    "card.skins": "Card Skins",
+    "chat": {
+      "commands": "Commands",
+      "emotes": "Emotes",
+      "ignored": "Ignored Users",
+      "import": "Import",
+      "links": "Trusted Domains",
+      "ping": "Ping Me"
+    },
+    "custom": "Custom",
+    "filter": "Filter",
+    "friendship": "Friendship",
+    "home": "Home",
+    "hotkeys": "Hotkeys",
+    "library.crafting": "Crafting",
+    "minigames": "Minigames",
+    "outline": "Outline",
+    "plugins": "Plugins",
+    "streamer": "Streamer Mode",
+    "updates": "Updates"
+  },
   "chat.rightclick": "Disable Chat Context (right click)",
   "command": "Disable $1 command",
-  "craft.border": "Disable Crafting Highlight",
-  "craft.hotkey": "Disable craft max hotkey",
-  "custom.friends": "Friends only",
-  "custom.friends.note": "Setting this will only allow friends to join custom games by default.",
-  "deck.average": "Disable deck average counter",
-  "deck.preview": "Disable Deck Preview",
-  "disenchant": "Disable Smart Disenchanting",
-  "disenchant.note": "Enable at own risk",
+  "craft": {
+    "border": "Disable Crafting Highlight",
+    "hotkey": "Disable craft max hotkey"
+  },
+  "custom.friends": {
+    "~": "Friends only",
+    "note": "Setting this will only allow friends to join custom games by default."
+  },
+  "deck": {
+    "average": "Disable deck average counter",
+    "preview": "Disable Deck Preview"
+  },
+  "disenchant": {
+    "~": "Disable Smart Disenchanting",
+    "note": "Enable at own risk"
+  },
   "emote.disable": "Disable $1",
-  "endTurn": "Disable End Turn Hotkey",
-  "endTurn.mouse": "Disable End Turn with Space",
-  "endTurn.keyboard": "Disable End Turn with Middle Click",
-  "filter.collection": "Collection dropdown ",
-  "filter.disable": "Disable filter",
-  "filter.shiny": "Merge Shiny Cards",
-  "filter.shiny.option": [
-    "Never",
-    "Deck (Vanilla)",
-    "Crafting",
-    "Always"
-  ],
-  "filter.split": "Split Based and Token",
-  "filter.tribe": "Tribe button",
-  "filter.trim": "Trim filter buttons",
-  "filter.trim.option": [
-    "Always",
-    "Deck",
-    "Crafting",
-    "Never"
-  ],
-  "fishday": "Disable April Fools Jokes",
-  "fishday.note": "Disables *almost* everything.",
-  "friend.add": "Add friends without refreshing",
-  "friend.auto": "Disable",
-  "friend.auto.ignore": "Include ignored chat users",
-  "friend.auto.silent": "Silent",
-  "friend.background": "Remove friends without refreshing",
-  "friend.decline": "Disable decline all button",
-  "friend.online": "Enable online friends",
-  "friend.request": "Disable Friend Request Notifications",
-  "friendship": "Disable Collect All",
-  "friendship.notification": "Disable Friendship Notification",
-  "friendship.rank": "Display Friendship Rankings",
+  "endTurn": {
+    "~": "Disable End Turn Hotkey",
+    "mouse": "Disable End Turn with Space",
+    "keyboard": "Disable End Turn with Middle Click"
+  },
+  "filter": {
+    "collection": "Collection dropdown ",
+    "disable": "Disable filter",
+    "shiny": {
+      "~": "Merge Shiny Cards",
+      "option": [
+        "Never",
+        "Deck (Vanilla)",
+        "Crafting",
+        "Always"
+      ]
+    },
+    "split": "Split Based and Token",
+    "tribe": "Tribe button",
+    "trim": {
+      "~": "Trim filter buttons",
+      "option": [
+        "Always",
+        "Deck",
+        "Crafting",
+        "Never"
+      ]
+    }
+  },
+  "fishday": {
+    "~": "Disable April Fools Jokes",
+    "note": "Disables *almost* everything."
+  },
+  "friend": {
+    "add": "Add friends without refreshing",
+    "auto": {
+      "~": "Disable",
+      "ignore": "Include ignored chat users",
+      "silent": "Silent"
+    },
+    "background": "Remove friends without refreshing",
+    "decline": "Disable decline all button",
+    "online": "Enable online friends",
+    "request": "Disable Friend Request Notifications"
+  },
+  "friendship": {
+    "~": "Disable Collect All",
+    "notification": "Disable Friendship Notification",
+    "rank": "Display Friendship Rankings"
+  },
   "game.season": "Disable version toast",
-  "gamelist": "Disable Game List Resizing",
-  "gamelist.refresh": "Disable Game List Refresh",
+  "gamelist": {
+    "~": "Disable Game List Resizing",
+    "refresh": "Disable Game List Refresh"
+  },
   "header.sticky": "Disable header scrolling",
-  "ignore": "Disable",
-  "ignore.how": "Behavior",
-  "ignore.option": [
-    "Remove",
-    "Hide",
-    "None"
-  ],
+  "ignore": {
+    "~": "Disable",
+    "how": "Behavior",
+    "option": [
+      "Remove",
+      "Hide",
+      "None"
+    ]
+  },
   "import.shiny": "Prefer Shiny",
-  "key.any": "Press Any Key...",
-  "key.bind": "Click to bind",
+  "key": {
+    "any": "Press Any Key...",
+    "bind": "Click to bind"
+  },
   "large.avatar": "Large Icon mode",
   "library.scrollwheel": "Disable Scrolling Collection with Mousewheel",
   "links": "Use Original Link Detection",
   "map.duplicate": "Duplicate value, not updated! Click here to reset.",
-  "minigame": "Disable",
-  "minigame.wasd": "Use WASD",
+  "minigame": {
+    "~": "Disable",
+    "wasd": "Use WASD"
+  },
   "note.refresh": "Will require you to refresh the page.",
-  "page.chat": "Chat",
-  "page.friends": "Friends",
-  "page.library": "Library",
-  "page.plugins": "Plugins",
-  "page.jump": "Disable First/Last Page Shortcut",
-  "page.select": "Disable Page Select",
+  "page": {
+    "chat": "Chat",
+    "friends": "Friends",
+    "library": "Library",
+    "plugins": "Plugins",
+    "jump": "Disable First/Last Page Shortcut",
+    "select": "Disable Page Select"
+  },
   "patches": "Disable Patch Notes",
-  "ping": "Disable Chat Ping {{STYLE:highlight|(highlighting)}}",
-  "ping.global": "Only open chats",
-  "ping.on": "On",
-  "ping.toast": "Enable ping toasts",
+  "ping": {
+    "~": "Disable Chat Ping {{STYLE:highlight|(highlighting)}}",
+    "global": "Only open chats",
+    "on": "On",
+    "toast": "Enable ping toasts"
+  },
   "quest.highlight": "Disable Quest Highlight",
-  "safelink": "Enabled",
-  "safelink.trust": "Trust $1",
+  "safelink": {
+    "~": "Enabled",
+    "trust": "Trust $1"
+  },
   "search": "Search",
-  "skins.basic": "Force Basic Card Skins",
-  "skins.breaking": "Breaking Card Art Behavior",
-  "skins.breaking.option": [
-    "Breaking (Vanilla)",
-    "Covered (Transparent)",
-    "Covered"
-  ],
-  "skins.full": "Disable Full Card Art",
-  "streamer": "Enable?",
-  "streamer.note": "Enables a button on the menu, streamer mode is \"off\" by default.",
-  "streamer.option": [
-    "Yes",
-    "Yes (silent)",
-    "No"
-  ],
+  "skins": {
+    "basic": "Force Basic Card Skins",
+    "breaking": {
+      "~": "Breaking Card Art Behavior",
+      "option": [
+        "Breaking (Vanilla)",
+        "Covered (Transparent)",
+        "Covered"
+      ]
+    },
+    "full": "Disable Full Card Art"
+  },
+  "streamer": {
+    "~": "Enable?",
+    "note": "Enables a button on the menu, streamer mode is \"off\" by default.",
+    "option": [
+      "Yes",
+      "Yes (silent)",
+      "No"
+    ]
+  },
   "title": "UnderScript Configuration",
-  "toast.bundle": "Enable bundle toast",
-  "toast.cards": "Enable new Card toast",
-  "toast.emotes": "Enable emote toast",
-  "toast.pass": "Enable quest pass toast",
-  "toast.skins": "Enable skin toast",
-  "update": "Disable Auto Updates",
-  "update.frequency": "Update Frequency",
-  "update.frequency.option": [
-    "Page Load (Not recommended)",
-    "Hourly",
-    "Daily"
-  ],
-  "update.plugin": "Disable Auto Updates",
-  "update.silent": "Run automatic updates in the background",
-  "vanilla.card.shiny": "Disable shiny card animation",
-  "vanilla.card.skin": "Disable breaking skins",
-  "vanilla.chat.avatar": "Disable chat avatars",
-  "vanilla.chat.rainbow": "Disable rainbow chat",
-  "vanilla.chat.sound": "Disable chat sounds",
-  "vanilla.game.music": "Disable Music",
-  "vanilla.game.music.volume": "Music Volume",
-  "vanilla.game.jingle": "Disable Jingles",
-  "vanilla.game.jingle.volume": "Jingle Volume",
-  "vanilla.game.sound": "Disable Effects",
-  "vanilla.game.sound.volume": "Effect Volume",
-  "vanilla.game.emote": "Disable emotes",
-  "vanilla.game.profile": "Disable profile skins",
-  "vanilla.game.shake": "Disable screen shake",
-  "vanilla.game.stats": "Disable stats",
-  "vanilla.game.vfx": "Disable VFX",
+  "toast": {
+    "bundle": "Enable bundle toast",
+    "cards": "Enable new Card toast",
+    "emotes": "Enable emote toast",
+    "pass": "Enable quest pass toast",
+    "skins": "Enable skin toast"
+  },
+  "update": {
+    "~": "Disable Auto Updates",
+    "frequency": {
+      "~": "Update Frequency",
+      "option": [
+        "Page Load (Not recommended)",
+        "Hourly",
+        "Daily"
+      ]
+    },
+    "plugin": "Disable Auto Updates",
+    "silent": "Run automatic updates in the background"
+  },
+  "vanilla": {
+    "card": {
+      "shiny": "Disable shiny card animation",
+      "skin": "Disable breaking skins"
+    },
+    "chat": {
+      "avatar": "Disable chat avatars",
+      "rainbow": "Disable rainbow chat",
+      "sound": "Disable chat sounds"
+    },
+    "game": {
+      "music": {
+        "~": "Disable Music",
+        "volume": "Music Volume"
+      },
+      "jingle": {
+        "~": "Disable Jingles",
+        "volume": "Jingle Volume"
+      },
+      "sound": {
+        "~": "Disable Effects",
+        "volume": "Effect Volume"
+      },
+      "emote": "Disable emotes",
+      "profile": "Disable profile skins",
+      "shake": "Disable screen shake",
+      "stats": "Disable stats",
+      "vfx": "Disable VFX"
+    }
+  },
   "volume.match.found": "Game Found Volume"
 }

@@ -1,18 +1,30 @@
 {
-  "menu": "Menu",
-  "menu.title": "MENU",
-  "changelog": "UnderScript Change Log",
-  "changelog.note": "Unavailable on this page",
-  "update": "Check for updates",
-  "update.note": "Last Checked: $1",
+  "menu": {
+    "~": "Menu",
+    "title": "MENU"
+  },
+  "changelog": {
+    "~": "UnderScript Change Log",
+    "note": "Unavailable on this page"
+  },
+  "update": {
+    "~": "Check for updates",
+    "note": "Last Checked: $1",
+    "checking.note": "Check for updats",
+    "pending": "Show Pending Updates"
+  },
   "gamelog": "Game Patch Notes",
   "reload": "Reload Cards",
-  "settings": "Settings",
-  "settings.note": "Settings temporarily unavailable",
-  "streamer.on": "Streamer Mode: On",
-  "streamer.off": "Streamer Mode: Off",
-  "surrender": "Surrender",
-  "surrender.note": "You can't surrender before turn 5.",
-  "update.checking.note": "Check for updats",
-  "update.pending": "Show Pending Updates"
+  "settings": {
+    "~": "Settings",
+    "note": "Settings temporarily unavailable"
+  },
+  "streamer": {
+    "on": "Streamer Mode: On",
+    "off": "Streamer Mode: Off"
+  },
+  "surrender": {
+    "~": "Surrender",
+    "note": "You can't surrender before turn 5."
+  }
 }
