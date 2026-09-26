@@ -1,6 +1,5 @@
 const versionSeparator = '\n## ';
 const regex = /^Version/;
-const unreleased = /\[unreleased\]/i;
 const titleRegex = / - | \(/;
 const idRegex = /[0-9][a-z0-9.\-+]+|unreleased/i;
 const dateRegex = /[0-9-/]+/;
@@ -12,15 +11,13 @@ exports.getVersionById = (data, id) => {
     return versions.find((v) => v.id === id);
   }
 
-  return versions
-    .filter((v) => !unreleased.test(v.id))
-    .shift();
+  return versions.shift();
 };
 
 function getEntries(data) {
   return String(data)
     .split(versionSeparator)
-    .filter((e) => regex.test(e) || unreleased.test(e));
+    .filter((e) => regex.test(e));
 }
 
 function parseEntry(entry = '') {
