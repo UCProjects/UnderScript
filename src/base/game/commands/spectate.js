@@ -1,27 +1,24 @@
 import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
 import { global } from 'src/utils/global.js';
+import onPage from 'src/utils/onPage.js';
 import { infoToast } from 'src/utils/2.toasts.js';
-import Translation from 'src/structures/constants/translation.ts';
-
-const command = 'spectate';
-const setting = settings.register({
-  name: Translation.DISABLE_COMMAND_SETTING.withArgs(command),
-  key: 'underscript.command.spectate',
-  note: '/spectate [text (optional)]<br/>Output:<br/>You vs Enemy: url [text]',
-  page: 'Chat',
-  category: Translation.CATEGORY_CHAT_COMMAND,
-});
+import { register } from 'src/utils/chatCommands.js';
 
 let toast;
-eventManager.on('Chat:command', function spectateCommand(data) {
-  if (this.canceled || data.command !== command || setting.value()) return;
-  if (typeof gameId === 'undefined' || global('finish')) {
-    this.canceled = true;
-    return;
-  }
-  if (toast) toast.close();
-  data.output = `${$('#yourUsername').text()} vs ${$('#enemyUsername').text()}: ${location.origin}/Spectate?gameId=${global('gameId')}&playerId=${global('userId')}${data.text ? ` - ${data.text}` : ''}`;
+
+register({
+  command: 'spectate',
+  usage: '[text (optional)]',
+  note: '/spectate [text (optional)]<br/>Output:<br/>You vs Enemy: url [text]',
+  enabled: () => onPage('Game') && global('finish', { throws: false }) === false,
+  handler(data) {
+    if (typeof gameId === 'undefined' || global('finish')) {
+      this.canceled = true;
+      return;
+    }
+    if (toast) toast.close();
+    data.output = `${$('#yourUsername').text()} vs ${$('#enemyUsername').text()}: ${location.origin}/Spectate?gameId=${global('gameId')}&playerId=${global('userId')}${data.text ? ` - ${data.text}` : ''}`;
+  },
 });
 
 eventManager.on('GameStart', () => {
