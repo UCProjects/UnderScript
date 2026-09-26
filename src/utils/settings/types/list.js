@@ -25,7 +25,7 @@ export default class List extends Setting {
   }
 
   default(data = []) {
-    return data.map(getValue);
+    return data.map(clone);
   }
 
   encode(value = []) {
