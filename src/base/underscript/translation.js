@@ -5,18 +5,24 @@ import eventManager from 'src/utils/eventManager';
 /** @type {Map<string, Translation[]>} */
 const arrays = new Map();
 
-// TODO: include base underscript.json in script so we always have something to show?
-const translations = (async () => {
+async function getText() {
+  if (typeof GM_getResourceText === 'function') {
+    const text = GM_getResourceText('underscript.json');
+    if (text) return text;
+  }
   const response = await fetch(
     'https://raw.githubusercontent.com/UCProjects/UnderScript/refs/heads/master/lang/underscript.json',
     {
       cache: 'default',
+      mode: 'cors',
     },
   );
-  const data = await response.text();
-  const text = typeof GM_getResourceText === 'undefined' ?
-    data :
-    GM_getResourceText('underscript.json') || data;
+  return response.text();
+}
+
+// TODO: include base underscript.json in script so we always have something to show?
+const translations = (async () => {
+  const text = await getText();
   return JSON.parse(text, function reviver(key, value) {
     if (Array.isArray(value)) {
       if (!arrays.has(key)) {
