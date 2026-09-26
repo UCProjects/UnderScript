@@ -76,6 +76,9 @@ function init(page) {
     };
     data.page.setName(name);
     configs.set(page, data);
+    if (page.name) {
+      getPage('Plugins').refresh();
+    }
   }
   return configs.get(page);
 }

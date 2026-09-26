@@ -42,6 +42,7 @@ export default function TabManager() {
       content,
       // Set first tab as active by default
       active: tabs.length === 0,
+      dirty: true,
     };
 
     tabs.push(tab);
@@ -52,6 +53,7 @@ export default function TabManager() {
 
     function setContent(value = content) {
       tab.content = value;
+      refresh();
       if (typeof value === 'string') {
         container.innerHTML = value;
       }
@@ -65,7 +67,12 @@ export default function TabManager() {
       if (tab.active) return;
       tabs.forEach((t) => t.active = false);
       tab.active = true;
+      refresh();
       button.checked = true;
+    }
+
+    function refresh() {
+      tab.dirty = true;
     }
 
     // Initialize
@@ -79,6 +86,7 @@ export default function TabManager() {
       setContent,
       setEnd,
       setActive,
+      refresh,
     };
 
     Object.defineProperty(wrapper, 'active', {
@@ -95,14 +103,18 @@ export default function TabManager() {
     view.classList.toggle('left', tabSettings.left);
 
     // Update content of tabs
-    tabs.forEach(({
-      elements: [button, label, content],
-      content: contents,
-      active = false,
-    }) => {
+    tabs.forEach((tab) => {
+      const {
+        elements: [button, label, content],
+        active = false,
+      } = tab;
+
       button.checked = active;
 
-      let value = contents;
+      if (!tab.dirty) return;
+      tab.dirty = false;
+
+      let value = tab.content;
       if (typeof value === 'function') {
         value = value();
       } else if (typeof value?.render === 'function') {
