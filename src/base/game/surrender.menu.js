@@ -10,7 +10,7 @@ onPage('Game', () => {
     $(document).off('keyup');
   });
   function canSurrender() {
-    return global('turn') >= 5;
+    return global('turn') >= 5 && global('gameType') !== 'STORY';
   }
   // Add the "surrender" menu button
   menu.addButton({
