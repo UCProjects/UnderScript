@@ -149,6 +149,9 @@ function createSetting(setting = defaultSetting) {
       });
     ret.append(' ', reset);
   }
+
+  const description = $('<div>').addClass('setting-description');
+  ret.append(description);
   ret.append(container);
 
   function refresh() {
@@ -157,6 +160,8 @@ function createSetting(setting = defaultSetting) {
     el.prop('disabled', setting.disabled);
     label.toggleClass('disabled', setting.disabled);
     label.html(setting.name);
+    const text = setting.description;
+    description.html(text).toggle(!!text);
   }
   refresh();
   untilClose(`refresh:${key}`, refresh, `create:${key}`);

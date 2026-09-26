@@ -32,6 +32,8 @@ export default class RegisteredSetting {
   #data;
   /** @type {string | null | function(): string?} */
   #note;
+  /** @type {string | null | function(): string?} */
+  #description;
   /** @type {boolean | null | function(): boolean?} */
   #refresh;
   /** @type {function(any, any): void} */
@@ -46,6 +48,7 @@ export default class RegisteredSetting {
     converter,
     data,
     default: def,
+    description,
     disabled,
     export: exporting,
     extraPrefix,
@@ -76,6 +79,7 @@ export default class RegisteredSetting {
     this.#reset = reset;
     this.#data = data;
     this.#note = note;
+    this.#description = description;
     this.#refresh = refreshText;
     this.#events = events;
     this.#transformer = transform;
@@ -140,6 +144,11 @@ export default class RegisteredSetting {
    */
   get data() {
     return this.#value(this.#data);
+  }
+
+  get description() {
+    const value = this.#value(this.#description);
+    return value ? translateText(value) : '';
   }
 
   get note() {
