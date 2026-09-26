@@ -84,6 +84,8 @@ export default function createSearch(showSetting, settingReg, dialog) {
 
   input.addEventListener('input', () => search(input.value));
 
+  input.addEventListener('focus', () => search(input.value));
+
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       e.preventDefault();
@@ -95,7 +97,14 @@ export default function createSearch(showSetting, settingReg, dialog) {
       }
       return;
     }
-    if (!items.length) return;
+    if (!items.length) {
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      search(input.value);
+      if (!items.length) return;
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
     if (!['ArrowDown', 'ArrowUp', 'Enter'].includes(e.key)) return;
     e.preventDefault();
     e.stopPropagation();
