@@ -28,6 +28,8 @@ const settingReg = {
 };
 const events = eventEmitter();
 const configs = new Map();
+const pageTokens = new Map();
+const pluginViews = new Map();
 const dialog = new DialogHelper();
 let updateLock = false;
 
@@ -42,7 +44,7 @@ export function getScreen() {
   screen.settings({ left: true });
 
   screen.plugins = tabManager();
-  const tab = screen.addTab('Plugins', screen.plugins);
+  const tab = screen.addTab('Plugins', screen.plugins, { fold: true });
   tab.setEnd(true); // Plugins go to the bottom of the list
   configs.set('Plugins', {
     page: tab,
@@ -50,6 +52,43 @@ export function getScreen() {
 
   getScreen.screen = screen;
   return screen;
+}
+
+export function pageToken(page, tab) {
+  if (!tab || !page?.name) return page;
+  let byTab = pageTokens.get(page);
+  if (!byTab) {
+    byTab = new Map();
+    pageTokens.set(page, byTab);
+  }
+  if (!byTab.has(tab)) {
+    byTab.set(tab, {
+      plugin: page,
+      tab,
+      get name() { return tab; },
+      get label() { return `${page.name}: ${tab}`; },
+      get logger() { return page.logger; },
+    });
+  }
+  return byTab.get(tab);
+}
+
+function getPluginView(plugin) {
+  const existing = pluginViews.get(plugin);
+  if (existing) return existing;
+
+  const manager = tabManager();
+  const config = configs.get(plugin);
+  const tab = config?.page ?? getScreen().plugins.addTab(plugin.name, manager);
+  tab.setContent(manager);
+  if (config) {
+    manager.addTab(config.name, () => getMessage(plugin)[0]);
+  }
+
+  const view = { tab, manager };
+  pluginViews.set(plugin, view);
+  getPage('Plugins').refresh();
+  return view;
 }
 
 function getPage(key) {
@@ -61,10 +100,15 @@ function getPage(key) {
   function builder() {
     return getMessage(key)[0];
   }
+  if (key?.plugin) {
+    return getPluginView(key.plugin).manager.addTab(key.tab, builder);
+  }
+  if (pluginViews.has(key)) {
+    return pluginViews.get(key).manager.addTab(key.name, builder);
+  }
   const screen = key.name ? getScreen().plugins : getScreen();
   const name = key.name || key;
-  const tab = screen.addTab(name, builder);
-  return tab;
+  return screen.addTab(name, builder);
 }
 
 function init(page) {
@@ -226,7 +270,7 @@ export function register(data) {
   const key = (data.key || data); // .replace(/ /g, '_'); // This is a breaking change (but possibly necessary)
   if (settingReg[key]) throw new Error(`${settingReg[key].name}[${key}] already registered`);
 
-  const page = data.page || 'main';
+  const page = pageToken(data.page || 'main', data.tab);
   const setting = {
     ...(typeof data === 'object' && data),
     events,
@@ -300,11 +344,18 @@ export function register(data) {
   };
 }
 
-export function open(page = 'main') {
-  const test = page.name || page;
-  if (typeof test !== 'string') throw new Error(`Attempted to open unknown page, ${test} (${typeof page})`);
-  getPage(page).setActive();
-  if (page.name) {
+export function open(page = 'main', tab = undefined) {
+  const target = pageToken(page, tab);
+  const test = target.name || target;
+  if (typeof test !== 'string') throw new Error(`Attempted to open unknown page, ${test} (${typeof target})`);
+  getPage(target).setActive();
+  const plugin = target.plugin;
+  if (plugin) {
+    const view = getPluginView(plugin);
+    view.tab.setActive();
+    view.tab.refresh();
+  }
+  if (plugin || target.name) {
     const plugins = getPage('Plugins');
     plugins.setActive();
     plugins.refresh();

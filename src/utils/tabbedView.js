@@ -17,7 +17,7 @@ export default function TabManager() {
   const view = document.createElement('div');
   view.classList.add('tabbedView');
 
-  function addTab(name = '', content = '') {
+  function addTab(name = '', content = '', { fold = false } = {}) {
     const id = tabs.length ? tabs[tabs.length - 1].id + 1 : 0;
     const elements = newTab(`${group}-${id}`, group);
     const [button, label, container] = elements;
@@ -26,6 +26,7 @@ export default function TabManager() {
       id,
       elements,
       content,
+      fold,
       // Set first tab as active by default
       active: tabs.length === 0,
       dirty: true,
@@ -117,7 +118,7 @@ export default function TabManager() {
         nested = true;
         value = value.render(true);
       }
-      content.classList.toggle('nested', nested);
+      content.classList.toggle('nested', nested && tab.fold);
 
       if (typeof value === 'string' && value) {
         content.innerHTML = value;

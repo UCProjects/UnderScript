@@ -5,7 +5,7 @@ import SettingType from 'src/utils/settings/types/setting.js';
 
 wrap(() => {
   const name = 'settings';
-  function add(plugin) {
+  function add(plugin, tab) {
     const prefix = `underscript.plugin.${plugin.name}`;
 
     return (data = {}) => {
@@ -16,6 +16,7 @@ wrap(() => {
         key: `${prefix}.${data.key}`,
         name: data.name || data.key,
         page: plugin,
+        tab,
       };
       return settings.register(setting);
     };
@@ -24,6 +25,15 @@ wrap(() => {
   function mod(plugin) {
     const obj = {
       add: add(plugin),
+      page(tabName) {
+        if (typeof tabName !== 'string') throw new Error(`Page name must be a string, got ${typeof tabName}`);
+        const tab = tabName.trim();
+        if (!tab) throw new Error('Page name must be provided');
+        return Object.freeze({
+          add: add(plugin, tab),
+          open: () => settings.open(plugin, tab),
+        });
+      },
       on: (...args) => settings.on(...args),
       open: () => settings.open(plugin),
       isOpen: () => settings.isOpen(),

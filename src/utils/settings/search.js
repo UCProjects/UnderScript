@@ -48,7 +48,7 @@ export default function createSearch(showSetting, settingReg, dialog) {
   }
 
   function pageLabel(page) {
-    return toText(page.name || page);
+    return toText(page.label || page.name || page);
   }
 
   function createResult(setting, index) {

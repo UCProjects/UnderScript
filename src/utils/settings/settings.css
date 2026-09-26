@@ -112,3 +112,7 @@
   font-size: 0.9em;
   opacity: 0.7;
 }
+
+.settings .tabContent > .tabbedView > .tabLabel {
+  margin-bottom: 5px;
+}
