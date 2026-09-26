@@ -19,7 +19,7 @@ const setting = settings.register({
 });
 
 export const globalPing = settings.register({
-  name: Translation.Setting('ping.toast'),
+  name: Translation.Setting('ping.global'),
   key: 'underscript.enable.ping.global',
   category,
   page: 'Chat',
