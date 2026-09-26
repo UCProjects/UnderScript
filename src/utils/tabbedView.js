@@ -34,6 +34,8 @@ export default function TabManager() {
   function addTab(name = '', content = '') {
     const id = tabs.length ? tabs[tabs.length - 1].id + 1 : 0;
     const elements = newTab(`${group}-${id}`, group);
+    const [button, label, container] = elements;
+
     const tab = {
       id,
       elements,
@@ -45,24 +47,25 @@ export default function TabManager() {
     tabs.push(tab);
 
     function setName(value = name) {
-      elements[1].textContent = value;
+      label.textContent = value;
     }
 
     function setContent(value = content) {
       tab.content = value;
       if (typeof value === 'string') {
-        elements[2].innerHTML = value;
+        container.innerHTML = value;
       }
     }
 
     function setEnd(value = false) {
-      elements[1].classList.toggle('end', value === true);
+      label.classList.toggle('end', value === true);
     }
 
     function setActive() {
       if (tab.active) return;
       tabs.forEach((t) => t.active = false);
       tab.active = true;
+      button.checked = true;
     }
 
     // Initialize
@@ -97,25 +100,29 @@ export default function TabManager() {
       content: contents,
       active = false,
     }) => {
-      if (active) {
-        button.checked = true;
-      }
+      button.checked = active;
 
       let value = contents;
       if (typeof value === 'function') {
         value = value();
-      } else if (typeof value.render === 'function') {
+      } else if (typeof value?.render === 'function') {
         value = value.render(true);
       }
 
-      if (typeof value === 'string') {
+      if (typeof value === 'string' && value) {
         content.innerHTML = value;
       } else if (value instanceof HTMLElement) {
         content.innerHTML = '';
         content.appendChild(value);
-      } else return;
+      } else {
+        if (button.isConnected) {
+          view.removeChild(button);
+          view.removeChild(label);
+          view.removeChild(content);
+        }
+        return;
+      }
 
-      // Add tab to view
       view.appendChild(button);
       view.appendChild(label);
       view.appendChild(content);
