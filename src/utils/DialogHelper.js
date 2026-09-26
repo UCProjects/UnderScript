@@ -1,5 +1,9 @@
 import Translation from 'src/structures/constants/translation.ts';
 import eventEmitter from './eventEmitter.js';
+import style from './style.js';
+import styles from './dialog.css';
+
+style.add(styles);
 
 export default class DialogHelper {
   #instance;
