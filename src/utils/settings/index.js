@@ -255,7 +255,7 @@ function showSetting(key, scroll) {
   const setting = settingReg[key];
   if (!setting) return;
   const opening = !isOpen();
-  open(setting.page, key);
+  open(setting.page);
   if (!scroll) return;
   if (opening) {
     events.once('open', () => events.emit(`scroll:${key}`));
