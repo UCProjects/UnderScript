@@ -3,6 +3,7 @@
   "announce.friendsOnly": "Friends Only",
   "announce.notSelf": "Ignore Self",
   "autocomplete": "Visual Autocomplete",
+  "autocomplete.emotes": "Autocomplete: Emotes",
   "autocomplete.friends": "Autocomplete: Online Friends Only",
   "broadcast": "Disable Broadcast Toast",
   "card.name.english": "Force English for card names",
