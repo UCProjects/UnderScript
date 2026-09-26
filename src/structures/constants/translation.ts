@@ -20,6 +20,11 @@ export interface TranslationBase {
   withArgs<N extends number>(...args: string[]): TranslationWithArgs<N>;
 }
 
+export interface TranslationNamespace {
+  (key: string, fallback?: string): Translation;
+  <N extends number>(key: string, args: N): TranslationWithArgs<N>;
+}
+
 export interface TranslationWithArgs<N extends number> extends TranslationBase {
   translate(...arg: Tuple<string, N>): string;
   withArgs(...arg: Tuple<String, N>): TranslationWithArgs<N>;
@@ -27,6 +32,25 @@ export interface TranslationWithArgs<N extends number> extends TranslationBase {
 }
 
 export default class Translation extends Constant implements TranslationBase {
+  private static namespace(prefix: string, options?: TranslationOptions, transform?: (key: string) => string): TranslationNamespace {
+    return ((key: string, text?: string | number) => new Translation(
+      transform ? transform(key) : `${prefix}${key}`,
+      { ...options, fallback: typeof text === 'string' ? text : undefined },
+    )) as TranslationNamespace;
+  }
+
+  static General = this.namespace('general.');
+
+  static Command = this.namespace('command.');
+
+  static Menu = this.namespace('menu.');
+
+  static Setting = this.namespace('settings.');
+
+  static Toast = this.namespace('toast.');
+
+  static Vanilla = this.namespace('', { prefix: null }, (key) => key.toLowerCase());
+
   static DISMISS = this.General('dismiss', 'Dismiss');
   static ERROR = this.General('error', 'Error');
   static OPEN = this.General('open', 'Open');
@@ -97,45 +121,5 @@ export default class Translation extends Constant implements TranslationBase {
 
   toString() {
     return this.translate();
-  }
-
-  static General(key: string): Translation;
-  static General<N extends number>(key: string, fallback: string): Translation;
-  static General<N extends number>(key: string, hasArgs: N): TranslationWithArgs<N>;
-  static General<N extends number>(key: string, text?: string | N): TranslationBase | TranslationWithArgs<N> {
-    const fallback = typeof text === 'string' ? text : undefined;
-    return new Translation(`general.${key}`, { fallback });
-  }
-
-  static Menu(key: string): Translation;
-  static Menu<N extends number>(key: string, fallback: string): Translation;
-  static Menu<N extends number>(key: string, hasArgs: N): TranslationWithArgs<N>;
-  static Menu<N extends number>(key: string, text?: string | N): TranslationBase | TranslationWithArgs<N> {
-    const fallback = typeof text === 'string' ? text : undefined;
-    return new Translation(`menu.${key}`, { fallback });
-  }
-
-  static Setting(key: string): Translation;
-  static Setting<N extends number>(key: string, fallback: string): Translation;
-  static Setting<N extends number>(key: string, hasArgs: N): TranslationWithArgs<N>;
-  static Setting<N extends number>(key: string, text?: string | N): TranslationBase | TranslationWithArgs<N> {
-    const fallback = typeof text === 'string' ? text : undefined;
-    return new Translation(`settings.${key}`, { fallback });
-  }
-
-  static Toast(key: string): Translation;
-  static Toast<N extends number>(key: string, fallback: string): Translation;
-  static Toast<N extends number>(key: string, hasArgs: N): TranslationWithArgs<N>;
-  static Toast<N extends number>(key: string, text?: string | N): TranslationBase | TranslationWithArgs<N> {
-    const fallback = typeof text === 'string' ? text : undefined;
-    return new Translation(`toast.${key}`, { fallback });
-  }
-
-  static Vanilla(key: string): Translation;
-  static Vanilla<N extends number>(key: string, fallback: string): Translation
-  static Vanilla<N extends number>(key: string, hasArgs: N): TranslationWithArgs<N>;
-  static Vanilla<N extends number>(key: string, text?: string | number): TranslationBase | TranslationWithArgs<N> {
-    const fallback = typeof text === 'string' ? text : undefined;
-    return new Translation(key.toLowerCase(), { fallback, prefix: null });
   }
 }
