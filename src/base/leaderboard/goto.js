@@ -36,7 +36,7 @@ function userLast() {
 
 if (onPage('leaderboard')) {
   const data = getData();
-  const skip = VarStore(true);
+  const skip = new VarStore(true);
   let replacePage;
 
   window.addEventListener('popstate', () => {
@@ -52,7 +52,7 @@ if (onPage('leaderboard')) {
 
   eventManager.on(':preload', () => {
     eventManager.on('ShowPage', function showPage(page) {
-      if (skip.get()) return;
+      if (skip.consume()) return;
       set('page', page, replacePage);
       replacePage = undefined;
     });

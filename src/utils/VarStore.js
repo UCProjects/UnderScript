@@ -1,32 +1,49 @@
-export default function VarStore(def) {
-  let v = def;
+/** @template T */
+export default class VarStore {
+  /** @type {T} */
+  #default;
+  /** @type {T} */
+  #value;
 
-  function get() {
-    const ret = v;
-    set(def);
+  /** @param {T} def */
+  constructor(def) {
+    this.#default = def;
+    this.#value = def;
+    Object.freeze(this);
+  }
+
+  /** @returns {T} */
+  get value() {
+    return this.#value;
+  }
+
+  /** @param {T} val */
+  set value(val) {
+    this.set(val);
+  }
+
+  /** @returns {T} */
+  consume() {
+    const ret = this.#value;
+    this.set(this.#default);
     return ret;
   }
 
-  function peak() {
-    return v;
+  /** @returns {T} */
+  get() {
+    return this.#value;
   }
 
-  function set(val) {
-    return v = val;
+  /**
+   * @param {T} val
+   * @returns {T}
+   */
+  set(val) {
+    this.#value = val;
+    return val;
   }
 
-  function isSet() {
-    return v !== def;
+  isSet() {
+    return this.#value !== this.#default;
   }
-
-  const ret = {
-    get, set, peak, isSet, value: v,
-  };
-
-  Object.defineProperty(ret, 'value', {
-    get,
-    set,
-  });
-
-  return Object.freeze(ret);
 }

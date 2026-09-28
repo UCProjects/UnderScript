@@ -19,7 +19,7 @@ const setting = settings.register({
 
 const safeLinks = new Set();
 
-const cache = VarStore(false);
+const cache = new VarStore(false);
 
 // Load blocked users
 each(localStorage, (host, key) => {
@@ -44,7 +44,7 @@ const TrustDomain = Translation.Setting('safelink.trust', 1);
 
 eventManager.on('BootstrapDialog:show', (dialog) => {
   if (dialog.getTitle() !== 'Leaving Warning' || !setting.value()) return;
-  const host = cache.value;
+  const host = cache.consume();
   const after = dialog.options.buttons[0];
   dialog.options.buttons.unshift({
     label: TrustDomain.translate(host),

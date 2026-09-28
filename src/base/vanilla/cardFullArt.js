@@ -11,11 +11,11 @@ const setting = settings.register({
   onChange: toggle,
   category: Translation.CATEGORY_CARD_SKINS,
 });
-const art = VarStore();
+const art = new VarStore();
 
 function toggle() {
   if (art.isSet()) {
-    art.get().remove();
+    art.consume().remove();
   } else {
     art.set(style.add(
       '.full-skin .cardHeader, .full-skin .cardFooter { background-color: rgb(0, 0, 0); }',

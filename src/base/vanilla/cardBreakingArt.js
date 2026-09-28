@@ -31,13 +31,13 @@ const setting = settings.register({
     }
   },
 });
-const art = VarStore();
+const art = new VarStore();
 const type1 = 'rgb(0, 0, 0)';
 const type2 = 'rgba(0, 0, 0, 0.2)';
 
 function update(value) {
   if (art.isSet()) {
-    art.get().remove();
+    art.consume().remove();
   }
   if (value === def) return;
 

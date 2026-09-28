@@ -12,12 +12,12 @@ const setting = settings.register({
   onChange: toggle,
   category: Translation.CATEGORY_OUTLINE,
 });
-const art = VarStore();
+const art = new VarStore();
 
 function toggle(add = setting.value()) {
   if (art.isSet()) {
     if (add) return;
-    art.get().remove();
+    art.consume().remove();
   }
   if (add) {
     art.set(style.add(

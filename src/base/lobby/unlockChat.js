@@ -2,7 +2,7 @@ import eventManager from 'src/utils/eventManager.js';
 import VarStore from 'src/utils/VarStore.js';
 import { global } from 'src/utils/global.js';
 
-const unpause = VarStore(false);
+const unpause = new VarStore(false);
 
 eventManager.on('Chat:focused', () => {
   const game = global('game', {
@@ -26,7 +26,7 @@ eventManager.on('Chat:unfocused', () => {
     throws: false,
   });
   if (game && game.input) {
-    if (unpause.get()) {
+    if (unpause.consume()) {
       game.paused = false;
     }
     const keyboard = game.input.keyboard;

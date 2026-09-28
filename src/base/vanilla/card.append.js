@@ -10,7 +10,7 @@ const PREFIX = 'appendCard';
 const internal = eventEmitter();
 let event = PREFIX;
 let data = [];
-const extras = VarStore();
+const extras = new VarStore();
 
 internal.on('set', (e = PREFIX) => {
   event = e;
@@ -31,7 +31,7 @@ internal.on('set', (e = PREFIX) => {
     event = PREFIX; // Reset
   } else {
     data = args;
-    if (extras.isSet()) data.push(...extras.value);
+    if (extras.isSet()) data.push(...extras.consume());
   }
 });
 

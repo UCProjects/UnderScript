@@ -9,7 +9,7 @@ import { isActive, updateIfActive } from './session.js';
 // TODO: Use Message object
 // TODO: Better history management
 let reconnectAttempts = 0;
-const guestMode = VarStore(false);
+const guestMode = new VarStore(false);
 const historyIds = new Set();
 
 function handleClose(event) {

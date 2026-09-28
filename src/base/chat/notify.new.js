@@ -36,7 +36,7 @@ eventManager.on('preChat:getHistory Chat:getHistory', function enable(data) {
 
 eventManager.on('ChatDetected', () => {
   globalSet('notif', function newNotify(original) {
-    if (!setting.value() && !pendingIgnore.get()) { // TODO
+    if (!setting.value() && !pendingIgnore.consume()) { // TODO
       const text = this.super(original);
 
       const regex = pingRegex();
