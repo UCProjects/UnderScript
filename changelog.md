@@ -1,6 +1,6 @@
 # UnderScript Changelog
 
-## Unreleased
+## Version 0.64.0 (2026-08-28)
 ### Features
 1. Added "crafting" option for "merge shiny cards" setting
 1. Added a search bar to the settings screen
