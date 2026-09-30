@@ -81,7 +81,9 @@ function render() {
       $('<td class="empty" colspan="5">').text(`${emptyText()}`),
     ));
   } else {
-    plugins.forEach((entry) => body.append(row(entry)));
+    plugins.sort(
+      ({ name: nameA }, { name: nameB }) => nameA.localeCompare(nameB),
+    ).forEach((entry) => body.append(row(entry)));
   }
   complete = plugins.length > 0 && plugins.every(({ name }) => registry.info(name));
   container.empty().append($('<table class="table">').append(header(), body));
