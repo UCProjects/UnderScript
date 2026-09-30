@@ -8,5 +8,10 @@
     "name": "Wizascript",
     "author": "TheWiza2341",
     "updateURL": "https://raw.githubusercontent.com/theWiza2341/Wizascript/refs/heads/main/wizascript.user.js"
+  },
+  {
+    "name": "Galascript",
+    "author": "galadino",
+    "updateURL": "https://raw.githubusercontent.com/galadinowo/galascript/refs/heads/main/Galascript.user.js"
   }
 ]
