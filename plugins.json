@@ -3,5 +3,10 @@
     "name": "Player Info",
     "author": "feildmaster",
     "updateURL": "https://gist.github.com/feildmaster/685b7cc68f747d5d1cce5de59cec2ef4/raw/playerInfo.user.js"
+  },
+  {
+    "name": "Wizascript",
+    "author": "TheWiza2341",
+    "updateURL": "https://raw.githubusercontent.com/theWiza2341/Wizascript/refs/heads/main/wizascript.user.js"
   }
 ]
