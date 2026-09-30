@@ -13,5 +13,10 @@
     "name": "Galascript",
     "author": "galadino",
     "updateURL": "https://raw.githubusercontent.com/galadinowo/galascript/refs/heads/main/Galascript.user.js"
+  },
+  {
+    "name": "PrettyCards",
+    "author": "elytrafae",
+    "updateURL": "https://github.com/elytrafae/prettycards/releases/latest/download/prettycards.user.js"
   }
 ]
