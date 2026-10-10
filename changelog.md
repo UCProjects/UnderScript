@@ -1,5 +1,12 @@
 # UnderScript Changelog
 
+
+## Unreleased
+### Features
+1. Smart Disenchant now lists every card you can disenchant, so you can choose exactly which cards and copies to disenchant<extended>
+    - Cards are grouped as Normal and Shiny, then by rarity, then by card. A group's box selects everything inside it.
+    - The Prioritize Normal and Prioritize Shiny buttons select what they would have disenchanted, and you can adjust the selection before confirming.</extended>
+
 ## Version 0.65.1 (2026-10-10)
 1. Fixed the Craftable cards notice on the Crafting page showing no text
 1. Fixed opening packs showing several results, including an empty one, when the game was slow to answer

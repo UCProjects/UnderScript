@@ -16,7 +16,10 @@
     "~": "Collect All",
     "note": "Collect all rewards"
   },
-  "disenchant": "Smart Disenchant",
+  "disenchant": {
+    "~": "Smart Disenchant",
+    "note": "Smart Disenchant will not disenchant {{RARITY:DETERMINATION}} or Shiny {{RARITY:BASE}} cards. Pick a selection below, then adjust it by hand."
+  },
   "friend": {
     "block": "Block $1",
     "decline": "Decline all"

@@ -7,12 +7,20 @@ import { debug } from 'src/utils/debug';
 import debugToast from 'src/utils/debugToast';
 import * as cardHelper from 'src/utils/cardHelper';
 import onPage from 'src/utils/onPage';
-import * as hover from 'src/utils/hover';
 import each from 'src/utils/each';
 import { captureError } from 'src/utils/sentry';
 import hasOwn from 'src/utils/hasOwn';
 import Translation from 'src/structures/constants/translation';
 import Rarity from 'src/structures/constants/rarity';
+import * as hover from 'src/utils/hover';
+import checkboxGroup, {
+  getChecked,
+  revealChecked,
+  setAllCollapsed,
+  setChecked,
+} from 'src/utils/checkboxGroup';
+import style from 'src/utils/style';
+import styles from './disenchant.css';
 
 const setting = settings.register({
   name: Translation.Setting('disenchant'),
@@ -23,6 +31,8 @@ const setting = settings.register({
   category: Translation.CATEGORY_LIBRARY_CRAFTING,
   page: 'Library',
 });
+
+style.add(styles);
 
 // TODO: More translations
 onPage('Crafting', function disenchantWrapper() {
@@ -36,56 +46,130 @@ onPage('Crafting', function disenchantWrapper() {
     $('#dust').after(' ', button);
   });
 
+  const RARITIES = [Rarity.LEGENDARY, Rarity.EPIC, Rarity.RARE, Rarity.COMMON];
+  const CONFIRM = 'us-disenchant-confirm';
+
+  function titleCase(text) {
+    return `${text.charAt(0)}${text.slice(1).toLowerCase()}`;
+  }
+
+  function cardName({ name }) {
+    return $('<span>').text(name).html();
+  }
+
+  function cardNode(entry) {
+    const copies = Array.from({ length: entry.quantity }, (_, index) => {
+      const copy = index + 1;
+      return [`Copy ${copy}`, { entry, copy }];
+    });
+    if (copies.length < 2) return [cardName(entry), copies[0][1]];
+    return checkboxGroup(`${cardName(entry)} x${entry.quantity}`, copies, { collapsed: true });
+  }
+
+  function buildColumn(entries, shiny) {
+    const groups = RARITIES.map((rarity) => {
+      const cards = entries
+        .filter((entry) => !!entry.shiny === shiny && Rarity.find(entry.rarity) === rarity)
+        .sort((a, b) => a.name.localeCompare(b.name));
+      const label = Translation.Vanilla(`rarity-${rarity}`, titleCase(String(rarity))).translate();
+      return checkboxGroup(label, cards.map(cardNode), { collapsed: true });
+    });
+    return checkboxGroup(shiny ? 'Shiny' : 'Normal', groups, { collapsible: false });
+  }
+
+  function cardKey({ id, shiny }) {
+    return `${id}:${!!shiny}`;
+  }
+
   function onclick() {
-    const normals = calcCards({ shiny: false });
-    const shinies = calcCards({ shiny: true });
-    const pNormal = calcCards({ shiny: false, priority: true });
-    const pShiny = calcCards({ shiny: true, priority: true });
+    const presets = [{
+      label: 'Prioritize Normal',
+      hint: 'Select extra shiny cards<br />Note: Also selects normals > max',
+      cards: calcCards({ shiny: false, priority: true }),
+    }, {
+      label: 'Prioritize Shiny',
+      hint: 'Select extra normal cards<br />Note: Also selects shinies > max',
+      cards: calcCards({ shiny: true, priority: true }),
+    }];
+    const note = Translation.General(
+      'disenchant.note',
+      'Smart Disenchant will not disenchant DETERMINATION or Shiny BASE cards. Pick a selection below, then adjust it by hand.',
+    );
+    const everything = [...calcCards({ shiny: false }), ...calcCards({ shiny: true })];
+    const normal = buildColumn(everything, false);
+    const shiny = buildColumn(everything, true);
+    let confirm;
+
+    function selected() {
+      const counts = new Map();
+      [...getChecked(normal), ...getChecked(shiny)].forEach(({ meta: { entry } }) => {
+        counts.set(entry, (counts.get(entry) || 0) + 1);
+      });
+      return [...counts].map(([entry, quantity]) => ({ ...entry, quantity }));
+    }
+
+    function update() {
+      const cards = selected();
+      confirm.text(`Disenchant (+${calcDust(cards)})`).prop('disabled', !cards.length);
+    }
+
+    function select(cards = []) {
+      const wanted = new Map(cards.map((card) => [cardKey(card), card.quantity]));
+      const test = ({ meta }) => meta.copy <= (wanted.get(cardKey(meta.entry)) || 0);
+      setChecked(normal, test);
+      setChecked(shiny, test);
+      update();
+    }
+
+    const buttons = $('<div class="us-disenchant-presets">').append(
+      presets.map((preset) => $('<button type="button" class="btn btn-info btn-sm">')
+        .text(`${preset.label} (+${calcDust(preset.cards)})`)
+        .prop('disabled', !preset.cards.length)
+        .hover(hover.show(preset.hint))
+        .on('click', () => select(preset.cards))),
+      $('<button type="button" class="btn btn-default btn-sm">')
+        .text('Clear')
+        .on('click', () => select()),
+    );
+    const view = $('<div class="us-disenchant-view">').append(
+      $('<button type="button" class="btn btn-default btn-xs">')
+        .text('Expand selected')
+        .on('click', () => {
+          revealChecked(normal);
+          revealChecked(shiny);
+        }),
+      $('<button type="button" class="btn btn-default btn-xs">')
+        .text('Collapse all')
+        .on('click', () => {
+          setAllCollapsed(normal, true);
+          setAllCollapsed(shiny, true);
+        }),
+    );
+    const columns = $('<div class="us-disenchant-columns">')
+      .append($('<div class="us-disenchant-column">').append(normal))
+      .append($('<div class="us-disenchant-column">').append(shiny))
+      .on('change', 'input[type="checkbox"]', update);
+
     BootstrapDialog.show({
-      // TODO: translation
       title: 'Smart Disenchant',
-      message: `Note: Smart Disenchant will not disenchant DETERMINATION or Shiny BASE cards.<br>
-      Normal/Shiny will disenchant <b>ALL</b> normal/shiny cards until you have 0.<br>
-      Prioritize will count normal/shiny together and disenchant extra non normal/shiny cards.`,
-      onshow(dialog) {
-        const window = dialog.getModalFooter();
-        // TODO: translation
-        window.find('.us-normal').hover(hover.show('Disenchant all normal cards')).prop('disabled', !normals.length);
-        window.find('.us-shiny').hover(hover.show('Disenchant all shiny cards')).prop('disabled', !shinies.length);
-        window.find('.us-normal-p').hover(hover.show('Disenchant extra shiny cards<br />Note: Also disenchants normals > max')).prop('disabled', !pNormal.length);
-        window.find('.us-shiny-p').hover(hover.show('Disenchant extra normal cards<br />Note: Also disenchants shinies > max')).prop('disabled', !pShiny.length);
+      cssClass: 'mono underscript-dialog',
+      message: $('<div>').append(
+        $('<div class="us-disenchant-note">').html(`${note}`),
+        buttons,
+        view,
+        columns,
+      ),
+      onshown(dialog) {
+        confirm = dialog.getButton(CONFIRM);
+        update();
       },
       onhide: hover.hide,
       buttons: [{
-        // TODO: translation
-        label: `All Normal (+${calcDust(normals)})`,
-        cssClass: 'btn-danger us-normal',
+        id: CONFIRM,
+        label: 'Disenchant (+0)',
+        cssClass: 'btn-danger',
         action(dialog) {
-          disenchant(normals);
-          dialog.close();
-        },
-      }, {
-        // TODO: translation
-        label: `All Shiny (+${calcDust(shinies)})`,
-        cssClass: 'btn-danger us-shiny',
-        action(dialog) {
-          disenchant(shinies);
-          dialog.close();
-        },
-      }, {
-        // TODO: translation
-        label: `Prioritize Normal (+${calcDust(pNormal)})`,
-        cssClass: 'btn-danger us-normal-p',
-        action(dialog) {
-          disenchant(pNormal);
-          dialog.close();
-        },
-      }, {
-        // TODO: translation
-        label: `Prioritize Shiny (+${calcDust(pShiny)})`,
-        cssClass: 'btn-danger us-shiny-p',
-        action(dialog) {
-          disenchant(pShiny);
+          disenchant(selected());
           dialog.close();
         },
       }],

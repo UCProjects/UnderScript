@@ -22,3 +22,26 @@
 .checkGroup.collapsed > :not(legend) {
   display: none;
 }
+
+.checkGroup input[type='checkbox'] {
+  appearance: none;
+  box-sizing: border-box;
+  width: 14px;
+  height: 14px;
+  padding: 2px;
+  border: 2px solid currentcolor;
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-clip: content-box;
+  background-origin: content-box;
+}
+
+.checkGroup input[type='checkbox']:checked {
+  background-color: currentcolor;
+}
+
+.checkGroup input[type='checkbox']:indeterminate {
+  background-image: linear-gradient(currentcolor, currentcolor);
+  background-size: 100% 2px;
+}

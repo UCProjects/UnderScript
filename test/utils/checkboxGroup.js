@@ -1,5 +1,12 @@
 import { expect } from 'chai';
-import checkboxGroup, { getChecked, isCollapsed, setCollapsed } from '../../src/utils/checkboxGroup';
+import checkboxGroup, {
+  getChecked,
+  isCollapsed,
+  revealChecked,
+  setAllCollapsed,
+  setChecked,
+  setCollapsed,
+} from '../../src/utils/checkboxGroup';
 
 function boxes(group) {
   return group.find('input[type=checkbox]').toArray().map((el) => $(el));
@@ -256,6 +263,32 @@ describe('checkboxGroup', () => {
       return group.children('legend').children('.checkToggle');
     }
 
+    it('has no toggle when it is not collapsible', () => {
+      const group = checkboxGroup('Root', ['a'], { collapsible: false });
+      expect(toggle(group).length).to.equal(0);
+    });
+
+    it('marks groups that are not collapsible', () => {
+      expect(checkboxGroup('Root', ['a'], { collapsible: false }).hasClass('checkFixed')).to.equal(true);
+      expect(checkboxGroup('Root', ['a']).hasClass('checkFixed')).to.equal(false);
+    });
+
+    it('ignores collapsing when it is not collapsible', () => {
+      const group = checkboxGroup('Root', ['a'], { collapsible: false, collapsed: true });
+      expect(isCollapsed(group)).to.equal(false);
+      setCollapsed(group, true);
+      expect(isCollapsed(group)).to.equal(false);
+      expect(group.hasClass('collapsed')).to.equal(false);
+    });
+
+    it('is never collapsed by revealChecked or setAllCollapsed', () => {
+      const fixed = checkboxGroup('Fixed', ['a'], { collapsible: false });
+      const root = checkboxGroup('Root', [fixed, checkboxGroup('Other', ['b'])]);
+      revealChecked(root);
+      setAllCollapsed(root, true);
+      expect(isCollapsed(fixed)).to.equal(false);
+    });
+
     it('starts expanded with a toggle', () => {
       const group = checkboxGroup('Root', ['a']);
       expect(toggle(group).length).to.equal(1);
@@ -334,6 +367,162 @@ describe('checkboxGroup', () => {
       const group = checkboxGroup('Root', [checkboxGroup('Empty')]);
       expect(boxes(group).length).to.equal(2);
       expect(values(group)).to.deep.equal([]);
+    });
+  });
+
+  describe('setChecked', () => {
+    it('checks the leaves the predicate accepts', () => {
+      const group = checkboxGroup('Root', [['a', { n: 1 }], ['b', { n: 2 }], ['c', { n: 3 }]]);
+      setChecked(group, ({ meta }) => meta.n !== 2);
+      expect(values(group)).to.deep.equal(['a', 'c']);
+    });
+
+    it('passes the value and meta to the predicate', () => {
+      const group = checkboxGroup('Root', [['a', { n: 1 }]]);
+      const seen = [];
+      setChecked(group, (leaf) => {
+        seen.push(leaf);
+        return false;
+      });
+      expect(seen).to.deep.equal([{ value: 'a', meta: { n: 1 } }]);
+    });
+
+    it('unchecks leaves the predicate rejects', () => {
+      const group = checkboxGroup('Root', ['a', 'b']);
+      click(find(group, 'Root'));
+      setChecked(group, ({ value }) => value === 'b');
+      expect(values(group)).to.deep.equal(['b']);
+    });
+
+    it('updates parent and indeterminate state at every depth', () => {
+      const group = checkboxGroup('Root', [
+        'a',
+        checkboxGroup('Sub', ['b', checkboxGroup('Deep', ['c', 'd'])]),
+      ]);
+      setChecked(group, ({ value }) => value === 'c');
+      expect(state(find(group, 'Deep'))).to.deep.equal(mixed);
+      expect(state(find(group, 'Sub'))).to.deep.equal(mixed);
+      expect(state(find(group, 'Root'))).to.deep.equal(mixed);
+      setChecked(group, () => true);
+      ['Deep', 'Sub', 'Root'].forEach((name) => {
+        expect(state(find(group, name))).to.deep.equal(checked);
+      });
+      setChecked(group, () => false);
+      ['Deep', 'Sub', 'Root'].forEach((name) => {
+        expect(state(find(group, name))).to.deep.equal(unchecked);
+      });
+    });
+
+    it('refreshes the ancestors when used on a subgroup', () => {
+      const sub = checkboxGroup('Sub', ['b', 'c']);
+      const group = checkboxGroup('Root', ['a', sub]);
+      setChecked(sub, () => true);
+      expect(state(find(group, 'Sub'))).to.deep.equal(checked);
+      expect(state(find(group, 'Root'))).to.deep.equal(mixed);
+      expect(values(group)).to.deep.equal(['b', 'c']);
+    });
+
+    it('ignores the (empty) line', () => {
+      const group = checkboxGroup('Root', ['a', checkboxGroup('Empty')]);
+      setChecked(group, () => true);
+      expect(values(group)).to.deep.equal(['a']);
+    });
+  });
+
+  describe('revealChecked', () => {
+    function tree() {
+      const deep = checkboxGroup('Deep', ['d1', 'd2'], { collapsed: true });
+      const left = checkboxGroup('Left', ['l1', deep], { collapsed: true });
+      const right = checkboxGroup('Right', ['r1'], { collapsed: true });
+      const root = checkboxGroup('Root', [left, right]);
+      return { root, left, right, deep };
+    }
+
+    it('expands groups that contain checked leaves, at any depth', () => {
+      const { root, left, right, deep } = tree();
+      click(find(root, 'd2'));
+      revealChecked(root);
+      expect(isCollapsed(left)).to.equal(false);
+      expect(isCollapsed(deep)).to.equal(false);
+      expect(isCollapsed(right)).to.equal(true);
+    });
+
+    it('collapses groups that have nothing checked', () => {
+      const { root, left, right } = tree();
+      setCollapsed(left, false);
+      setCollapsed(right, false);
+      click(find(root, 'r1'));
+      revealChecked(root);
+      expect(isCollapsed(left)).to.equal(true);
+      expect(isCollapsed(right)).to.equal(false);
+    });
+
+    it('leaves the group it is called on alone', () => {
+      const root = checkboxGroup('Root', ['a'], { collapsed: true });
+      revealChecked(root);
+      expect(isCollapsed(root)).to.equal(true);
+    });
+
+    it('stops at the given depth', () => {
+      const { root, left, right, deep } = tree();
+      click(find(root, 'd2'));
+      click(find(root, 'r1'));
+      revealChecked(root, 1);
+      expect(isCollapsed(left)).to.equal(false);
+      expect(isCollapsed(right)).to.equal(false);
+      expect(isCollapsed(deep)).to.equal(true);
+    });
+
+    it('leaves groups below the depth as they were', () => {
+      const { root, left, deep } = tree();
+      setCollapsed(deep, false);
+      setCollapsed(left, false);
+      revealChecked(root, 1);
+      expect(isCollapsed(left)).to.equal(true);
+      expect(isCollapsed(deep)).to.equal(false);
+    });
+
+    it('collapses everything below when nothing is checked', () => {
+      const { root, left, right, deep } = tree();
+      [left, right, deep].forEach((group) => setCollapsed(group, false));
+      revealChecked(root);
+      [left, right, deep].forEach((group) => expect(isCollapsed(group)).to.equal(true));
+    });
+  });
+
+  describe('setAllCollapsed', () => {
+    function tree() {
+      const deep = checkboxGroup('Deep', ['d1']);
+      const left = checkboxGroup('Left', ['l1', deep]);
+      const right = checkboxGroup('Right', ['r1']);
+      const root = checkboxGroup('Root', [left, right]);
+      return { root, left, right, deep };
+    }
+
+    it('collapses every group below, at any depth', () => {
+      const { root, left, right, deep } = tree();
+      setAllCollapsed(root, true);
+      [left, right, deep].forEach((group) => expect(isCollapsed(group)).to.equal(true));
+    });
+
+    it('expands them again', () => {
+      const { root, left, right, deep } = tree();
+      setAllCollapsed(root, true);
+      setAllCollapsed(root, false);
+      [left, right, deep].forEach((group) => expect(isCollapsed(group)).to.equal(false));
+    });
+
+    it('leaves the group it is called on alone', () => {
+      const { root } = tree();
+      setAllCollapsed(root, true);
+      expect(isCollapsed(root)).to.equal(false);
+    });
+
+    it('does not change what is checked', () => {
+      const { root } = tree();
+      click(find(root, 'l1'));
+      setAllCollapsed(root, true);
+      expect(values(root)).to.deep.equal(['l1']);
     });
   });
 });

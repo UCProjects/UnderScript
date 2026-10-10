@@ -27,6 +27,9 @@ function createLeaf(groupName, value) {
     cascade(checked) {
       input.prop('checked', checked);
     },
+    apply(predicate) {
+      input.prop('checked', !!predicate({ value: text, meta }));
+    },
     leaves() {
       return [leaf];
     },
@@ -39,19 +42,23 @@ class Group {
   parent = null;
   members = [];
 
-  constructor(name, children, { collapsed = false } = {}) {
+  constructor(name, children, { collapsible = true, collapsed = false } = {}) {
     const { input, label } = createBox(name, name);
     const legend = $('<legend>');
     this.input = input;
     this.placeholder = $('<div class="checkEmpty">').text('(empty)');
     this.element = $('<fieldset class="checkGroup">')
+      .toggleClass('checkFixed', !collapsible)
       .append(legend, this.placeholder)
       .data(KEY, this);
-    this.toggle = $('<button type="button" class="checkToggle">')
-      .on('click', () => {
-        this.collapsed = !this.collapsed;
-      });
-    legend.append(this.toggle, ' ', label);
+    if (collapsible) {
+      this.toggle = $('<button type="button" class="checkToggle">')
+        .on('click', () => {
+          this.collapsed = !this.collapsed;
+        });
+      legend.append(this.toggle, ' ');
+    }
+    legend.append(label);
     input.on('change', () => {
       this.cascade(this.checked);
       this.refresh();
@@ -65,6 +72,7 @@ class Group {
   }
 
   set collapsed(value) {
+    if (!this.toggle) return;
     this.element.toggleClass('collapsed', !!value);
     this.toggle.attr('aria-expanded', String(!value));
   }
@@ -93,14 +101,33 @@ class Group {
     this.members.forEach((member) => member.cascade(value));
   }
 
+  apply(predicate) {
+    this.members.forEach((member) => member.apply(predicate));
+    this.sync();
+  }
+
+  reveal(depth) {
+    this.collapsed = !this.leaves().some(({ checked }) => checked);
+    if (depth > 1) this.members.forEach((member) => member.reveal?.(depth - 1));
+  }
+
+  collapseAll(collapsed) {
+    this.members.forEach((member) => member.collapseAll?.(collapsed));
+    this.collapsed = collapsed;
+  }
+
   refresh() {
+    this.sync();
+    this.parent?.refresh();
+  }
+
+  sync() {
     const total = this.members.length;
     const checked = this.members.filter(({ checked: c }) => c).length;
     this.input.prop({
       checked: total > 0 && checked === total,
       indeterminate: this.members.some(({ indeterminate }) => indeterminate) || (checked > 0 && checked < total),
     });
-    this.parent?.refresh();
   }
 
   leaves() {
@@ -112,6 +139,20 @@ export function getChecked(group) {
   return group.data(KEY).leaves()
     .filter(({ checked }) => checked)
     .map(({ value, meta }) => ({ value, meta }));
+}
+
+export function setChecked(group, predicate) {
+  const target = group.data(KEY);
+  target.apply(predicate);
+  target.parent?.refresh();
+}
+
+export function revealChecked(group, depth = Infinity) {
+  group.data(KEY).members.forEach((member) => member.reveal?.(depth));
+}
+
+export function setAllCollapsed(group, collapsed) {
+  group.data(KEY).members.forEach((member) => member.collapseAll?.(collapsed));
 }
 
 export function isCollapsed(group) {
