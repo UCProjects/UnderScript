@@ -2,8 +2,34 @@ import Translation from 'src/structures/constants/translation';
 import eventManager from './eventManager';
 import * as settings from './settings/index';
 
+/**
+ * @typedef {object} ChatCommand
+ * @property {string} command
+ * @property {string | Translation} [description]
+ * @property {string} [usage]
+ * @property {string | Translation | (() => string | Translation | undefined)} [note]
+ * @property {string} [page]
+ * @property {Translation} [category]
+ * @property {() => boolean} [enabled]
+ * @property {(this: UnderScriptEventMeta, data: { command: string; text: string; [key: string]: any }) => unknown} [handler]
+ * @property {boolean} [setting]
+ */
+
+/**
+ * @typedef {object} ChatCommandInfo
+ * @property {string} command
+ * @property {string | Translation} description
+ * @property {string} [usage]
+ * @property {() => boolean} available
+ */
+
+/** @type {ChatCommandInfo[]} */
 const commands = [];
 
+/**
+ * @param {ChatCommand} command
+ * @returns {ReturnType<typeof settings.register> | undefined}
+ */
 export function register({
   command,
   description = Translation.Command(command, ''),
@@ -47,6 +73,7 @@ export function register({
   return setting;
 }
 
+/** @returns {ChatCommandInfo[]} */
 export function list() {
   return commands.filter(({ available }) => available());
 }

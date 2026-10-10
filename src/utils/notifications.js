@@ -24,6 +24,11 @@ function isType(type = 'default') {
   return window.Notification && Notification.permission === type;
 }
 
+/**
+ * @param {string} text
+ * @param {string} [title]
+ * @returns {void}
+ */
 export default function notify(text, title = 'Undercards') {
   const n = new Notification(title, {
     body: text,

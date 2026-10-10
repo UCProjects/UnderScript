@@ -4,6 +4,11 @@ import * as cardHelper from 'src/utils/cardHelper';
 import * as hover from 'src/utils/hover';
 import * as menu from 'src/utils/menu';
 import Plugin, { getPluginNames, getVersion, registerModule } from 'src/utils/plugin';
+import * as chatCommands from 'src/utils/chatCommands';
+import * as loadDeck from 'src/utils/loadDeck';
+import notify from 'src/utils/notifications';
+import * as quests from 'src/utils/quests';
+import TabManager from 'src/utils/tabbedView';
 
 toast('text') satisfies UnderScriptToast | false;
 toast({ text: 'text', title: 'title', timeout: 5 }) satisfies UnderScriptToast | false;
@@ -64,5 +69,44 @@ getPluginNames() satisfies string[];
 getVersion('My plugin') satisfies string;
 // @ts-expect-error a module needs a function
 registerModule('module', 'not a function');
+
+notify('text') satisfies void;
+notify('text', 'title');
+// @ts-expect-error notifications need text
+notify();
+
+quests.getQuests()[0].id satisfies string;
+quests.fetch(({ quests: list, error }) => {
+  list?.length satisfies number | undefined;
+  error satisfies unknown;
+});
+// @ts-expect-error the callback is a function
+quests.fetch('callback');
+
+chatCommands.register({
+  command: 'ping',
+  usage: '<name>',
+  handler(data) {
+    data.text satisfies string;
+    this.canceled = true;
+  },
+});
+chatCommands.register({ command: 'quiet', enabled: () => false, setting: false });
+chatCommands.list()[0].available() satisfies boolean;
+// @ts-expect-error a command needs a name
+chatCommands.register({ description: 'nameless' });
+// @ts-expect-error enabled is a function
+chatCommands.register({ command: 'bad', enabled: false });
+
+loadDeck.load({ cards: [{ id: 1 }, { id: 2, shiny: true }], artifacts: [3, { id: 4 }], validate: true });
+loadDeck.clear() satisfies void;
+// @ts-expect-error cards need an id
+loadDeck.load({ cards: [{ shiny: true }] });
+
+const tabs = TabManager();
+tabs.addTab('One', 'content').setActive();
+tabs.render() satisfies string;
+// @ts-expect-error not a tab manager method
+tabs.nope();
 
 export {};
