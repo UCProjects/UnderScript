@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import checkboxGroup, { getChecked } from '../../src/utils/checkboxGroup';
+import checkboxGroup, { getChecked, isCollapsed, setCollapsed } from '../../src/utils/checkboxGroup';
 
 function boxes(group) {
   return group.find('input[type=checkbox]').toArray().map((el) => $(el));
@@ -249,6 +249,91 @@ describe('checkboxGroup', () => {
       const group = checkboxGroup('Root', ['a']);
       click(find(group, 'a'));
       expect(getChecked(group)).to.deep.equal([{ value: 'a', meta: undefined }]);
+    });
+  });
+  describe('collapsing', () => {
+    function toggle(group) {
+      return group.children('legend').children('.checkToggle');
+    }
+
+    it('starts expanded with a toggle', () => {
+      const group = checkboxGroup('Root', ['a']);
+      expect(toggle(group).length).to.equal(1);
+      expect(toggle(group).attr('aria-expanded')).to.equal('true');
+      expect(isCollapsed(group)).to.equal(false);
+      expect(group.hasClass('collapsed')).to.equal(false);
+    });
+
+    it('can start collapsed', () => {
+      const group = checkboxGroup('Root', ['a'], { collapsed: true });
+      expect(isCollapsed(group)).to.equal(true);
+      expect(group.hasClass('collapsed')).to.equal(true);
+      expect(toggle(group).attr('aria-expanded')).to.equal('false');
+    });
+
+    it('clicking the toggle collapses and expands', () => {
+      const group = checkboxGroup('Root', ['a']);
+      toggle(group).trigger('click');
+      expect(isCollapsed(group)).to.equal(true);
+      expect(toggle(group).attr('aria-expanded')).to.equal('false');
+      toggle(group).trigger('click');
+      expect(isCollapsed(group)).to.equal(false);
+      expect(toggle(group).attr('aria-expanded')).to.equal('true');
+    });
+
+    it('does not change what is checked', () => {
+      const group = checkboxGroup('Root', ['a', 'b']);
+      click(find(group, 'a'));
+      toggle(group).trigger('click');
+      expect(state(find(group, 'Root'))).to.deep.equal(mixed);
+      expect(state(find(group, 'a'))).to.deep.equal(checked);
+      expect(values(group)).to.deep.equal(['a']);
+    });
+
+    it('checking a collapsed parent still checks hidden children', () => {
+      const group = checkboxGroup('Root', ['a', 'b'], { collapsed: true });
+      click(find(group, 'Root'));
+      expect(values(group)).to.deep.equal(['a', 'b']);
+    });
+
+    it('collapses each group on its own', () => {
+      const sub = checkboxGroup('Sub', ['b']);
+      const group = checkboxGroup('Root', ['a', sub]);
+      setCollapsed(sub, true);
+      expect(isCollapsed(sub)).to.equal(true);
+      expect(isCollapsed(group)).to.equal(false);
+    });
+
+    it('setCollapsed works from code', () => {
+      const group = checkboxGroup('Root', ['a']);
+      setCollapsed(group, true);
+      expect(group.hasClass('collapsed')).to.equal(true);
+      setCollapsed(group, false);
+      expect(group.hasClass('collapsed')).to.equal(false);
+    });
+  });
+
+  describe('empty groups', () => {
+    it('show an empty line', () => {
+      const group = checkboxGroup('Root');
+      expect(group.children('.checkEmpty').text()).to.equal('(empty)');
+    });
+
+    it('do not show it when there are children', () => {
+      const group = checkboxGroup('Root', ['a']);
+      expect(group.children('.checkEmpty').length).to.equal(0);
+    });
+
+    it('lose the line once something is added', () => {
+      const group = checkboxGroup('Root', ['a', checkboxGroup('Empty')]);
+      expect(group.children('.checkEmpty').length).to.equal(0);
+      expect(group.find('.checkGroup .checkEmpty').length).to.equal(1);
+    });
+
+    it('never count the line as a checkbox or a value', () => {
+      const group = checkboxGroup('Root', [checkboxGroup('Empty')]);
+      expect(boxes(group).length).to.equal(2);
+      expect(values(group)).to.deep.equal([]);
     });
   });
 });
