@@ -39,17 +39,34 @@ class Group {
   parent = null;
   members = [];
 
-  constructor(name, children) {
+  constructor(name, children, { collapsed = false } = {}) {
     const { input, label } = createBox(name, name);
+    const legend = $('<legend>');
     this.input = input;
+    this.placeholder = $('<div class="checkEmpty">').text('(empty)');
     this.element = $('<fieldset class="checkGroup">')
-      .append($('<legend>').append(label))
+      .append(legend, this.placeholder)
       .data(KEY, this);
+    this.toggle = $('<button type="button" class="checkToggle">')
+      .on('click', () => {
+        this.collapsed = !this.collapsed;
+      });
+    legend.append(this.toggle, ' ', label);
     input.on('change', () => {
       this.cascade(this.checked);
       this.refresh();
     });
     children.forEach((child) => this.add(child));
+    this.collapsed = collapsed;
+  }
+
+  get collapsed() {
+    return this.element.hasClass('collapsed');
+  }
+
+  set collapsed(value) {
+    this.element.toggleClass('collapsed', !!value);
+    this.toggle.attr('aria-expanded', String(!value));
   }
 
   get checked() {
@@ -66,6 +83,7 @@ class Group {
     if (member.parent) throw new Error('Child already belongs to a group');
     member.parent = this;
     this.members.push(member);
+    this.placeholder.detach();
     this.element.append(member.element);
     this.refresh();
   }
@@ -96,6 +114,14 @@ export function getChecked(group) {
     .map(({ value, meta }) => ({ value, meta }));
 }
 
-export default function checkboxGroup(name, children = []) {
-  return new Group(name, children).element;
+export function isCollapsed(group) {
+  return group.data(KEY).collapsed;
+}
+
+export function setCollapsed(group, collapsed) {
+  group.data(KEY).collapsed = collapsed;
+}
+
+export default function checkboxGroup(name, children = [], options = {}) {
+  return new Group(name, children, options).element;
 }
