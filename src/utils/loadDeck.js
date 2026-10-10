@@ -3,11 +3,17 @@ import eventManager from './eventManager';
 import { debug } from './debug';
 import onPage from './onPage';
 
+/**
+ * @typedef {{ id: number | string; shiny?: boolean }} DeckCard
+ * @typedef {number | string | { id: number | string }} DeckArtifact
+ */
+
 const actions = ['addCard', 'removeCard', 'removeAllCards', 'clearArtifacts', 'addArtifact'];
 const mockLastOpenedDialog = { close() {} };
 const pending = [];
 let templastOpenedDialog;
 
+/** @returns {void} */
 export function clear() {
   pending.splice(0, pending.length);
 }
@@ -45,6 +51,10 @@ eventManager.on('Deck:postChange', ({ action, data }) => {
   }
 });
 
+/**
+ * @param {{ cards?: DeckCard[]; artifacts?: DeckArtifact[]; validate?: boolean }} deck
+ * @returns {void}
+ */
 export function load({ cards = [], artifacts = [], validate = false }) {
   if (!onPage('Decks')) return;
   clear();

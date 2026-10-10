@@ -10,6 +10,7 @@ const defaultLabels = {
 
 let groupID = 0;
 
+/** @returns {UnderScriptTabManager} */
 export default function TabManager() {
   const group = groupID;
   groupID += 1;

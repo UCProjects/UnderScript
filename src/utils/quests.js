@@ -8,6 +8,7 @@ import eventManager from './eventManager';
 const quests = new Map();
 let fetching = false;
 
+/** @returns {Quest[]} */
 export function getQuests() {
   return [...quests.values()];
 }
@@ -34,6 +35,11 @@ function update(data, { callback, event = true }) {
   }
 }
 
+/**
+ * @param {(result: { quests?: Quest[]; previous?: Quest[]; error?: unknown }) => void} [callback]
+ * @param {boolean} [event]
+ * @returns {void}
+ */
 export function fetch(callback, event = true) {
   if (fetching) return;
   fetching = true;
