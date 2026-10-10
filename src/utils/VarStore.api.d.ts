@@ -7,5 +7,7 @@ type UnderScriptVarStore<T> = {
 };
 
 interface UnderScriptUtils {
-  readonly VarStore: new <T>(defaultValue: T) => UnderScriptVarStore<T>;
+  readonly VarStore: new <T = undefined>(
+    ...args: undefined extends T ? [defaultValue?: T] : [defaultValue: T]
+  ) => UnderScriptVarStore<T>;
 }
