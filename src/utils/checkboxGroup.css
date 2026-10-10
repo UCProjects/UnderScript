@@ -45,3 +45,9 @@
   background-image: linear-gradient(currentcolor, currentcolor);
   background-size: 100% 2px;
 }
+
+.checkGroup input[type='checkbox']:focus-visible,
+.checkGroup .checkToggle:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 2px;
+}

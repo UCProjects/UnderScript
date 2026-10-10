@@ -98,6 +98,7 @@ onPage('Crafting', function disenchantWrapper() {
     const everything = [...calcCards({ shiny: false }), ...calcCards({ shiny: true })];
     const normal = buildColumn(everything, false);
     const shiny = buildColumn(everything, true);
+    const status = $('<div class="sr-only" role="status" aria-live="polite">');
     let confirm;
 
     function selected() {
@@ -108,9 +109,12 @@ onPage('Crafting', function disenchantWrapper() {
       return [...counts].map(([entry, quantity]) => ({ ...entry, quantity }));
     }
 
-    function update() {
+    function update(announce = true) {
       const cards = selected();
-      confirm.text(`Disenchant (+${calcDust(cards)})`).prop('disabled', !cards.length);
+      const dust = calcDust(cards);
+      const copies = cards.reduce((total, { quantity }) => total + quantity, 0);
+      confirm.text(`Disenchant (+${dust})`).prop('disabled', !cards.length);
+      if (announce) status.text(`${copies} ${copies === 1 ? 'copy' : 'copies'} selected, +${dust} dust`);
     }
 
     function select(cards = []) {
@@ -148,7 +152,7 @@ onPage('Crafting', function disenchantWrapper() {
     const columns = $('<div class="us-disenchant-columns">')
       .append($('<div class="us-disenchant-column">').append(normal))
       .append($('<div class="us-disenchant-column">').append(shiny))
-      .on('change', 'input[type="checkbox"]', update);
+      .on('change', 'input[type="checkbox"]', () => update());
 
     BootstrapDialog.show({
       title: 'Smart Disenchant',
@@ -158,10 +162,14 @@ onPage('Crafting', function disenchantWrapper() {
         buttons,
         view,
         columns,
+        status,
       ),
       onshown(dialog) {
+        dialog.getModal().on('keypress', (e) => {
+          if (e.key === 'Enter') e.stopPropagation();
+        });
         confirm = dialog.getButton(CONFIRM);
-        update();
+        update(false);
       },
       onhide: hover.hide,
       buttons: [{
