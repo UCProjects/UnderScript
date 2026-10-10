@@ -126,7 +126,7 @@ utils.rarity.dust('RARE') satisfies number | null;
 utils.rarity.max('DT') satisfies number | undefined;
 utils.rarity.cost(underscript.rarity.LEGENDARY) satisfies number | null;
 // @ts-expect-error not a rarity
-utils.rarity.max('MYTHIC');
+utils.rarity.max('NOT_A_RARITY');
 
 const hotkey = new utils.Hotkey('Open', (event) => event, { keys: ['Escape'], clicks: utils.mouse.Middle });
 hotkey.bindKey('a').bindClick(utils.mouse.Right) satisfies UnderScriptHotkey;

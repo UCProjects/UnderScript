@@ -29,8 +29,8 @@ describe('underscript constants', () => {
   });
 
   it('knows when something is not a rarity', () => {
-    expect(constants.isRarity('MYTHIC')).to.equal(false);
-    expect(constants.getRarity('MYTHIC')).to.equal(undefined);
+    expect(constants.isRarity('NOT_A_RARITY')).to.equal(false);
+    expect(constants.getRarity('NOT_A_RARITY')).to.equal(undefined);
   });
 
   it('knows when something is not a priority', () => {

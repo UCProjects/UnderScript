@@ -118,7 +118,7 @@ describe('Rarity', () => {
   });
 
   it('does not know other rarities', () => {
-    expect(Rarity.find('MYTHIC')).to.equal(undefined);
+    expect(Rarity.find('NOT_A_RARITY')).to.equal(undefined);
     expect(Rarity.DETERMINATION.equals('LEGENDARY')).to.equal(false);
   });
 

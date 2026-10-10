@@ -28,7 +28,7 @@ describe('cardHelper', () => {
     });
 
     it('does not know other rarities', () => {
-      expect(helper.max('MYTHIC')).to.equal(undefined);
+      expect(helper.max('NOT_A_RARITY')).to.equal(undefined);
     });
   });
 
@@ -52,7 +52,7 @@ describe('cardHelper', () => {
     });
 
     it('does not know other rarities', () => {
-      expect(helper.dustCost('MYTHIC', false)).to.equal(null);
+      expect(helper.dustCost('NOT_A_RARITY', false)).to.equal(null);
     });
   });
 
@@ -76,7 +76,7 @@ describe('cardHelper', () => {
     });
 
     it('does not know other rarities', () => {
-      expect(helper.dustGain('MYTHIC', false)).to.equal(null);
+      expect(helper.dustGain('NOT_A_RARITY', false)).to.equal(null);
     });
   });
 
