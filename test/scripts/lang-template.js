@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { createTemplate } from '../../scripts/lang-template.js';
+import { createTemplate } from '../../scripts/lang-template';
 
 describe('lang template', () => {
   const english = {

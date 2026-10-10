@@ -1,10 +1,10 @@
-import Translation from 'src/structures/constants/translation.ts';
-import compound from 'src/utils/compoundEvent.js';
-import DialogHelper from 'src/utils/DialogHelper.js';
-import eventManager from 'src/utils/eventManager.js';
-import * as menu from 'src/utils/menu.js';
-import * as registry from 'src/utils/pluginRegistry.js';
-import style from 'src/utils/style.js';
+import Translation from 'src/structures/constants/translation';
+import compound from 'src/utils/compoundEvent';
+import DialogHelper from 'src/utils/DialogHelper';
+import eventManager from 'src/utils/eventManager';
+import * as menu from 'src/utils/menu';
+import * as registry from 'src/utils/pluginRegistry';
+import style from 'src/utils/style';
 import css from './plugins.css';
 
 const keys = {

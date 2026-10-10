@@ -1,13 +1,13 @@
 import axios from 'axios';
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { toast } from 'src/utils/2.toasts.js';
-import { debug } from 'src/utils/debug.js';
-import onPage from 'src/utils/onPage.js';
-import * as hover from 'src/utils/hover.js';
-import each from 'src/utils/each.js';
-import { captureError } from 'src/utils/sentry.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { toast } from 'src/utils/2.toasts';
+import { debug } from 'src/utils/debug';
+import onPage from 'src/utils/onPage';
+import * as hover from 'src/utils/hover';
+import each from 'src/utils/each';
+import { captureError } from 'src/utils/sentry';
+import Translation from 'src/structures/constants/translation';
 
 const disabled = settings.register({
   name: Translation.Setting('friend.auto'),

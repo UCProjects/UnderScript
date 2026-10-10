@@ -1,4 +1,4 @@
-import Base from './FileParser.js';
+import Base from './FileParser';
 
 export default class GithubRaw extends Base {
   constructor(updateUrl, downloadUrl) {

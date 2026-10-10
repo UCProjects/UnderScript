@@ -1,5 +1,5 @@
-import * as settings from 'src/utils/settings/index.js';
-import debugMode from 'src/base/underscript/debugMode.js';
+import * as settings from 'src/utils/settings/index';
+import debugMode from 'src/base/underscript/debugMode';
 import html from './advanced.html';
 
 const page = document.createElement('div');

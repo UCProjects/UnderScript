@@ -1,5 +1,5 @@
 import axios from 'axios';
-import extractMeta from '../extractMeta.js';
+import extractMeta from '../extractMeta';
 
 export default class FileParser {
   #updateURL;

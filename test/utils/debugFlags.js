@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import * as flags from '../../src/utils/debugFlags.js';
-import { debug, enabled } from '../../src/utils/debug.js';
+import * as flags from '../../src/utils/debugFlags';
+import { debug, enabled } from '../../src/utils/debug';
 
 const src = new URL('../../src', import.meta.url).pathname.replace(/^\/(\w:)/, '$1');
 
@@ -101,7 +101,7 @@ describe('debug flags', () => {
   describe('source', () => {
     it('never passes a flag as a string', () => {
       const offenders = readdirSync(src, { recursive: true })
-        .filter((file) => file.endsWith('.js') && !file.endsWith('debugFlags.js'))
+        .filter((file) => /\.(js|ts)$/.test(file) && !file.endsWith('debugFlags.ts'))
         .filter((file) => /['"`]debugging[.'"`*]/.test(readFileSync(join(src, file), 'utf8')));
       expect(offenders).to.deep.equal([]);
     });

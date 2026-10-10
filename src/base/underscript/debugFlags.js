@@ -1,6 +1,6 @@
-import * as settings from 'src/utils/settings/index.js';
-import { registeredFlags } from 'src/utils/debugFlags.js';
-import debugMode from './debugMode.js';
+import * as settings from 'src/utils/settings/index';
+import { registeredFlags } from 'src/utils/debugFlags';
+import debugMode from './debugMode';
 
 if (debugMode.value()) {
   registeredFlags().forEach(({ key, description }) => {

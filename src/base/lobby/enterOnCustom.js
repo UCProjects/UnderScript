@@ -1,7 +1,7 @@
-import eventManager from 'src/utils/eventManager.js';
-import { infoToast } from 'src/utils/2.toasts.js';
-import { window } from 'src/utils/1.variables.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import { infoToast } from 'src/utils/2.toasts';
+import { window } from 'src/utils/1.variables';
+import Translation from 'src/structures/constants/translation';
 
 eventManager.on(':load:GamesList', () => {
   let toast = infoToast({

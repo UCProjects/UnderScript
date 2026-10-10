@@ -1,5 +1,5 @@
-import { scriptVersion } from './1.variables.js';
-import * as api from './4.api.js';
+import { scriptVersion } from './1.variables';
+import * as api from './4.api';
 
 const regex = /^(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:-(\d+))?$/;
 

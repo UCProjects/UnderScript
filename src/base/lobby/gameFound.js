@@ -1,7 +1,7 @@
-import Translation from 'src/structures/constants/translation.ts';
-import compound from 'src/utils/compoundEvent.js';
-import eventManager from 'src/utils/eventManager.js';
-import onPage from 'src/utils/onPage.js';
+import Translation from 'src/structures/constants/translation';
+import compound from 'src/utils/compoundEvent';
+import eventManager from 'src/utils/eventManager';
+import onPage from 'src/utils/onPage';
 
 onPage('Play', () => {
   const title = document.title;

@@ -28,6 +28,11 @@ export default [
     linterOptions: {
       reportUnusedDisableDirectives: 'off',
     },
+    settings: {
+      'import/resolver': {
+        node: { extensions: ['.js', '.mjs', '.ts', '.json'] },
+      },
+    },
     languageOptions: {
       ecmaVersion: 'latest',
     },
@@ -58,8 +63,8 @@ export default [
       quotes: ['error', 'single', { allowTemplateLiterals: true, avoidEscape: true }],
       'no-extra-boolean-cast': 'warn',
       'import/extensions': ['error', 'ignorePackages', {
-        ts: 'always',
-        js: 'always',
+        ts: 'never',
+        js: 'never',
         json: 'always',
       }],
       'import/no-extraneous-dependencies': ['error', {
@@ -90,11 +95,16 @@ export default [
   {
     files: ['scripts/**'],
     rules: {
+      'no-console': 'off',
+    },
+  },
+  {
+    files: ['scripts/**', 'rollup.config.js', 'test/setup/**'],
+    rules: {
       'import/extensions': ['error', {
         js: 'always',
         json: 'always',
       }],
-      'no-console': 'off',
     },
   },
   {

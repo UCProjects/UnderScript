@@ -1,4 +1,4 @@
-import Setting from './setting.js';
+import Setting from './setting';
 
 export default class extends Setting {
   constructor(name = 'boolean') { // Allows extension

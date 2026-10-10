@@ -1,8 +1,8 @@
-import { all, general } from './debugFlags.js';
+import { all, general } from './debugFlags';
 
 /**
  * @param {unknown} message
- * @param {import('./debugFlags.js').DebugFlag} [flag]
+ * @param {import('./debugFlags').DebugFlag} [flag]
  * @param {...unknown} extras
  */
 export function debug(message, flag = general, ...extras) {
@@ -11,7 +11,7 @@ export function debug(message, flag = general, ...extras) {
 }
 
 /**
- * @param {import('./debugFlags.js').DebugFlag} flag
+ * @param {import('./debugFlags').DebugFlag} flag
  * @returns {boolean}
  */
 export function enabled(flag) {

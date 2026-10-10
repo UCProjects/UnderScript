@@ -1,7 +1,7 @@
-import eventManager from 'src/utils/eventManager.js';
-import { scriptVersion, window } from 'src/utils/1.variables.js';
-import { getPageName } from 'src/utils/onPage.js';
-import sleep from 'src/utils/sleep.js';
+import eventManager from 'src/utils/eventManager';
+import { scriptVersion, window } from 'src/utils/1.variables';
+import { getPageName } from 'src/utils/onPage';
+import sleep from 'src/utils/sleep';
 
 const page = getPageName();
 

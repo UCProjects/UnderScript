@@ -1,41 +1,21 @@
-/**
- * @typedef {{ key: string; description: string }} DebugFlag
- */
+export type DebugFlag = { key: string; description: string };
 
-/** @type {DebugFlag[]} */
-const registry = [];
+const registry: DebugFlag[] = [];
 
-/**
- * @template {string} Key
- * @template {string} Description
- * @param {Key} key
- * @param {Description} description
- * @returns {{
- *   key: Key;
- *   description: Description;
- * }}
- */
-function define(key, description) {
+function define<Key extends string, Description extends string>(key: Key, description: Description) {
   const flag = Object.freeze({ key, description });
   registry.push(flag);
   return flag;
 }
 
-/**
- * @template {string} Base
- * @template {string} Description
- * @param {Base} base
- * @param {Description} description
- * @returns {<Suffix extends string>(suffix: Suffix) => {
- *   key: `${Base}.${Suffix}`;
- *   description: Description;
- * }}
- */
-function family(base, description) {
-  return (suffix) => Object.freeze({ key: `${base}.${suffix}`, description });
+function family<Base extends string, Description extends string>(base: Base, description: Description) {
+  return <Suffix extends string>(suffix: Suffix) => Object.freeze({
+    key: `${base}.${suffix}` as const,
+    description,
+  });
 }
 
-export function registeredFlags() {
+export function registeredFlags(): DebugFlag[] {
   return [...registry];
 }
 

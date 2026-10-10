@@ -1,11 +1,11 @@
-import * as settings from 'src/utils/settings/index.js';
-import wrap from 'src/utils/2.pokemon.js';
-import { noop, scriptVersion } from 'src/utils/1.variables.js';
-import style from 'src/utils/style.js';
-import { toast } from 'src/utils/2.toasts.js';
-import Translation from 'src/structures/constants/translation.ts';
+import * as settings from 'src/utils/settings/index';
+import wrap from 'src/utils/2.pokemon';
+import { noop, scriptVersion } from 'src/utils/1.variables';
+import style from 'src/utils/style';
+import { toast } from 'src/utils/2.toasts';
+import Translation from 'src/structures/constants/translation';
 import eventManager from 'src/utils/eventManager';
-import * as changelog from './changelog.js';
+import * as changelog from './changelog';
 import styles from './patchnotes.css';
 
 wrap(function patchNotes() {

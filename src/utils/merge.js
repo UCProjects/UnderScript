@@ -1,5 +1,5 @@
-import each from './each.js';
-import isSimpleObject from './isSimpleObject.js';
+import each from './each';
+import isSimpleObject from './isSimpleObject';
 
 export default function merge(...obj) {
   const ret = {};

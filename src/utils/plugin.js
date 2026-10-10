@@ -1,4 +1,4 @@
-import * as api from './4.api.js';
+import * as api from './4.api';
 
 const nameRegex = /^[a-z0-9 ]+$/i;
 /**

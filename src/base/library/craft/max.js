@@ -1,14 +1,14 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global } from 'src/utils/global.js';
-import sleep from 'src/utils/sleep.js';
-import onPage from 'src/utils/onPage.js';
-import * as hover from 'src/utils/hover.js';
-import * as cardHelper from 'src/utils/cardHelper.js';
-import Translation from 'src/structures/constants/translation.js';
-import isCtrl from 'src/utils/isCtrl.js';
-import Rarity from 'src/structures/constants/rarity.js';
-import setBypass from './protection.js';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global } from 'src/utils/global';
+import sleep from 'src/utils/sleep';
+import onPage from 'src/utils/onPage';
+import * as hover from 'src/utils/hover';
+import * as cardHelper from 'src/utils/cardHelper';
+import Translation from 'src/structures/constants/translation';
+import isCtrl from 'src/utils/isCtrl';
+import Rarity from 'src/structures/constants/rarity';
+import setBypass from './protection';
 
 const setting = settings.register({
   name: Translation.Setting('craft.hotkey'),

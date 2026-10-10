@@ -1,4 +1,4 @@
-import Setting from './text.js';
+import Setting from './text';
 
 // TODO: show password button
 export default class Password extends Setting {

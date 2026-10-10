@@ -1,20 +1,20 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global } from 'src/utils/global.js';
-import style from 'src/utils/style.js';
-import { debug } from 'src/utils/debug.js';
-import * as flags from 'src/utils/debugFlags.js';
-import onPage from 'src/utils/onPage.js';
-import * as hover from 'src/utils/hover.js';
-import each from 'src/utils/each.js';
-import * as userInfo from 'src/utils/user.js';
-import find from 'src/utils/find.js';
-import merge from 'src/utils/merge.js';
-import { window } from 'src/utils/1.variables.js';
-import { cardName } from 'src/utils/cardHelper.js';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global } from 'src/utils/global';
+import style from 'src/utils/style';
+import { debug } from 'src/utils/debug';
+import * as flags from 'src/utils/debugFlags';
+import onPage from 'src/utils/onPage';
+import * as hover from 'src/utils/hover';
+import each from 'src/utils/each';
+import * as userInfo from 'src/utils/user';
+import find from 'src/utils/find';
+import merge from 'src/utils/merge';
+import { window } from 'src/utils/1.variables';
+import { cardName } from 'src/utils/cardHelper';
 import extractImageName from 'src/utils/extractImageName';
-import { translateText } from 'src/utils/translate.js';
-import Translation from 'src/structures/constants/translation.js';
+import { translateText } from 'src/utils/translate';
+import Translation from 'src/structures/constants/translation';
 import styles from './battleLog.css';
 
 const sizeSetting = settings.register({

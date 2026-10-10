@@ -1,10 +1,10 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global, globalSet } from 'src/utils/global.js';
-import { debug } from 'src/utils/debug.js';
-import onPage from 'src/utils/onPage.js';
-import compound from 'src/utils/compoundEvent.js';
-import Translation from 'src/structures/constants/translation.js';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global, globalSet } from 'src/utils/global';
+import { debug } from 'src/utils/debug';
+import onPage from 'src/utils/onPage';
+import compound from 'src/utils/compoundEvent';
+import Translation from 'src/structures/constants/translation';
 
 // let live = false;
 let self;

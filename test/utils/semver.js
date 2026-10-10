@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { semver } from '../../src/utils/version.js';
+import { semver } from '../../src/utils/version';
 
 describe('underscript.semver', () => {
   describe('meets', () => {

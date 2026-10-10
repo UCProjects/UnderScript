@@ -1,12 +1,12 @@
 /* eslint-disable consistent-return */
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global } from 'src/utils/global.js';
-import * as fnUser from 'src/utils/user.js';
-import pendingIgnore from 'src/utils/pendingIgnore.js';
-import { debug } from 'src/utils/debug.js';
-import { chat, chatMessage } from 'src/utils/debugFlags.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global } from 'src/utils/global';
+import * as fnUser from 'src/utils/user';
+import pendingIgnore from 'src/utils/pendingIgnore';
+import { debug } from 'src/utils/debug';
+import { chat, chatMessage } from 'src/utils/debugFlags';
+import Translation from 'src/structures/constants/translation';
 
 const setting = settings.register({
   name: Translation.Setting('ignore'),

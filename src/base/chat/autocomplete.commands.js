@@ -1,5 +1,5 @@
-import { register, highlight } from 'src/utils/autocomplete.js';
-import { list } from 'src/utils/chatCommands.js';
+import { register, highlight } from 'src/utils/autocomplete';
+import { list } from 'src/utils/chatCommands';
 
 function note(text) {
   const element = document.createElement('span');

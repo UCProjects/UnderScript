@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import eventManager from 'src/utils/eventManager.js';
-import 'src/base/plugin/events.js';
+import eventManager from 'src/utils/eventManager';
+import 'src/base/plugin/events';
 
 let counter = 0;
 

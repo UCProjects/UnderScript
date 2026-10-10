@@ -6,7 +6,7 @@ describe('cardHelper', () => {
   let helper;
 
   before(async () => {
-    helper = await import('../../src/utils/cardHelper.js');
+    helper = await import('../../src/utils/cardHelper');
   });
 
   describe('max', () => {
@@ -98,7 +98,7 @@ describe('cardHelper', () => {
 
   describe('craftable', () => {
     before(async () => {
-      const { default: eventManager } = await import('../../src/utils/eventManager.js');
+      const { default: eventManager } = await import('../../src/utils/eventManager');
       eventManager.emit(
         'allCardsReady',
         RARITIES.map((rarity, index) => ({ id: 100 + index, rarity })),

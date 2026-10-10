@@ -1,6 +1,6 @@
 import luxon from 'luxon';
-import eventManager from 'src/utils/eventManager.js';
-import style from 'src/utils/style.js';
+import eventManager from 'src/utils/eventManager';
+import style from 'src/utils/style';
 
 eventManager.on(':preload:Quests', () => {
   style.add('.dailyMissed { background: repeating-linear-gradient(45deg, red, black 0.488em); }');

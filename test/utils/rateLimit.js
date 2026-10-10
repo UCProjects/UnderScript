@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { retryAfter, waitSeconds } from '../../src/utils/rateLimit.js';
+import { retryAfter, waitSeconds } from '../../src/utils/rateLimit';
 
 const headers = (values) => (name) => values[name] ?? null;
 

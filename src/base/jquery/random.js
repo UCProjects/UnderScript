@@ -1,4 +1,4 @@
-import eventManager from 'src/utils/eventManager.js';
+import eventManager from 'src/utils/eventManager';
 
 eventManager.on('jQuery', () => {
   $.fn.random = function random() {

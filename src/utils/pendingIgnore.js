@@ -1,3 +1,3 @@
-import VarStore from './VarStore.js';
+import VarStore from './VarStore';
 
 export default new VarStore();

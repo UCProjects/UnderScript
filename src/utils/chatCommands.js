@@ -1,6 +1,6 @@
-import Translation from 'src/structures/constants/translation.js';
-import eventManager from './eventManager.js';
-import * as settings from './settings/index.js';
+import Translation from 'src/structures/constants/translation';
+import eventManager from './eventManager';
+import * as settings from './settings/index';
 
 const commands = [];
 

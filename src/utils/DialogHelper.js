@@ -1,6 +1,6 @@
-import Translation from 'src/structures/constants/translation.ts';
-import eventEmitter from './eventEmitter.js';
-import style from './style.js';
+import Translation from 'src/structures/constants/translation';
+import eventEmitter from './eventEmitter';
+import style from './style';
 import styles from './dialog.css';
 
 style.add(styles);

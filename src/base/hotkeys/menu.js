@@ -1,7 +1,7 @@
-import { hotkeys } from 'src/utils/1.variables.js';
-import Hotkey from 'src/utils/hotkey.class.js';
-import length from 'src/utils/length.js';
-import * as menu from 'src/utils/menu.js';
+import { hotkeys } from 'src/utils/1.variables';
+import Hotkey from 'src/utils/hotkey.class';
+import length from 'src/utils/length';
+import * as menu from 'src/utils/menu';
 
 hotkeys.push(new Hotkey('Open Menu', () => {
   if (typeof BootstrapDialog !== 'undefined' && length(BootstrapDialog.dialogs)) {

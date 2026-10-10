@@ -1,6 +1,6 @@
-import clone from 'src/utils/clone.js';
-import { translateText } from 'src/utils/translate.js';
-import Setting from './array.js';
+import clone from 'src/utils/clone';
+import { translateText } from 'src/utils/translate';
+import Setting from './array';
 
 export default class List extends Setting {
   constructor(name = 'list') {

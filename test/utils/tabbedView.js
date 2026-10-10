@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import tabManager from '../../src/utils/tabbedView.js';
+import tabManager from '../../src/utils/tabbedView';
 
 const restore = [];
 

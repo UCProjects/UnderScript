@@ -1,6 +1,6 @@
 const internal = typeof Object.hasOwn === 'function';
 
-export default function hasOwn(object, property) {
+export default function hasOwn(object: object, property: PropertyKey): boolean {
   if (internal) {
     return Object.hasOwn(object, property);
   }

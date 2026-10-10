@@ -1,13 +1,13 @@
-import eventManager from 'src/utils/eventManager.js';
-import { global } from 'src/utils/global.js';
-import * as cardHelper from 'src/utils/cardHelper.js';
-import * as hover from 'src/utils/hover.js';
-import shuffle from 'src/utils/shuffle.js';
-import style from 'src/utils/style.js';
-import rand from 'src/utils/rand.js';
-import * as deckLoader from 'src/utils/loadDeck.js';
+import eventManager from 'src/utils/eventManager';
+import { global } from 'src/utils/global';
+import * as cardHelper from 'src/utils/cardHelper';
+import * as hover from 'src/utils/hover';
+import shuffle from 'src/utils/shuffle';
+import style from 'src/utils/style';
+import rand from 'src/utils/rand';
+import * as deckLoader from 'src/utils/loadDeck';
 import { getTranslationArray } from 'src/base/underscript/translation';
-import Rarity from 'src/structures/constants/rarity.js';
+import Rarity from 'src/structures/constants/rarity';
 
 function buildPool(shinyFilter) {
   const cards = [{ id: 0, shiny: false, rarity: '' }];

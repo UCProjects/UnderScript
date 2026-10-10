@@ -1,4 +1,4 @@
-import { getPluginNames } from './plugin.js';
+import { getPluginNames } from './plugin';
 
 const GUEST = {
   id: 0,

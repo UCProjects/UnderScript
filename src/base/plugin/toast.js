@@ -1,7 +1,7 @@
-import wrap from 'src/utils/2.pokemon.js';
-import { registerModule } from 'src/utils/plugin.js';
-import { toast as basicToast, errorToast } from 'src/utils/2.toasts.js';
-import toArray from 'src/utils/toArray.js';
+import wrap from 'src/utils/2.pokemon';
+import { registerModule } from 'src/utils/plugin';
+import { toast as basicToast, errorToast } from 'src/utils/2.toasts';
+import toArray from 'src/utils/toArray';
 
 wrap(() => {
   const buildFooter = (plugin, text) => [text, plugin.name, 'via UnderScript'].filter(Boolean).join(' • ');

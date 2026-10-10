@@ -1,7 +1,7 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import style from 'src/utils/style.js';
-import Translation from 'src/structures/constants/translation.js';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import style from 'src/utils/style';
+import Translation from 'src/structures/constants/translation';
 import styles from './gameLog.css';
 
 style.add(styles);

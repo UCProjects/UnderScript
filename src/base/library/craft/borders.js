@@ -1,12 +1,12 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import sleep from 'src/utils/sleep.js';
-import { infoToast } from 'src/utils/2.toasts.js';
-import onPage from 'src/utils/onPage.js';
-import style from 'src/utils/style.js';
-import * as cardHelper from 'src/utils/cardHelper.js';
-import Translation from 'src/structures/constants/translation.ts';
-import Rarity from 'src/structures/constants/rarity.js';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import sleep from 'src/utils/sleep';
+import { infoToast } from 'src/utils/2.toasts';
+import onPage from 'src/utils/onPage';
+import style from 'src/utils/style';
+import * as cardHelper from 'src/utils/cardHelper';
+import Translation from 'src/structures/constants/translation';
+import Rarity from 'src/structures/constants/rarity';
 
 const setting = settings.register({
   name: Translation.Setting('craft.border'),

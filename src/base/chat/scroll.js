@@ -1,5 +1,5 @@
-import eventManager from 'src/utils/eventManager.js';
-import { global, globalSet } from 'src/utils/global.js';
+import eventManager from 'src/utils/eventManager';
+import { global, globalSet } from 'src/utils/global';
 
 eventManager.on('ChatDetected', function override() {
   // eslint-disable-next-line consistent-return

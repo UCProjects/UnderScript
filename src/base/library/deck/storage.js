@@ -1,16 +1,16 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global } from 'src/utils/global.js';
-import onPage from 'src/utils/onPage.js';
-import * as hover from 'src/utils/hover.js';
-import style from 'src/utils/style.js';
-import * as deckLoader from 'src/utils/loadDeck.js';
-import compound from 'src/utils/compoundEvent.js';
-import hasOwn from 'src/utils/hasOwn.js';
-import { cardName } from 'src/utils/cardHelper.js';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global } from 'src/utils/global';
+import onPage from 'src/utils/onPage';
+import * as hover from 'src/utils/hover';
+import style from 'src/utils/style';
+import * as deckLoader from 'src/utils/loadDeck';
+import compound from 'src/utils/compoundEvent';
+import hasOwn from 'src/utils/hasOwn';
+import { cardName } from 'src/utils/cardHelper';
 import { translateText } from 'src/utils/translate';
 import { getTranslationArray } from 'src/base/underscript/translation';
-import Translation from 'src/structures/constants/translation.ts';
+import Translation from 'src/structures/constants/translation';
 import isCtrl from 'src/utils/isCtrl';
 
 const setting = settings.register({

@@ -1,14 +1,14 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global } from 'src/utils/global.js';
-import style from 'src/utils/style.js';
-import { toast as simpleToast, infoToast } from 'src/utils/2.toasts.js';
-import each from 'src/utils/each.js';
-import * as fnUser from 'src/utils/user.js';
-import ignoreUser from 'src/utils/ignoreUser.js';
-import decode from 'src/utils/decode.js';
-import { window } from 'src/utils/1.variables.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global } from 'src/utils/global';
+import style from 'src/utils/style';
+import { toast as simpleToast, infoToast } from 'src/utils/2.toasts';
+import each from 'src/utils/each';
+import * as fnUser from 'src/utils/user';
+import ignoreUser from 'src/utils/ignoreUser';
+import decode from 'src/utils/decode';
+import { window } from 'src/utils/1.variables';
+import Translation from 'src/structures/constants/translation';
 import isCtrl from 'src/utils/isCtrl';
 import styles from './context.css';
 

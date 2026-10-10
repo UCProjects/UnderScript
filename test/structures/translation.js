@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import Translation from 'src/structures/constants/translation.js';
+import Translation from 'src/structures/constants/translation';
 
 describe('Translation', () => {
   it('prefixes the key with its namespace', () => {

@@ -1,4 +1,4 @@
-import sleep from './sleep.js';
+import sleep from './sleep';
 
 export default function eventEmitter() {
   const events = {

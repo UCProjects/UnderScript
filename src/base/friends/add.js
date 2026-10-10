@@ -1,11 +1,11 @@
 import axios from 'axios';
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { toast } from 'src/utils/2.toasts.js';
-import onPage from 'src/utils/onPage.js';
-import decrypt from 'src/utils/decrypt.emails.js';
-import * as $el from 'src/utils/elementHelper.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { toast } from 'src/utils/2.toasts';
+import onPage from 'src/utils/onPage';
+import decrypt from 'src/utils/decrypt.emails';
+import * as $el from 'src/utils/elementHelper';
+import Translation from 'src/structures/constants/translation';
 import style from 'src/utils/style';
 
 const setting = settings.register({

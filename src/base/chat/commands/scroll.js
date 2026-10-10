@@ -1,6 +1,6 @@
-import { global } from 'src/utils/global.js';
-import { debug } from 'src/utils/debug.js';
-import { register } from 'src/utils/chatCommands.js';
+import { global } from 'src/utils/global';
+import { debug } from 'src/utils/debug';
+import { register } from 'src/utils/chatCommands';
 
 register({
   command: 'scroll',

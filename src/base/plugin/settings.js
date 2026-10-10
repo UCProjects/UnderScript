@@ -1,7 +1,7 @@
-import * as settings from 'src/utils/settings/index.js';
-import wrap from 'src/utils/2.pokemon.js';
-import { registerModule } from 'src/utils/plugin.js';
-import SettingType from 'src/utils/settings/types/setting.js';
+import * as settings from 'src/utils/settings/index';
+import wrap from 'src/utils/2.pokemon';
+import { registerModule } from 'src/utils/plugin';
+import SettingType from 'src/utils/settings/types/setting';
 
 wrap(() => {
   const name = 'settings';

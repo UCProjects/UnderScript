@@ -1,5 +1,5 @@
-import { translateText } from 'src/utils/translate.js';
-import Constant from './constant.js';
+import { translateText } from 'src/utils/translate';
+import Constant from './constant';
 
 export type Tuple<T, N extends number, A extends any[] = []> = A extends { length: N } ? A : Tuple<T, N, [T, ...A]>;
 

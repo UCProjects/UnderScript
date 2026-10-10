@@ -1,21 +1,21 @@
-import Translation from 'src/structures/constants/translation.js';
-import eventManager from 'src/utils/eventManager.js';
-import eventEmitter from 'src/utils/eventEmitter.js';
-import style from 'src/utils/style.js';
-import * as menu from 'src/utils/menu.js';
-import tabManager from 'src/utils/tabbedView.js';
-import * as hover from 'src/utils/hover.js';
-import each from 'src/utils/each.js';
-import wrap from 'src/utils/2.pokemon.js';
-import { translateText } from 'src/utils/translate.js';
-import DialogHelper from 'src/utils/DialogHelper.js';
-import AdvancedMap from './types/map2.js';
-import * as types from './types/index.js';
-import RegisteredSetting from './RegisteredSetting.js';
+import Translation from 'src/structures/constants/translation';
+import eventManager from 'src/utils/eventManager';
+import eventEmitter from 'src/utils/eventEmitter';
+import style from 'src/utils/style';
+import * as menu from 'src/utils/menu';
+import tabManager from 'src/utils/tabbedView';
+import * as hover from 'src/utils/hover';
+import each from 'src/utils/each';
+import wrap from 'src/utils/2.pokemon';
+import { translateText } from 'src/utils/translate';
+import DialogHelper from 'src/utils/DialogHelper';
+import AdvancedMap from './types/map2';
+import * as types from './types/index';
+import RegisteredSetting from './RegisteredSetting';
 import styles from './settings.css';
-import { isSettingType, registry } from './settingRegistry.js';
-import createSearch from './search.js';
-import { createFilter, parse, serialize } from './portable.js';
+import { isSettingType, registry } from './settingRegistry';
+import createSearch from './search';
+import { createFilter, parse, serialize } from './portable';
 
 const defaultSetting = new RegisteredSetting();
 

@@ -4,7 +4,7 @@ describe('underscript constants', () => {
   let constants;
 
   before(async () => {
-    await import('../../../src/base/api/constants.js');
+    await import('../../../src/base/api/constants');
     ({ constants } = globalThis.underscript);
   });
 

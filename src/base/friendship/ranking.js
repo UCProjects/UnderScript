@@ -1,12 +1,12 @@
 /* eslint-disable no-multi-assign */
 import axios from 'axios';
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global, globalSet } from 'src/utils/global.js';
-import style from 'src/utils/style.js';
-import each from 'src/utils/each.js';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global, globalSet } from 'src/utils/global';
+import style from 'src/utils/style';
+import each from 'src/utils/each';
 import { HOUR } from 'src/utils/1.variables';
-import Translation from 'src/structures/constants/translation.ts';
+import Translation from 'src/structures/constants/translation';
 import styles from './ranking.css';
 
 // Add setting to disable, or use top 500 (simple mode)

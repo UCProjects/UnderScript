@@ -1,6 +1,6 @@
-import eventManager from 'src/utils/eventManager.js';
-import { infoToast } from 'src/utils/2.toasts.js';
-import onPage from 'src/utils/onPage.js';
+import eventManager from 'src/utils/eventManager';
+import { infoToast } from 'src/utils/2.toasts';
+import onPage from 'src/utils/onPage';
 
 onPage('Game', () => {
   const regex = /(^| )@o\b/gi;

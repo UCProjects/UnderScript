@@ -1,7 +1,7 @@
-import Translation from 'src/structures/constants/translation.ts';
-import EventEmitter from '../eventEmitter.js';
-import { translateText } from '../translate.js';
-import SettingType from './types/setting.js';
+import Translation from 'src/structures/constants/translation';
+import EventEmitter from '../eventEmitter';
+import { translateText } from '../translate';
+import SettingType from './types/setting';
 
 const refresh = Translation.Setting('note.refresh');
 

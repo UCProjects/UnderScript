@@ -1,6 +1,6 @@
-import { SOCKET_SCRIPT_CLOSED, window } from 'src/utils/1.variables.js';
-import eventManager from 'src/utils/eventManager.js';
-import { getPageName } from 'src/utils/onPage.js';
+import { SOCKET_SCRIPT_CLOSED, window } from 'src/utils/1.variables';
+import eventManager from 'src/utils/eventManager';
+import { getPageName } from 'src/utils/onPage';
 
 eventManager.on(':preload', () => {
   function unload() {

@@ -1,4 +1,4 @@
-import SettingType from './types/setting.js';
+import SettingType from './types/setting';
 
 /**
  * @type {Map<string, SettingType>}

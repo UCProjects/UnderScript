@@ -1,12 +1,12 @@
-import eventManager from 'src/utils/eventManager.js';
-import { global, globalSet } from 'src/utils/global.js';
-import * as hover from 'src/utils/hover.js';
-import wrap from 'src/utils/2.pokemon.js';
-import sleep from 'src/utils/sleep.js';
-import * as api from 'src/utils/4.api.js';
-import Translation from 'src/structures/constants/translation.ts';
-import isCtrl from 'src/utils/isCtrl.js';
-import { getTranslationArray } from '../underscript/translation.js';
+import eventManager from 'src/utils/eventManager';
+import { global, globalSet } from 'src/utils/global';
+import * as hover from 'src/utils/hover';
+import wrap from 'src/utils/2.pokemon';
+import sleep from 'src/utils/sleep';
+import * as api from 'src/utils/4.api';
+import Translation from 'src/structures/constants/translation';
+import isCtrl from 'src/utils/isCtrl';
+import { getTranslationArray } from '../underscript/translation';
 
 wrap(() => {
   // buy multiple packs

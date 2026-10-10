@@ -1,7 +1,7 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global, globalSet } from 'src/utils/global.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global, globalSet } from 'src/utils/global';
+import Translation from 'src/structures/constants/translation';
 import compound from 'src/utils/compoundEvent';
 
 const baseSetting = {

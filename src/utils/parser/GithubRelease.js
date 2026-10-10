@@ -1,4 +1,4 @@
-import Base from './FileParser.js';
+import Base from './FileParser';
 
 export default class GithubRelease extends Base {
   constructor(updateURL = '', downloadURL = undefined) {

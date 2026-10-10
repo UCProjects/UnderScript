@@ -1,8 +1,8 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global, globalSet } from 'src/utils/global.js';
-import * as hover from 'src/utils/hover.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global, globalSet } from 'src/utils/global';
+import * as hover from 'src/utils/hover';
+import Translation from 'src/structures/constants/translation';
 import isCtrl from 'src/utils/isCtrl';
 
 const disable = settings.register({

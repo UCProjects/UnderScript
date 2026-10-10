@@ -1,5 +1,5 @@
-import * as api from 'src/utils/4.api.js';
-import Constant from './constant.js';
+import * as api from 'src/utils/4.api';
+import Constant from './constant';
 
 export default class Item extends Constant {
   static GOLD = new Item('Gold', 'gold', 'GOLD', 'reward-gold');

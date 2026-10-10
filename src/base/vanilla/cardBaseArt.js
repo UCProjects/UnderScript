@@ -1,8 +1,8 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { globalSet } from 'src/utils/global.js';
-import { window } from 'src/utils/1.variables.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { globalSet } from 'src/utils/global';
+import { window } from 'src/utils/1.variables';
+import Translation from 'src/structures/constants/translation';
 
 const setting = settings.register({
   name: Translation.Setting('skins.basic'),

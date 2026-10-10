@@ -1,4 +1,4 @@
-import style from './style.js';
+import style from './style';
 import styles from './tabbedView.css';
 
 style.add(styles);

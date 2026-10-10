@@ -1,7 +1,7 @@
-import wrap from 'src/utils/2.pokemon.js';
-import { registerModule } from 'src/utils/plugin.js';
-import Priority from 'src/structures/constants/priority.js';
-import { crafting, decks, filters } from '../library/filter.js';
+import wrap from 'src/utils/2.pokemon';
+import { registerModule } from 'src/utils/plugin';
+import Priority from 'src/structures/constants/priority';
+import { crafting, decks, filters } from '../library/filter';
 
 wrap(() => {
   if (!(crafting || decks)) return;

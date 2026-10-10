@@ -1,11 +1,11 @@
-import { SOCKET_SCRIPT_CLOSED } from 'src/utils/1.variables.js';
-import eventManager from 'src/utils/eventManager.js';
-import { debug } from 'src/utils/debug.js';
-import { rawChat } from 'src/utils/debugFlags.js';
-import { global, globalSet } from 'src/utils/global.js';
-import VarStore from 'src/utils/VarStore.js';
-import { attach } from 'src/utils/autocomplete.js';
-import { isActive, updateIfActive } from './session.js';
+import { SOCKET_SCRIPT_CLOSED } from 'src/utils/1.variables';
+import eventManager from 'src/utils/eventManager';
+import { debug } from 'src/utils/debug';
+import { rawChat } from 'src/utils/debugFlags';
+import { global, globalSet } from 'src/utils/global';
+import VarStore from 'src/utils/VarStore';
+import { attach } from 'src/utils/autocomplete';
+import { isActive, updateIfActive } from './session';
 
 // TODO: Use Message object
 // TODO: Better history management

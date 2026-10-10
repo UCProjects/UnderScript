@@ -1,9 +1,9 @@
 import axios from 'axios';
-import eventManager from 'src/utils/eventManager.js';
-import decrypt from 'src/utils/decrypt.emails.js';
+import eventManager from 'src/utils/eventManager';
+import decrypt from 'src/utils/decrypt.emails';
 import debug from 'src/utils/debugToast';
-import sleep from 'src/utils/sleep.js';
-import { window } from 'src/utils/1.variables.js';
+import sleep from 'src/utils/sleep';
+import { window } from 'src/utils/1.variables';
 import length from 'src/utils/length';
 
 // Friends list hooks. TODO: only work if logged in

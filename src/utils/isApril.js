@@ -1,4 +1,4 @@
-import { getSeasonMonth } from './season.js';
+import { getSeasonMonth } from './season';
 
 export const AUDIO = 'fishMusics';
 

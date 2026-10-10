@@ -1,5 +1,5 @@
 // Stole all this from CMD.
-import eventManager from './eventManager.js';
+import eventManager from './eventManager';
 
 const startsWith = 'quest-s';
 

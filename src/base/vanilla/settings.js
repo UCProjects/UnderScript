@@ -1,7 +1,7 @@
-import * as settings from 'src/utils/settings/index.js';
-import onPage from 'src/utils/onPage.js';
-import Translation from 'src/structures/constants/translation.ts';
-import { global } from 'src/utils/global.js';
+import * as settings from 'src/utils/settings/index';
+import onPage from 'src/utils/onPage';
+import Translation from 'src/structures/constants/translation';
+import { global } from 'src/utils/global';
 
 const CHAT = Translation.Vanilla('settings-chat');
 const GAME = Translation.Vanilla('settings-in-game');

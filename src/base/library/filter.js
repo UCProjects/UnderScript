@@ -1,14 +1,14 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global, globalSet } from 'src/utils/global.js';
-import style from 'src/utils/style.js';
-import onPage from 'src/utils/onPage.js';
-import { max } from 'src/utils/cardHelper.js';
-import Translation from 'src/structures/constants/translation.ts';
-import Priority from 'src/structures/constants/priority.js';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global, globalSet } from 'src/utils/global';
+import style from 'src/utils/style';
+import onPage from 'src/utils/onPage';
+import { max } from 'src/utils/cardHelper';
+import Translation from 'src/structures/constants/translation';
+import Priority from 'src/structures/constants/priority';
 import extractImageName from 'src/utils/extractImageName';
-import Rarity from 'src/structures/constants/rarity.js';
-import { getTranslationArray } from '../underscript/translation.js';
+import Rarity from 'src/structures/constants/rarity';
+import { getTranslationArray } from '../underscript/translation';
 import styles from './filter.css';
 
 export const crafting = onPage('Crafting');

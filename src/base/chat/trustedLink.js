@@ -1,9 +1,9 @@
-import Translation from 'src/structures/constants/translation.ts';
-import each from 'src/utils/each.js';
-import eventManager from 'src/utils/eventManager.js';
-import { globalSet } from 'src/utils/global.js';
-import * as settings from 'src/utils/settings/index.js';
-import VarStore from 'src/utils/VarStore.js';
+import Translation from 'src/structures/constants/translation';
+import each from 'src/utils/each';
+import eventManager from 'src/utils/eventManager';
+import { globalSet } from 'src/utils/global';
+import * as settings from 'src/utils/settings/index';
+import VarStore from 'src/utils/VarStore';
 
 const base = {
   key: 'underscript.safelink.',

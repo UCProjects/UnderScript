@@ -1,10 +1,10 @@
 import luxon from 'luxon';
 import showdown from 'showdown';
 import axios from 'axios';
-import { scriptVersion } from 'src/utils/1.variables.js';
-import style from 'src/utils/style.js';
-import * as menu from 'src/utils/menu.js';
-import Translation from 'src/structures/constants/translation.ts';
+import { scriptVersion } from 'src/utils/1.variables';
+import style from 'src/utils/style';
+import * as menu from 'src/utils/menu';
+import Translation from 'src/structures/constants/translation';
 import styles from './changelog.css';
 
 const changelog = {};

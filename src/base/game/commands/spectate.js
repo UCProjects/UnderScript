@@ -1,9 +1,9 @@
-import eventManager from 'src/utils/eventManager.js';
-import { global } from 'src/utils/global.js';
-import onPage from 'src/utils/onPage.js';
-import { infoToast } from 'src/utils/2.toasts.js';
-import { register } from 'src/utils/chatCommands.js';
-import Translation from 'src/structures/constants/translation.js';
+import eventManager from 'src/utils/eventManager';
+import { global } from 'src/utils/global';
+import onPage from 'src/utils/onPage';
+import { infoToast } from 'src/utils/2.toasts';
+import { register } from 'src/utils/chatCommands';
+import Translation from 'src/structures/constants/translation';
 
 let toast;
 

@@ -1,8 +1,8 @@
-import wrap from 'src/utils/2.pokemon.js';
-import { registerModule } from 'src/utils/plugin.js';
-import Hotkey from 'src/utils/hotkey.class.js';
-import { hotkeys } from 'src/utils/1.variables.js';
-import { capturePluginError } from 'src/utils/sentry.js';
+import wrap from 'src/utils/2.pokemon';
+import { registerModule } from 'src/utils/plugin';
+import Hotkey from 'src/utils/hotkey.class';
+import { hotkeys } from 'src/utils/1.variables';
+import { capturePluginError } from 'src/utils/sentry';
 
 class PluginHotkey extends Hotkey {
   constructor(plugin, hotkey) {

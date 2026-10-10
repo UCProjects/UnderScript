@@ -1,5 +1,5 @@
-import isTruthish from 'src/utils/isTrue.js';
-import Skin from './skin.js';
+import isTrue from 'src/utils/isTrue';
+import Skin from './skin';
 
 export default class ShopSkin extends Skin {
   #active = false;
@@ -20,11 +20,11 @@ export default class ShopSkin extends Skin {
     ...data
   }) {
     super(data);
-    this.#active = isTruthish(active);
+    this.#active = isTrue(active);
     this.#cost = Number(cost);
     this.#discount = Number(discount);
-    this.#owned = isTruthish(owned);
-    this.#unavailable = isTruthish(unavailable);
+    this.#owned = isTrue(owned);
+    this.#unavailable = isTrue(unavailable);
   }
 
   get active() {

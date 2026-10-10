@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import checkboxGroup, { getChecked } from '../../src/utils/checkboxGroup.js';
+import checkboxGroup, { getChecked } from '../../src/utils/checkboxGroup';
 
 function boxes(group) {
   return group.find('input[type=checkbox]').toArray().map((el) => $(el));
