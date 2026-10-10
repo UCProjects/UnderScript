@@ -28,6 +28,7 @@ eventManager.on('jQuery', () => {
     update();
   });
 });
+/** @returns {void} */
 export function hide() {
   if (e) {
     // Hide element
@@ -35,6 +36,11 @@ export function hide() {
     e = null;
   }
 }
+/**
+ * @param {string | JQuery | Element | Translation} data
+ * @param {string | null} [border]
+ * @returns {(event: { type: string }) => void}
+ */
 export function show(data, border = null) {
   return function hoverAction(event) {
     hide();
@@ -73,6 +79,12 @@ function getFooter(type) {
     default: return footer;
   }
 }
+/**
+ * @param {string} text
+ * @param {UnderScriptTipTarget} target
+ * @param {UnderScriptTipOptions} [options]
+ * @returns {void}
+ */
 export function tip(text, target, {
   follow = true,
   arrow = false,

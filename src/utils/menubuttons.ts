@@ -1,9 +1,9 @@
 import eventManager from './eventManager';
 import style from './style';
 
-let menu;
+let menu: HTMLUListElement | null | undefined;
 
-export default function addMenuButton(name, url) {
+export default function addMenuButton(name: string, url?: string): HTMLLIElement | false {
   if (!menu) return false;
   if (!name) throw new Error('Menu button must have a name');
   const el = document.createElement('li');
@@ -22,7 +22,7 @@ export default function addMenuButton(name, url) {
 }
 
 eventManager.on(':preload', () => {
-  menu = document.querySelector('ul.dropdown-menu[role="menu"]');
+  menu = document.querySelector<HTMLUListElement>('ul.dropdown-menu[role="menu"]');
   if (!menu) return;
   style.add('.click {cursor: pointer;}');
 

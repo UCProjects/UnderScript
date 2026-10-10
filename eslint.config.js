@@ -124,7 +124,6 @@ export default [
         BootstrapDialog: readonly,
         SimpleToast: readonly,
         VERSION: readonly,
-        Sentry: readonly,
         globalThis: readonly,
         window: 'off',
       },

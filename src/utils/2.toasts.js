@@ -6,6 +6,15 @@ import toArray from './toArray';
 import addToastClass from './toastClass';
 import applyToastCss from './toastCss';
 
+/**
+ * @typedef {Omit<UnderScriptToastButton, 'text'> & { text?: string | Translation }} ToastButton
+ * @typedef {Omit<UnderScriptToastOptions, 'text' | 'title' | 'buttons'> & {
+ *   text?: string | Translation;
+ *   title?: string | Translation;
+ *   buttons?: ToastButton | readonly ToastButton[];
+ * }} ToastOptions
+ */
+
 const SimpleToast = script.SimpleToast;
 
 let ready = false;
@@ -28,10 +37,15 @@ function dismissing(button) {
   };
 }
 
+/** @returns {UnderScriptToast} */
 export function blankToast() {
   return new SimpleToast();
 }
 
+/**
+ * @param {string | Translation | ToastOptions} [arg]
+ * @returns {UnderScriptToast | false}
+ */
 export function toast(arg) {
   if (!arg) return false;
   if (typeof arg === 'string' || arg instanceof Translation) {
@@ -61,6 +75,10 @@ export function toast(arg) {
   return slice;
 }
 
+/**
+ * @param {Error | (ToastOptions & { name?: string; message?: string; error?: unknown })} error
+ * @returns {UnderScriptToast | false}
+ */
 export function errorToast(error) {
   function getStack(err = {}) {
     const stack = err.stack;
@@ -82,6 +100,12 @@ export function errorToast(error) {
   return toast(lToast);
 }
 
+/**
+ * @param {string | Translation | ToastOptions} arg
+ * @param {string} [key]
+ * @param {string} [val]
+ * @returns {UnderScriptToast | false | null}
+ */
 export function infoToast(arg, key, val = '1') {
   if (localStorage.getItem(key) === val) return null;
   if (typeof arg === 'string' || arg instanceof Translation) {
@@ -106,6 +130,10 @@ export function infoToast(arg, key, val = '1') {
   return toast(merge(defaults, arg, override));
 }
 
+/**
+ * @param {{ title?: string | Translation; text: string | Translation; key: string; value?: string }} options
+ * @returns {UnderScriptToast | false | undefined}
+ */
 export function dismissable({ title, text, key, value = 'true' }) {
   if (localStorage.getItem(key) === value) return undefined;
   const buttons = {

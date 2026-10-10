@@ -5,6 +5,12 @@ import { debug } from './debug';
 import eventManager from './eventManager';
 import { translateText } from './translate';
 
+/**
+ * @typedef {UnderScriptRarity | Rarity | string} RarityLike
+ * @typedef {{ id: number; fixedId?: number; name: string; rarity: string; [key: string]: any }} CardData
+ */
+
+/** @type {Map<number, CardData>} */
 const cardMap = new Map();
 
 eventManager.on('allCardsReady', (allCards) => {
@@ -14,6 +20,10 @@ eventManager.on('allCardsReady', (allCards) => {
 });
 
 const unset = [undefined, null];
+/**
+ * @param {RarityLike} rarity
+ * @returns {number | undefined}
+ */
 export function max(rarity) { // eslint-disable-line no-shadow
   switch (Rarity.find(rarity)) {
     case Rarity.DETERMINATION:
@@ -29,10 +39,19 @@ export function max(rarity) { // eslint-disable-line no-shadow
   }
 }
 
+/**
+ * @param {Element} el
+ * @returns {boolean}
+ */
 export function isShiny(el) {
   return el.classList.contains('shiny');
 }
 
+/**
+ * @param {string | number} id
+ * @param {boolean} [shiny]
+ * @returns {Element | undefined}
+ */
 export function find(id, shiny) {
   const elements = document.querySelectorAll(`[id="${id}"]`);
   if (shiny !== undefined) {
@@ -46,26 +65,47 @@ export function find(id, shiny) {
   return elements[0];
 }
 
+/**
+ * @param {Element} el
+ * @returns {string | null}
+ */
 export function name(el) {
   return el.querySelector('.cardName').textContent;
 }
 
+/**
+ * @param {Element} el
+ * @returns {string}
+ */
 export function rarity(el) {
   return getCardData(el.id).rarity;
 }
 
+/**
+ * @param {Element} el
+ * @returns {number}
+ */
 export function quantity(el) {
   return parseInt(el.querySelector('.cardQuantity .nb, #quantity .nb, .quantity .nb').textContent, 10);
 }
 
+/**
+ * @param {Element} el
+ * @returns {number}
+ */
 export function cost(el) {
   return parseInt(el.querySelector('.cardCost').textContent, 10);
 }
 
+/** @returns {number} */
 export function totalDust() {
   return parseInt(document.querySelector('span#dust').textContent, 10);
 }
 
+/**
+ * @param {Element} el
+ * @returns {boolean}
+ */
 export function craftable(el) {
   const r = rarity(el);
   if (quantity(el) >= max(r)) {
@@ -90,10 +130,16 @@ export function craftable(el) {
   }
 }
 
+/** @returns {number} */
 export function totalFrags() {
   return Number(document.querySelector('span#nbDTFragments').textContent);
 }
 
+/**
+ * @param {RarityLike | Element} r
+ * @param {boolean} [s]
+ * @returns {number | null}
+ */
 export function fragCost(r, s) {
   if (typeof r === 'object' && !(r instanceof Rarity)) {
     if (typeof s !== 'boolean') {
@@ -107,6 +153,11 @@ export function fragCost(r, s) {
   }
 }
 
+/**
+ * @param {RarityLike | Element} r
+ * @param {boolean} [s]
+ * @returns {number | null}
+ */
 export function fragGain(r, s) {
   if (typeof r === 'object' && !(r instanceof Rarity)) {
     if (typeof s !== 'boolean') {
@@ -120,6 +171,11 @@ export function fragGain(r, s) {
   }
 }
 
+/**
+ * @param {RarityLike | Element} r
+ * @param {boolean} [s]
+ * @returns {number | null}
+ */
 export function dustCost(r, s) {
   if (typeof r === 'object' && !(r instanceof Rarity)) {
     if (typeof s !== 'boolean') {
@@ -138,6 +194,11 @@ export function dustCost(r, s) {
   }
 }
 
+/**
+ * @param {RarityLike | Element} r
+ * @param {boolean} [s]
+ * @returns {number | null}
+ */
 export function dustGain(r, s) {
   if (typeof r === 'object' && !(r instanceof Rarity)) {
     if (typeof s !== 'boolean') {
@@ -160,12 +221,21 @@ export function dustGain(r, s) {
   }
 }
 
+/**
+ * @param {string | number} id
+ * @returns {CardData}
+ */
 export function getCardData(id) {
   const card = cardMap.get(Number(id));
   if (card) return card;
   throw new Error(`Unknown card ${id}`);
 }
 
+/**
+ * @param {{ id: number; fixedId?: number; name: string }} card
+ * @param {string} [fallback]
+ * @returns {string}
+ */
 export function cardName(card, fallback = card.name) {
   return translateText(`card-name-${card.fixedId || card.id}`, {
     args: [1],

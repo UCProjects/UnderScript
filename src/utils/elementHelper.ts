@@ -1,8 +1,17 @@
-function removeClass(el, className) {
+type Items<T> = ArrayLike<T> & { forEach(callback: (item: T) => unknown): void };
+
+type SearchOptions = {
+  mutex?: (el: any) => any;
+  single?: boolean;
+};
+
+function removeClass(el: Items<Element>, className: string): void {
   el.forEach((e) => e.classList.remove(className));
 }
 
-function containsText(el, text, { mutex, single } = {}) {
+function containsText(el: Element, text: string): boolean;
+function containsText(el: Items<any>, text: string, options?: SearchOptions): any;
+function containsText(el: any, text: string, { mutex, single }: SearchOptions = {}): any {
   if (el.forEach) {
     const ret = [];
     for (let i = 0; i < el.length; i++) {
@@ -15,15 +24,17 @@ function containsText(el, text, { mutex, single } = {}) {
   }
   return !!~(el.textContent || el.innerText).indexOf(text);
 }
-function getText(el) {
+function getText(el: any): string {
   return el.value || el.textContent || el.innerText;
 }
-function setText(el, text) {
+function setText<T extends Element>(el: T, text: string): T {
   const set = Object.getOwnPropertyDescriptor(el, 'textContent') ? 'textContent' : 'innerText';
-  el[set] = text;
+  (el as any)[set] = text;
   return el;
 }
-function containsHTML(el, text, { mutex, single } = {}) {
+function containsHTML(el: Element, text: string): boolean;
+function containsHTML(el: Items<any>, text: string, options?: SearchOptions): any;
+function containsHTML(el: any, text: string, { mutex, single }: SearchOptions = {}): any {
   if (el.forEach) {
     const ret = [];
     for (let i = 0; i < el.length; i++) {
@@ -36,11 +47,11 @@ function containsHTML(el, text, { mutex, single } = {}) {
   }
   return !!~el.innerHTML.indexOf(text);
 }
-function setHTML(el, text) {
+function setHTML<T extends Element>(el: T, text: string): T {
   el.innerHTML = text;
   return el;
 }
-function getHTML(el) {
+function getHTML(el: Element): string {
   return el.innerHTML;
 }
 

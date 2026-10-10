@@ -1,5 +1,5 @@
-export default function ensureStylesheet(name, href) {
-  const links = [...document.querySelectorAll('link[rel~="stylesheet"]')];
+export default function ensureStylesheet(name: string, href: string): boolean {
+  const links = [...document.querySelectorAll<HTMLLinkElement>('link[rel~="stylesheet"]')];
   if (links.some((link) => link.href.includes(name))) return false;
 
   const link = document.createElement('link');

@@ -244,10 +244,6 @@
     }
   },
   "volume.match.found": "Game Found Volume",
-  "analytics": {
-    "~": "Send anonymous statistics",
-    "note": "Analytics has been disabled by your adblocker."
-  },
   "board.priority": {
     "~": "Priority",
     "notify": "Notify"

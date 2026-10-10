@@ -3,24 +3,26 @@ import {
   window,
 } from './1.variables';
 
-const underscript = {
+type Registry = Record<PropertyKey, any>;
+
+const underscript: Registry = {
   version: scriptVersion,
 };
 
-const modules = {};
+const modules: Registry = {};
 
-export function register(name, val, module = false) {
+export function register(name: PropertyKey, val: unknown, module = false): void {
   // if (underscript.ready) throw new Error(`Registering module (${name}) too late!`);
   if (underscript[name]) {
-    if (!module) throw new Error(`${name} already exists`);
-    console.error(`Module [${name}] skipped, variable exists`);
+    if (!module) throw new Error(`${name as string} already exists`);
+    console.error(`Module [${name as string}] skipped, variable exists`);
     return;
   }
 
   underscript[name] = val;
 }
 
-export const mod = new Proxy(modules, {
+export const mod: Registry = new Proxy(modules, {
   get(o, key, r) {
     if (!(key in o)) {
       const ob = {};
@@ -36,11 +38,11 @@ export const mod = new Proxy(modules, {
   },
 });
 
-window.underscript = new Proxy(underscript, {
+(window as unknown as { underscript: unknown }).underscript = new Proxy(underscript, {
   get(...args) {
     const value = Reflect.get(...args);
     if (value === null || (typeof value !== 'object' && typeof value !== 'function')) return value;
-    return new Proxy(value, { set() {} });
+    return new Proxy(value, { set() { return false; } });
   },
-  set() {},
+  set() { return false; },
 });

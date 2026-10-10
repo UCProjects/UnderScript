@@ -11,6 +11,18 @@ import { translateText } from './translate';
 import compound from './compoundEvent';
 import styles from './menu.css';
 
+/**
+ * @typedef {object} MenuButton
+ * @property {string | Translation | (() => string | Translation)} text
+ * @property {(event: JQuery.Event) => unknown} [action]
+ * @property {string} [url]
+ * @property {string | Translation | (() => string | Translation | undefined)} [note]
+ * @property {() => boolean} [enabled]
+ * @property {() => boolean} [hidden]
+ * @property {boolean} [keep]
+ * @property {boolean} [top]
+ */
+
 let initialized;
 let menuOpen;
 let wrapper;
@@ -44,6 +56,7 @@ function init() {
   $('span.menu-close').on('click', close);
   return initialized = true;
 }
+/** @returns {void} */
 export function open() {
   if (menuOpen || !init()) return;
   eventManager.emit(':menu:opening');
@@ -105,14 +118,20 @@ export function open() {
     toast.close('opened');
   }
 }
+/** @returns {void} */
 export function close() {
   if (!menuOpen) return;
   wrapper.css({ display: '' });
   menuOpen = false;
 }
+/** @returns {boolean} */
 export function isOpen() {
   return menuOpen;
 }
+/**
+ * @param {MenuButton} [button]
+ * @returns {void}
+ */
 export function addButton(button = {}) {
   if (!button || !button.text) {
     debug('Menu: Missing button information');
@@ -150,6 +169,7 @@ compound(':load', 'underscript:ready', () => {
   }, 'underscript.notice.menu', '1');
 });
 
+/** @returns {void} */
 export function dirty() {
   cooked = false;
 }

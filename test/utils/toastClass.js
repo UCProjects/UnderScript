@@ -6,6 +6,10 @@ describe('addToastClass', () => {
     expect(addToastClass(undefined, 'base')).to.deep.equal(['base']);
   });
 
+  it('treats null like nothing', () => {
+    expect(addToastClass(null, 'base')).to.deep.equal(['base']);
+  });
+
   it('adds to a string', () => {
     expect(addToastClass('mine', 'base')).to.deep.equal(['base', 'mine']);
   });

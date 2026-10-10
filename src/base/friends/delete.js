@@ -5,7 +5,7 @@ import { globalSet } from 'src/utils/global';
 import { toast, errorToast } from 'src/utils/2.toasts';
 import decrypt from 'src/utils/decrypt.emails';
 import style from 'src/utils/style';
-import { captureError } from 'src/utils/sentry';
+import { debug } from 'src/utils/debug';
 import Translation from 'src/structures/constants/translation';
 
 const setting = settings.register({
@@ -49,7 +49,7 @@ function process(btn) {
       }
       parent.addClass('deleted');
     }
-  }).catch(captureError);
+  }).catch((error) => debug(error));
 }
 
 eventManager.on(':preload:Friends', () => {

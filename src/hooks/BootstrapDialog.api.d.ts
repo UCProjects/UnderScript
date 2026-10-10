@@ -103,6 +103,7 @@ type UnderScriptDialogBase = {
   getButton(id: string): UnderScriptDialogButtonElement | null;
   getButtonSize(): string;
   enableButtons(enabled: boolean): UnderScriptDialog;
+  updateButtons(): UnderScriptDialog;
   onShow(hook: UnderScriptDialogHook | null): UnderScriptDialog;
   onShown(hook: UnderScriptDialogHook | null): UnderScriptDialog;
   onHide(hook: UnderScriptDialogHook | null): UnderScriptDialog;

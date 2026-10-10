@@ -1,10 +1,10 @@
 import wrap from './2.pokemon';
 import * as api from './4.api';
 
-export function getPageName() {
+export function getPageName(): string {
   const { pathname } = location;
   const length = pathname.length;
-  let temp = pathname.indexOf('.');
+  let temp: number | null = pathname.indexOf('.');
   // eslint-disable-next-line no-cond-assign
   if (temp === -1 && (temp = pathname.lastIndexOf('/')) <= 0) {
     temp = null;
@@ -12,7 +12,7 @@ export function getPageName() {
   return pathname.substring(1, temp || length);
 }
 
-export default function onPage(name, callback, prefix) {
+export default function onPage(name: string, callback?: () => unknown, prefix?: string): boolean {
   const r = getPageName() === name;
   if (typeof callback === 'function' && r) {
     wrap(callback, prefix);
