@@ -32,7 +32,11 @@ export interface TranslationWithArgs<N extends number> extends TranslationBase {
 }
 
 export default class Translation extends Constant implements TranslationBase {
-  private static namespace(prefix: string, options?: TranslationOptions, transform?: (key: string) => string): TranslationNamespace {
+  private static namespace(
+    prefix: string,
+    options?: TranslationOptions,
+    transform?: (key: string) => string,
+  ): TranslationNamespace {
     return ((key: string, text?: string | number) => new Translation(
       transform ? transform(key) : `${prefix}${key}`,
       { ...options, fallback: typeof text === 'string' ? text : undefined },
