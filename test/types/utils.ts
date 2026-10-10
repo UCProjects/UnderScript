@@ -68,6 +68,14 @@ store.isSet() satisfies boolean;
 new utils.VarStore<string | null>(null).set('text');
 // @ts-expect-error the store holds numbers
 store.set('text');
+const unset = new utils.VarStore();
+unset.value satisfies undefined;
+unset.isSet() satisfies boolean;
+const maybe = new utils.VarStore<string | undefined>();
+maybe.value satisfies string | undefined;
+maybe.set('text');
+// @ts-expect-error a number store needs a default
+new utils.VarStore<number>();
 
 class Counter extends utils.SettingType {
   constructor() {
