@@ -6,6 +6,9 @@
 1. Smart Disenchant now lists every card you can disenchant, so you can choose exactly which cards and copies to disenchant<extended>
     - Cards are grouped as Normal and Shiny, then by rarity, then by card. A group's box selects everything inside it.
     - The Prioritize Normal and Prioritize Shiny buttons select what they would have disenchanted, and you can adjust the selection before confirming.</extended>
+### Plugins
+1. `events.emit` now (optionally) takes "emit options" as its first argument: `events.emit({ cancelable: true, async: true }, 'event', data)`<extended>
+    - This works on `plugin.events` and `underscript.utils.eventEmitter()`. The options are `cancelable`, `canceled`, `singleton` and `async`.</extended>
 
 ## Version 0.65.1 (2026-10-10)
 1. Fixed the Craftable cards notice on the Crafting page showing no text

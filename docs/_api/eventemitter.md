@@ -19,6 +19,9 @@ off(*event*, *listener*)
 emit(*event*, ...*data*)
 : Tell everyone listening to `event`, passing `data` along. Returns `{ ran, canceled }`.
 
+emit(*options*, *event*, ...*data*)
+: The same, with [options](#emit-options) that change how the event behaves.
+
 ## Listener
 The listener is called with the event's data. `this` is an object describing the event:
 
@@ -34,17 +37,17 @@ The listener is called with the event's data. `this` is an object describing the
 {% endhighlight %}
 
 ## Emit options
-Options are chained before `emit`:
+Pass an object before the event name to change how `emit` behaves:
 
 {% highlight javascript %}
 // Listeners can cancel this event
-const { canceled } = events.emit.cancelable('myevent', data);
+const { canceled } = events.emit({ cancelable: true }, 'myevent', data);
 
 // Listeners can return promises to wait for
-await events.emit.async('myevent', data);
+await events.emit({ async: true }, 'myevent', data);
 
-// Chain them together
-await events.emit.cancelable.async('myevent', data);
+// Use as many as you need
+await events.emit({ cancelable: true, async: true }, 'myevent', data);
 {% endhighlight %}
 
 cancelable
@@ -58,6 +61,8 @@ async
 
 singleton
 : The event only happens once. Anyone who starts listening later still gets called, with the original data.
+
+Leave an option out, or set it to `false`, to leave it off.
 
 ## Examples
 {% highlight javascript %}

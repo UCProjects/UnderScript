@@ -12,6 +12,8 @@ type Options = {
   async: boolean;
 };
 
+type EmitOptions = Partial<Options>;
+
 type Singleton = {
   data: unknown[];
   async: boolean;
@@ -170,7 +172,16 @@ export default function eventEmitter(): UnderScriptEventEmitter {
       }
       return this.on(event, wrapper);
     },
-    emit: (event: string, ...data: unknown[]) => emit(event, singletonEvents[event] || events[event], ...data),
+    emit(first: string | EmitOptions, ...rest: unknown[]) {
+      if (typeof first !== 'object' || first === null) {
+        return emit(first, singletonEvents[first] || events[first], ...rest);
+      }
+      const [event, ...data] = rest as [string, ...unknown[]];
+      (['cancelable', 'canceled', 'singleton', 'async'] as const).forEach((key) => {
+        if (first[key] !== undefined) options[key] = !!first[key];
+      });
+      return emit(event, singletonEvents[event] || events[event], ...data);
+    },
     off(this: UnderScriptEventEmitter, event: string, fn: unknown) {
       off(event, fn);
       return this;

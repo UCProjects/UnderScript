@@ -26,7 +26,10 @@ compound(...*events*, *listener*)
 : Call `listener` once every one of the events has happened. Needs at least two events.
 
 emit(*event*, ...*data*)
-: Emit an event. Chain `.cancelable`, `.canceled`, `.singleton` or `.async` before it to change how it behaves.
+: Emit an event. Returns `{ ran, canceled }`.
+
+emit(*options*, *event*, ...*data*)
+: Emit an event with options, such as `{ cancelable: true, async: true }`. See [emit options]({{ site.baseurl }}{% link _api/eventemitter.md %}#emit-options).
 
 Read more: [EventEmitter]({{ site.baseurl }}{% link _api/eventemitter.md %}). See the [list of events]({{ site.baseurl }}{% link _api/events.md %}).
 
@@ -39,6 +42,9 @@ events.on(':load', () => console.log('Page finished loading'));
 // Call a custom event
 events.emit('customevent', { foo: 'bar' });
 events.on('customevent', (data) => console.log(data.foo)); // output: bar
+
+// Let listeners cancel it
+const { canceled } = events.emit({ cancelable: true }, 'customevent', { foo: 'bar' });
 
 // Wait for two things to happen
 events.compound('allCardsReady', ':load', () => console.log('Both happened'));
