@@ -75,6 +75,27 @@ events.emit('closeQueues');
 // @ts-expect-error argument types are checked for known events
 events.emit('closeQueues', 5);
 
+events.emit({ cancelable: true }, 'Chat:send', { message: 'hi' }) satisfies UnderScriptEmitResult;
+events.emit({ async: true }, ':update', true) satisfies Promise<UnderScriptEmitResult>;
+events.emit({ cancelable: true, async: true, singleton: true }, 'closeQueues', 'bye') satisfies Promise<UnderScriptEmitResult>;
+events.emit({ async: false }, 'GameStart') satisfies UnderScriptEmitResult;
+events.emit({}, 'custom:event', 1, 2, 3) satisfies UnderScriptEmitResult;
+// @ts-expect-error an object form with async set is a promise
+events.emit({ async: true }, 'GameStart') satisfies UnderScriptEmitResult;
+declare const wide: boolean;
+events.emit({ async: wide }, 'GameStart') satisfies UnderScriptEmitResult | Promise<UnderScriptEmitResult>;
+events.emit({ async: undefined }, 'GameStart') satisfies UnderScriptEmitResult;
+// @ts-expect-error an undefined async option is synchronous
+events.emit({ async: undefined }, 'GameStart') satisfies Promise<UnderScriptEmitResult>;
+const built: UnderScriptEmitOptions = { async: true };
+events.emit(built, 'GameStart') satisfies UnderScriptEmitResult | Promise<UnderScriptEmitResult>;
+// @ts-expect-error options built elsewhere may make it a promise
+events.emit(built, 'GameStart') satisfies UnderScriptEmitResult;
+// @ts-expect-error unknown options are rejected
+events.emit({ nope: true }, 'GameStart');
+// @ts-expect-error the object form still checks the event arguments
+events.emit({ cancelable: true }, 'closeQueues', 5);
+
 // @ts-expect-error only the four flags exist on emit
 events.emit.nope;
 

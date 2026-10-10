@@ -225,6 +225,113 @@ describe('EventEmitter', () => {
       it.skip('should call again if reset');
     });
 
+    describe('emit options', () => {
+      it('makes an event cancelable', () => {
+        emitter.on('test', function cancel() {
+          this.canceled = true;
+          expect(this.cancelable).to.be.true.and.inc();
+        });
+        const { canceled } = emitter.emit({ cancelable: true }, 'test');
+        expect(canceled).to.be.true;
+        assertInc(1);
+      });
+
+      it('is not cancelable by default', () => {
+        emitter.on('test', function cancel() {
+          this.canceled = true;
+          expect(this.cancelable).to.be.false.and.inc();
+        });
+        expect(emitter.emit({}, 'test').canceled).to.be.false;
+        assertInc(1);
+      });
+
+      it('starts canceled', () => {
+        emitter.on('test', function check() {
+          expect(this.cancelable).to.be.true.and.inc();
+          expect(this.canceled).to.be.true.and.inc();
+        });
+        expect(emitter.emit({ canceled: true }, 'test').canceled).to.be.true;
+        assertInc(2);
+      });
+
+      it('passes the data after the event name', () => {
+        emitter.on('test', (a, b) => {
+          expect(a).to.equal(1).and.inc();
+          expect(b).to.equal('two').and.inc();
+        });
+        emitter.emit({ cancelable: true }, 'test', 1, 'two');
+        assertInc(2);
+      });
+
+      it('returns a promise when async', async () => {
+        emitter.on('test', async function wait() {
+          expect(this.async).to.be.true.and.inc();
+          this.canceled = true;
+        });
+        const result = emitter.emit({ async: true, cancelable: true }, 'test');
+        expect(result).to.be.an.instanceOf(Promise);
+        expect(await result).to.deep.equal({ ran: true, canceled: true });
+        assertInc(1);
+      });
+
+      it('emits a singleton once', () => {
+        emitter.on('test', () => {
+          expect().inc();
+        });
+        emitter.emit({ singleton: true }, 'test');
+        emitter.emit({ singleton: true }, 'test');
+        assertInc(1);
+      });
+
+      it('replays a singleton to late listeners', (done) => {
+        emitter.emit({ singleton: true }, 'test', 'late');
+        emitter.on('test', (value) => {
+          expect(value).to.equal('late').and.inc();
+        });
+        setTimeout(() => {
+          assertInc(1);
+          done();
+        }, 1);
+      });
+
+      it('lets false turn a chained option back off', () => {
+        emitter.on('test', function cancel() {
+          this.canceled = true;
+          expect(this.cancelable).to.be.false.and.inc();
+        });
+        expect(emitter.cancelable.emit({ cancelable: false }, 'test').canceled).to.be.false;
+        assertInc(1);
+      });
+
+      it('combines with chained options', async () => {
+        emitter.on('test', async function cancel() {
+          this.canceled = true;
+          expect(this.cancelable).to.be.true.and.inc();
+        });
+        const result = emitter.cancelable.emit({ async: true }, 'test');
+        expect(result).to.be.an.instanceOf(Promise);
+        expect((await result).canceled).to.be.true;
+        assertInc(1);
+      });
+
+      it('does not leak into the next emit', () => {
+        emitter.on('test', function cancel() {
+          this.canceled = true;
+        });
+        emitter.emit({ cancelable: true }, 'test');
+        expect(emitter.emit('test').canceled).to.be.false;
+      });
+
+      it('works with the old form afterwards', () => {
+        emitter.on('test', () => {
+          expect().inc();
+        });
+        emitter.emit({ cancelable: true }, 'test');
+        emitter.emit('test');
+        assertInc(2);
+      });
+    });
+
     describe('once', () => {
       it('should be called once', () => {
         emitter.once('test', () => {

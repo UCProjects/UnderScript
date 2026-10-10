@@ -55,6 +55,14 @@ emitter.emit('x', 1, 2) satisfies UnderScriptEmitResult;
 emitter.cancelable.emit('x').canceled satisfies boolean;
 emitter.async.emit('x') satisfies Promise<UnderScriptEmitResult>;
 emitter.cancelable.async.singleton.emit('x') satisfies Promise<UnderScriptEmitResult>;
+emitter.emit({ cancelable: true }, 'x', 1).canceled satisfies boolean;
+emitter.emit({ async: true }, 'x') satisfies Promise<UnderScriptEmitResult>;
+emitter.emit({ cancelable: true, async: true }, 'x', 1) satisfies Promise<UnderScriptEmitResult>;
+emitter.async.emit({}, 'x') satisfies Promise<UnderScriptEmitResult>;
+// @ts-expect-error an object form without async is not a promise
+emitter.emit({ cancelable: true }, 'x') satisfies Promise<UnderScriptEmitResult>;
+// @ts-expect-error unknown options are rejected
+emitter.emit({ nope: true }, 'x');
 // @ts-expect-error a sync emit is not a promise
 emitter.emit('x') satisfies Promise<UnderScriptEmitResult>;
 // @ts-expect-error only the four flags exist

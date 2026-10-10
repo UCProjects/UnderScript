@@ -10,13 +10,33 @@ type UnderScriptEmitFlags = {
   async?: true;
 };
 
+type UnderScriptEmitOptions = {
+  cancelable?: boolean;
+  canceled?: boolean;
+  singleton?: boolean;
+  async?: boolean;
+};
+
+type UnderScriptEmitReturn<O extends UnderScriptEmitOptions> = O extends { async?: infer A }
+  ? A extends true ? Promise<UnderScriptEmitResult> : UnderScriptEmitResult
+  : UnderScriptEmitResult;
+
 type UnderScriptEmit<F extends UnderScriptEmitFlags = {}> = {
   <E extends string>(event: E, ...args: UnderScriptEventArgs<E>): F extends { async: true }
     ? Promise<UnderScriptEmitResult>
     : UnderScriptEmitResult;
+  <O extends UnderScriptEmitOptions, E extends string>(
+    options: O,
+    event: E,
+    ...args: UnderScriptEventArgs<E>
+  ): F extends { async: true } ? Promise<UnderScriptEmitResult> : UnderScriptEmitReturn<O>;
+  /** @deprecated Pass `{ cancelable: true }` as the first argument instead */
   readonly cancelable: UnderScriptEmit<F & { cancelable: true }>;
+  /** @deprecated Pass `{ canceled: true }` as the first argument instead */
   readonly canceled: UnderScriptEmit<F & { canceled: true }>;
+  /** @deprecated Pass `{ singleton: true }` as the first argument instead */
   readonly singleton: UnderScriptEmit<F & { singleton: true }>;
+  /** @deprecated Pass `{ async: true }` as the first argument instead */
   readonly async: UnderScriptEmit<F & { async: true }>;
 };
 
