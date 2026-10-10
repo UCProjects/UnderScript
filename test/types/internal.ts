@@ -9,6 +9,7 @@ import * as loadDeck from 'src/utils/loadDeck';
 import notify from 'src/utils/notifications';
 import * as quests from 'src/utils/quests';
 import TabManager from 'src/utils/tabbedView';
+import { hotkeys, script, scriptVersion, window as userWindow, HOUR, DAY, noop } from 'src/utils/1.variables';
 
 toast('text') satisfies UnderScriptToast | false;
 toast({ text: 'text', title: 'title', timeout: 5 }) satisfies UnderScriptToast | false;
@@ -108,5 +109,17 @@ tabs.addTab('One', 'content').setActive();
 tabs.render() satisfies string;
 // @ts-expect-error not a tab manager method
 tabs.nope();
+
+userWindow.innerWidth satisfies number;
+userWindow.document satisfies Document;
+userWindow.someGameGlobal satisfies unknown;
+userWindow.someGameFunction('argument');
+script.SimpleToast satisfies unknown;
+scriptVersion satisfies string;
+hotkeys.push(hotkeys[0]);
+// @ts-expect-error only hotkeys go in the list
+hotkeys.push('Space');
+(HOUR + DAY) satisfies number;
+noop() satisfies void;
 
 export {};
