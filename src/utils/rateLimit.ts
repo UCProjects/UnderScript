@@ -7,7 +7,7 @@ function parseSeconds(value: unknown): number | undefined {
   if (value == null || value === '') return undefined;
   const seconds = Number(value);
   if (Number.isFinite(seconds)) return Math.max(seconds, 0);
-  const date = Date.parse(String(value));
+  const date = Date.parse(`${value}`);
   return Number.isNaN(date) ? undefined : Math.max((date - Date.now()) / 1000, 0);
 }
 

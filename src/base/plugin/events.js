@@ -1,7 +1,6 @@
 import eventManager from 'src/utils/eventManager';
 import wrap from 'src/utils/2.pokemon';
 import { registerModule } from 'src/utils/plugin';
-import { capturePluginError } from 'src/utils/sentry';
 import compoundEvent from 'src/utils/compoundEvent';
 
 wrap(() => {
@@ -10,10 +9,6 @@ wrap(() => {
   const name = 'events';
   function mod(plugin) {
     function log(error, event, args, meta) {
-      capturePluginError(plugin, error, {
-        args,
-        ...meta,
-      });
       plugin.logger.error(`Event error (${event}):\n`, error, '\n', JSON.stringify({
         args,
         event: meta,

@@ -1,13 +1,16 @@
 import eventManager from './eventManager';
 import wrap from './2.pokemon';
 
-export default function compound(...events) {
-  const callback = events.pop();
+type Callback = (...args: any[]) => unknown;
+
+export default function compound(...args: [...events: string[], callback: Callback]): void {
+  const callback = args.pop();
   if (typeof callback !== 'function') throw new Error('Callback not provided');
-  const cache = {};
+  const events = args as string[];
+  const cache: Record<string, { triggered: boolean | 'singleton' }> = {};
   let triggered = 0;
   // TODO: cache data
-  function trigger(event, ...data) {
+  function trigger(this: UnderScriptEventMeta, event: string, ...data: unknown[]) {
     if (!cache[event].triggered) {
       cache[event].triggered = this.singleton ? 'singleton' : true;
       triggered += 1;
@@ -21,7 +24,7 @@ export default function compound(...events) {
         e.triggered = false;
         triggered -= 1;
       });
-      wrap(callback);
+      wrap(callback as Callback);
     }
   }
 
@@ -29,7 +32,7 @@ export default function compound(...events) {
     cache[ev] = {
       triggered: false,
     };
-    eventManager.on(ev, function wrapper(...data) {
+    eventManager.on(ev, function wrapper(this: UnderScriptEventMeta, ...data: unknown[]) {
       trigger.call(this, ev, ...data);
     });
   });

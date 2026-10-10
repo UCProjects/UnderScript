@@ -1,4 +1,3 @@
-import { config } from 'dotenv';
 import { readFileSync } from 'fs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import cleanup from 'rollup-plugin-cleanup';
@@ -14,8 +13,6 @@ import { version } from './package.json';
 import importString from './scripts/import-string.js';
 import bundle from './scripts/lang.js';
 
-config();
-
 const debug = process.argv.includes('--configDebug');
 const exclude = ['**/*.ignore/*', '**/*.ignore*'];
 
@@ -27,9 +24,6 @@ if (!debug) {
 }
 
 const meta = readFileSync('./src/meta.js').toString().replace(/{{ version }}/g, version);
-const {
-  SENTRY_DSN = '',
-} = process.env;
 
 const lexicalThis = {
   name: 'lexical-this',
@@ -84,9 +78,6 @@ export default [{
       preventAssignment: true,
       values: {
         VERSION: `'${version}'`,
-        __SENTRY__: SENTRY_DSN,
-        __VERSION__: version,
-        __ENVIRONMENT__: process.env.GITHUB_ACTIONS ? 'production' : 'development',
       },
     }),
     nodeResolve({ browser: true }),

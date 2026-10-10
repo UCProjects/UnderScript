@@ -2,13 +2,15 @@ import eventManager from 'src/utils/eventManager';
 
 let loaded = false;
 
-function extend(data) {
+type ParserExtension = Record<string, (nodes: any[]) => unknown>;
+
+function extend(data: ParserExtension): void {
   $.extend($.i18n.parser.emitter, data);
 }
 
 eventManager.on('translation:loaded', () => loaded = true);
 
-export default function extendLangParser(data = {}) {
+export default function extendLangParser(data: ParserExtension = {}): void {
   if (loaded) {
     extend(data);
   } else {

@@ -34,6 +34,11 @@ function load({ name, mod, dependencies = [], runs = 0 }, methods, local) {
 }
 
 // TODO: RegisteredPlugin
+/**
+ * @param {string} [name]
+ * @param {string | number} [version]
+ * @returns {Readonly<UnderScriptPlugin>}
+ */
 export default function Plugin(name = '', version = '') {
   if (name.length > 20) throw new Error(`Plugin name too long (${name}[${name.length}/20])`);
   if (!nameRegex.test(name)) throw new Error(`Name contains illegal characters (${name})`);
@@ -65,16 +70,27 @@ api.register('plugin', (name, version) => {
   return Plugin(name.trim(), version);
 });
 
+/**
+ * @param {string} name
+ * @param {(plugin: UnderScriptPlugin) => unknown} mod
+ * @param {...(string | string[])} dependencies
+ * @returns {void}
+ */
 export function registerModule(name, mod, ...dependencies) {
   if (!name) throw new Error('Module has no name');
   if (typeof mod !== 'function') throw new Error('Module must be a function');
   modules.push({ name, mod, dependencies: dependencies.flat() });
 }
 
+/** @returns {string[]} */
 export function getPluginNames() {
   return [...registry.keys()];
 }
 
+/**
+ * @param {string} key
+ * @returns {string}
+ */
 export function getVersion(key) {
   return registry.get(key)?.version ?? '';
 }

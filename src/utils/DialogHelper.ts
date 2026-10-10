@@ -5,12 +5,14 @@ import styles from './dialog.css';
 
 style.add(styles);
 
+type Listener = (this: UnderScriptEventMeta, ...args: any[]) => unknown;
+
 export default class DialogHelper {
-  #instance;
+  #instance: UnderScriptRealizedDialog | null | undefined;
 
   #events = eventEmitter();
 
-  isOpen() {
+  isOpen(): boolean {
     return !!this.#instance;
   }
 
@@ -20,7 +22,7 @@ export default class DialogHelper {
     message,
     title,
     ...options
-  } = BootstrapDialog.defaultOptions) {
+  }: UnderScriptDialogOptions = BootstrapDialog.defaultOptions): void {
     if (this.isOpen() || !message || !title) return;
     BootstrapDialog.show({
       ...options,
@@ -46,39 +48,39 @@ export default class DialogHelper {
     });
   }
 
-  close() {
+  close(): void {
     this.#instance?.close();
   }
 
-  onClose(callback) {
+  onClose(callback: Listener): void {
     this.#events.on('close', callback);
   }
 
-  onceClose(callback) {
+  onceClose(callback: Listener): void {
     this.#events.once('close', callback);
   }
 
-  onOpen(callback) {
+  onOpen(callback: Listener): void {
     this.#events.on('open', callback);
   }
 
-  onceOpen(callback) {
+  onceOpen(callback: Listener): void {
     this.#events.once('open', callback);
   }
 
-  appendButton(...buttons) {
+  appendButton(...buttons: UnderScriptDialogButton[]): void {
     const diag = this.#instance;
     if (!diag) return;
 
-    diag.options.buttons.push(...buttons);
+    diag.options.buttons!.push(...buttons);
     diag.updateButtons();
   }
 
-  prependButton(...buttons) {
+  prependButton(...buttons: UnderScriptDialogButton[]): void {
     const diag = this.#instance;
     if (!diag) return;
 
-    diag.options.buttons.unshift(...buttons);
+    diag.options.buttons!.unshift(...buttons);
     diag.updateButtons();
   }
 }

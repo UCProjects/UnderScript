@@ -2,7 +2,6 @@ import wrap from 'src/utils/2.pokemon';
 import { registerModule } from 'src/utils/plugin';
 import Hotkey from 'src/utils/hotkey.class';
 import { hotkeys } from 'src/utils/1.variables';
-import { capturePluginError } from 'src/utils/sentry';
 
 class PluginHotkey extends Hotkey {
   constructor(plugin, hotkey) {
@@ -27,9 +26,6 @@ class PluginHotkey extends Hotkey {
     try {
       return this.hotkey.run(...args);
     } catch (e) {
-      capturePluginError(this.plugin, e, {
-        hotkey: this.name,
-      });
       this.plugin.logger.error(`Hotkey${this.name || ''}${e instanceof Error ? '' : ' Error:'}`, e);
     }
     return undefined;

@@ -5,11 +5,11 @@ const startsWith = 'quest-s';
 
 let season = Number(sessionStorage.getItem('undercards.season')) || -1;
 
-export function getSeason() {
+export function getSeason(): number {
   return season;
 }
 
-export function getSeasonMonth() {
+export function getSeasonMonth(): number {
   if (season === -1) throw new Error('Season not loaded');
   return ((season - 66) % 12) + 1;
 }
@@ -21,6 +21,6 @@ eventManager.on('translation:loaded', () => {
   if (!seasonKey) return; // Just a fail-safe
 
   season = Number(seasonKey.substring(startsWith.length, seasonKey.indexOf('-', startsWith.length)));
-  sessionStorage.setItem('undercards.season', season);
-  eventManager.singleton.emit('undercards:season', season);
+  sessionStorage.setItem('undercards.season', `${season}`);
+  eventManager.emit({ singleton: true }, 'undercards:season', season);
 });

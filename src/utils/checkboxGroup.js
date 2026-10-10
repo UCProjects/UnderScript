@@ -85,7 +85,7 @@ class Group {
   set collapsed(value) {
     if (!this.toggle) return;
     this.element.toggleClass('collapsed', !!value);
-    this.toggle.attr('aria-expanded', String(!value));
+    this.toggle.attr('aria-expanded', `${!value}`);
   }
 
   get checked() {

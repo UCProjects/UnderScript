@@ -8,7 +8,6 @@ import debugToast from 'src/utils/debugToast';
 import * as cardHelper from 'src/utils/cardHelper';
 import onPage from 'src/utils/onPage';
 import each from 'src/utils/each';
-import { captureError } from 'src/utils/sentry';
 import hasOwn from 'src/utils/hasOwn';
 import Translation from 'src/structures/constants/translation';
 import Rarity from 'src/structures/constants/rarity';
@@ -71,7 +70,7 @@ onPage('Crafting', function disenchantWrapper() {
       const cards = entries
         .filter((entry) => !!entry.shiny === shiny && Rarity.find(entry.rarity) === rarity)
         .sort((a, b) => a.name.localeCompare(b.name));
-      const label = Translation.Vanilla(`rarity-${rarity}`, titleCase(String(rarity))).translate();
+      const label = Translation.Vanilla(`rarity-${rarity}`, titleCase(`${rarity}`)).translate();
       return checkboxGroup(label, cards.map(cardNode), { collapsed: true });
     });
     return checkboxGroup(shiny ? 'Shiny' : 'Normal', groups, { collapsible: false });
@@ -217,7 +216,6 @@ onPage('Crafting', function disenchantWrapper() {
         // TODO: translation
         updateOrToast(toast, `Finished disenchanting.\n+${gained} dust`);
       }).catch((e) => {
-        captureError(e);
         console.error(e); // eslint-disable-line no-console
         // TODO: translation
         updateOrToast(toast, 'Could not complete disenchanting.');
