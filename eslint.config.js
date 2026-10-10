@@ -148,6 +148,7 @@ export default [
       '@typescript-eslint': tseslint.plugin,
     },
     rules: {
+      'no-undef': 'off',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
       'no-use-before-define': 'off',
