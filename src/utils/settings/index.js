@@ -506,7 +506,9 @@ function registerTypeStyle(type, addStyle = style.add) {
   addStyle(...type.styles().map((s) => `.underscript-dialog .${getCSSName(type.name)} ${s}`));
 }
 
-each(types, (Type) => registerType(new Type()));
+const { AdvancedMap: LastType, ...basicTypes } = types;
+each(basicTypes, (Type) => registerType(new Type()));
+registerType(new LastType());
 
 function getCSSName(name = '', prefix = 'setting-') {
   return `${prefix}${name.replaceAll(/[^_a-zA-Z0-9-]/g, '-')}`;
