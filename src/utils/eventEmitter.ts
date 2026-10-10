@@ -1,21 +1,37 @@
 import sleep from './sleep';
 
-export default function eventEmitter() {
-  const events = {
+type Listener = ((this: UnderScriptEventMeta, ...args: any[]) => unknown) & {
+  displayName?: string;
+  original?: unknown;
+};
+
+type Options = {
+  cancelable: boolean | undefined;
+  canceled: boolean;
+  singleton: boolean;
+  async: boolean;
+};
+
+type Singleton = {
+  data: unknown[];
+  async: boolean;
+};
+
+export default function eventEmitter(): UnderScriptEventEmitter {
+  const events: Record<string, Listener[]> = {
     // eventName: [events]
   };
-  const singletonEvents = {
+  const singletonEvents: Record<string, Singleton> = {
     // eventName: { data, async }
   };
-  const options = {
-    cancelable: false,
+  const options: Options = {
+    cancelable: undefined,
     canceled: false,
     singleton: false,
     async: false,
   };
-  options.cancelable = undefined;
 
-  function reset() {
+  function reset(): Options {
     const ret = { ...options };
     options.cancelable = undefined;
     options.canceled = false;
@@ -24,7 +40,11 @@ export default function eventEmitter() {
     return ret;
   }
 
-  function emit(event, e, ...data) {
+  function emit(
+    event: string,
+    e: unknown,
+    ...data: unknown[]
+  ): UnderScriptEmitResult | Promise<UnderScriptEmitResult> {
     const {
       canceled: canceledState,
       cancelable = canceledState,
@@ -53,11 +73,11 @@ export default function eventEmitter() {
 
     let ran = false;
     let canceled = canceledState;
-    const promises = [];
+    const promises: Promise<unknown>[] = [];
 
     if (Array.isArray(e) && e.length) {
       ran = true;
-      [...e].forEach((ev) => {
+      [...e].forEach((ev: Listener) => {
         // Should we stop processing on cancel? Maybe.
         try {
           const meta = { event, cancelable, canceled, async, delayed, singleton };
@@ -76,7 +96,7 @@ export default function eventEmitter() {
       });
     }
 
-    function results() {
+    function results(): UnderScriptEmitResult {
       return {
         ran,
         canceled: cancelable && canceled,
@@ -90,7 +110,7 @@ export default function eventEmitter() {
     return results();
   }
 
-  function off(event, fn) {
+  function off(event: string, fn: unknown): void {
     event.split(' ').forEach((e) => {
       const list = events[e] || [];
       for (let i = list.length - 1; i >= 0; i--) {
@@ -102,7 +122,7 @@ export default function eventEmitter() {
   }
 
   const emitter = {
-    on(event, fn) {
+    on(this: UnderScriptEventEmitter, event: string, fn: Listener) {
       reset();
       if (typeof fn !== 'function') return this;
       event.split(' ').forEach((e) => {
@@ -122,20 +142,20 @@ export default function eventEmitter() {
       });
       return this;
     },
-    once(event, fn) {
+    once(this: UnderScriptEventEmitter, event: string, fn: Listener) {
       if (typeof fn !== 'function') return this;
-      function wrapper(...args) {
+      function wrapper(this: UnderScriptEventMeta, ...args: unknown[]) {
         off(event, wrapper);
         return fn.call(this, ...args);
       }
       return this.on(event, wrapper);
     },
-    one(event, fn) {
+    one(this: UnderScriptEventEmitter, event: string, fn: Listener) {
       return this.once(event, fn);
     },
-    until(event, fn) {
+    until(this: UnderScriptEventEmitter, event: string, fn: Listener) {
       if (typeof fn !== 'function') return this;
-      function wrapper(...args) {
+      function wrapper(this: UnderScriptEventMeta, ...args: unknown[]): unknown {
         const ret = fn.call(this, ...args);
         if (ret instanceof Promise) {
           return ret.then((val) => {
@@ -150,14 +170,14 @@ export default function eventEmitter() {
       }
       return this.on(event, wrapper);
     },
-    emit: (event, ...data) => emit(event, singletonEvents[event] || events[event], ...data),
-    off(event, fn) {
+    emit: (event: string, ...data: unknown[]) => emit(event, singletonEvents[event] || events[event], ...data),
+    off(this: UnderScriptEventEmitter, event: string, fn: unknown) {
       off(event, fn);
       return this;
     },
   };
 
-  Object.keys(options).forEach((key) => {
+  (Object.keys(options) as (keyof Options)[]).forEach((key) => {
     Object.defineProperty(emitter, key, {
       get() {
         options[key] = true;
@@ -166,5 +186,5 @@ export default function eventEmitter() {
     });
   });
 
-  return Object.freeze(emitter);
+  return Object.freeze(emitter) as unknown as UnderScriptEventEmitter;
 }
