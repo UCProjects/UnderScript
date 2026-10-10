@@ -1,7 +1,7 @@
 type LocaleOptions = {
   locale?: string;
   id: unknown;
-  data?: unknown[];
+  data?: string[];
 };
 
 export default function toLocale({
@@ -20,6 +20,6 @@ export default function toLocale({
   }
 }
 
-export function toEnglish(id: unknown, ...data: unknown[]): string {
+export function toEnglish(id: unknown, ...data: string[]): string {
   return toLocale({ id, data });
 }

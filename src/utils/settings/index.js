@@ -17,6 +17,31 @@ import { isSettingType, registry } from './settingRegistry';
 import createSearch from './search';
 import { createFilter, parse, serialize } from './portable';
 
+/**
+ * @typedef {string | {
+ *  name: string;
+ *  logger?: { error(...args: unknown[]): unknown }
+ * }} SettingsPage
+ * @typedef {{
+ *   plugin: SettingsPage;
+ *   tab: string;
+ *   readonly name: string;
+ *   readonly label: string;
+ *   readonly logger: unknown;
+ * }} PageToken
+ */
+
+/**
+ * @template [T=unknown]
+ * @typedef {Omit<UnderScriptSettingOptions<T>, 'name' | 'note' | 'description'> & {
+ *   name?: UnderScriptDynamic<string | Translation>;
+ *   note?: UnderScriptDynamic<string | Translation | null>;
+ *   description?: UnderScriptDynamic<string | Translation | null>;
+ *   page?: SettingsPage;
+ *   tab?: string;
+ * }} SettingOptions
+ */
+
 const defaultSetting = new RegisteredSetting();
 
 style.add(styles);
@@ -35,7 +60,7 @@ const dialog = new DialogHelper();
 let updateLock = false;
 
 /**
- * @returns {tabManager}
+ * @returns {UnderScriptTabManager & { plugins: UnderScriptTabManager }}
  */
 export function getScreen() {
   if (getScreen.screen) {
@@ -56,6 +81,11 @@ export function getScreen() {
   return screen;
 }
 
+/**
+ * @param {SettingsPage} page
+ * @param {string} [tab]
+ * @returns {SettingsPage | PageToken}
+ */
 export function pageToken(page, tab) {
   if (!tab || !page?.name) return page;
   let byTab = pageTokens.get(page);
@@ -283,6 +313,11 @@ function showSetting(key, scroll) {
   }
 }
 
+/**
+ * @template [T=unknown]
+ * @param {string | SettingOptions<T>} data
+ * @returns {UnderScriptSetting<T> | undefined}
+ */
 export function register(data) {
   if (typeof data !== 'string' && !data.key) throw new Error('No key provided');
 
@@ -363,6 +398,11 @@ export function register(data) {
   };
 }
 
+/**
+ * @param {SettingsPage | PageToken} [page]
+ * @param {string} [tab]
+ * @returns {void}
+ */
 export function open(page = 'main', tab = undefined) {
   const target = pageToken(page, tab);
   const test = target.name || target;
@@ -396,6 +436,11 @@ export function open(page = 'main', tab = undefined) {
   });
 }
 
+/**
+ * @param {string} name
+ * @param {SettingsPage} [page]
+ * @returns {boolean}
+ */
 export function setDisplayName(name, page = 'main') {
   if (name) {
     init(page).name = name;
@@ -406,6 +451,11 @@ export function setDisplayName(name, page = 'main') {
   return false;
 }
 
+/**
+ * @param {{ name: string }} plugin
+ * @param {string} name
+ * @returns {boolean}
+ */
 export function setMainName(plugin, name) {
   if (!name) return false;
   init(plugin).mainName = name;
@@ -413,10 +463,15 @@ export function setMainName(plugin, name) {
   return true;
 }
 
+/** @returns {boolean} */
 export function isOpen() {
   return dialog.isOpen();
 }
 
+/**
+ * @param {string} key
+ * @returns {unknown}
+ */
 export function value(key) {
   const setting = settingReg[key];
   if (setting) {
@@ -425,6 +480,10 @@ export function value(key) {
   return localStorage.getItem(key);
 }
 
+/**
+ * @param {string} key
+ * @returns {void}
+ */
 export function remove(key) {
   const setting = settingReg[key];
   if (!setting) return;
@@ -443,6 +502,10 @@ function removeSetting(setting, el) {
   }
 }
 
+/**
+ * @param {string} key
+ * @returns {boolean}
+ */
 export function exists(key) {
   return key in settingReg;
 }
@@ -451,14 +514,23 @@ function portableFilter() {
   return createFilter(Object.values(settingReg));
 }
 
+/** @returns {string} */
 export function exportSettings() {
   return serialize(localStorage, portableFilter());
 }
 
+/**
+ * @param {string} string
+ * @returns {{ accepted: Record<string, string>; skipped: string[] }}
+ */
 export function parseSettings(string) {
   return parse(string, portableFilter());
 }
 
+/**
+ * @param {string} string
+ * @returns {{ accepted: Record<string, string>; skipped: string[] }}
+ */
 export function importSettings(string) {
   const result = parseSettings(string);
   each(result.accepted, (val, key) => {
@@ -489,10 +561,20 @@ eventManager.once(':menu:opening', () => {
   });
 });
 
+/**
+ * @param {string} event
+ * @param {(...args: any[]) => unknown} listener
+ * @returns {void}
+ */
 export function on(...args) {
   events.on(...args);
 }
 
+/**
+ * @param {import('./types/setting').default} type
+ * @param {(...styles: string[]) => unknown} [addStyle]
+ * @returns {void}
+ */
 export function registerType(type, addStyle = style.add) {
   if (!isSettingType(type)) throw new Error(`SettingType: Tried to register object of: ${typeof type}`);
   const name = type.name;

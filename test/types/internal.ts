@@ -5,6 +5,9 @@ import * as hover from 'src/utils/hover';
 import * as menu from 'src/utils/menu';
 import Plugin, { getPluginNames, getVersion, registerModule } from 'src/utils/plugin';
 import * as chatCommands from 'src/utils/chatCommands';
+import * as settings from 'src/utils/settings/index';
+import SettingType from 'src/utils/settings/types/setting';
+import { translateText } from 'src/utils/translate';
 import * as loadDeck from 'src/utils/loadDeck';
 import notify from 'src/utils/notifications';
 import * as quests from 'src/utils/quests';
@@ -121,5 +124,64 @@ hotkeys.push(hotkeys[0]);
 hotkeys.push('Space');
 (HOUR + DAY) satisfies number;
 noop() satisfies void;
+
+const enabled = settings.register({
+  key: 'underscript.example',
+  name: 'Example',
+  default: true,
+  page: { name: 'Plugin' },
+  onChange(value, previous) {
+    value satisfies boolean;
+    previous satisfies boolean;
+  },
+});
+enabled?.value() satisfies boolean | undefined;
+enabled?.set(false);
+settings.register('underscript.bare');
+settings.register({ key: 'underscript.dynamic', hidden: () => false, note: () => 'note', min: 0, max: 10 });
+settings.register({ key: 'underscript.tabbed', page: 'Chat', tab: 'Ignored' });
+// @ts-expect-error a setting needs a key
+settings.register({ name: 'No key' });
+// @ts-expect-error disabled is a boolean or a function
+settings.register({ key: 'underscript.bad', disabled: 'yes' });
+// @ts-expect-error a page is a name or has one
+settings.register({ key: 'underscript.bad', page: 5 });
+
+settings.value('underscript.example') satisfies unknown;
+settings.exists('underscript.example') satisfies boolean;
+settings.remove('underscript.example');
+settings.open();
+settings.open('Chat');
+settings.open({ name: 'Plugin' }, 'Tab');
+settings.isOpen() satisfies boolean;
+settings.setDisplayName('Name', 'Chat') satisfies boolean;
+settings.exportSettings() satisfies string;
+settings.importSettings('{}').skipped satisfies string[];
+settings.on('setting:change', () => {});
+// @ts-expect-error a page is not a number
+settings.open(5);
+
+const settingType = new SettingType('example');
+settingType.name satisfies string;
+settingType.labelFirst() satisfies boolean | null;
+settingType.styles() satisfies string[];
+settingType.element('value', (value) => value, { container: document.createElement('div'), key: 'key' }) satisfies HTMLElement | JQuery;
+// @ts-expect-error a setting type needs a name
+new SettingType();
+
+translateText('text') satisfies string;
+translateText(Translation.CLOSE) satisfies string;
+translateText('text', { args: ['1', 'two'], fallback: Translation.CLOSE, locale: 'fr' });
+// @ts-expect-error translation arguments are strings
+translateText('text', { args: [1] });
+// @ts-expect-error a number is not text
+translateText(5);
+
+settings.register({
+  key: 'underscript.translated',
+  name: Translation.CLOSE,
+  note: () => Translation.CLOSE,
+  description: Translation.CLOSE,
+});
 
 export {};

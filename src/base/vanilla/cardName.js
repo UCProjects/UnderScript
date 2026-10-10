@@ -16,7 +16,7 @@ function createCard(card, ...rest) {
   }
 
   const c = $(this.super(card, ...rest));
-  c.find('.cardName').html(toEnglish(`card-name-${card.fixedId}`, 1));
+  c.find('.cardName').html(toEnglish(`card-name-${card.fixedId}`, '1'));
   return c[0].outerHTML;
 }
 

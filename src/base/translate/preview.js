@@ -28,7 +28,7 @@ function getPreview(id, locale = getLocale()) {
   return toLocale({
     locale,
     id,
-    data: [1],
+    data: ['1'],
   });
 }
 
