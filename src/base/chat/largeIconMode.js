@@ -1,8 +1,8 @@
-import Translation from 'src/structures/constants/translation.ts';
-import { infoToast } from 'src/utils/2.toasts.js';
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import style from 'src/utils/style.js';
+import Translation from 'src/structures/constants/translation';
+import { infoToast } from 'src/utils/2.toasts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import style from 'src/utils/style';
 
 const setting = settings.register({
   name: Translation.Setting('large.avatar'),

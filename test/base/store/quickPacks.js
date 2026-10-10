@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import eventManager from '../../../src/utils/eventManager.js';
-import installClock from '../../setup/clock.js';
-import { clearToasts } from '../../setup/simpletoast.js';
+import eventManager from '../../../src/utils/eventManager';
+import installClock from '../../setup/clock';
+import { clearToasts } from '../../setup/simpletoast';
 
 const flush = () => new Promise((resolve) => { setImmediate(resolve); });
 
@@ -58,7 +58,7 @@ describe('quick packs', () => {
     globalThis.canOpen = false;
     globalThis.revealCard = () => {};
     globalThis.translateFromServerJson = (message) => message;
-    await import('../../../src/base/store/quickPacks.js');
+    await import('../../../src/base/store/quickPacks');
     eventManager.emit('Deck:Loaded', { collection: '[]' });
     await flush();
     eventManager.emit('jQuery');

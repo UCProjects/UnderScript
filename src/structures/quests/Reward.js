@@ -1,5 +1,5 @@
-import Skin from '../card/skin.js';
-import Item from '../constants/item.js';
+import Skin from '../card/skin';
+import Item from '../constants/item';
 
 export default class Reward {
   #reward;

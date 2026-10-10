@@ -1,7 +1,7 @@
-import FileParser from './FileParser.js';
-import Gist from './Gist.js';
-import GithubRaw from './GithubRaw.js';
-import GithubRelease from './GithubRelease.js';
+import FileParser from './FileParser';
+import Gist from './Gist';
+import GithubRaw from './GithubRaw';
+import GithubRelease from './GithubRelease';
 
 export default function createParser({
   downloadURL,

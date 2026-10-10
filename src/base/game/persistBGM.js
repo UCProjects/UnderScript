@@ -1,10 +1,10 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global } from 'src/utils/global.js';
-import { isApril, IMAGES } from 'src/utils/isApril.js';
-import { window } from 'src/utils/1.variables.js';
-import Translation from 'src/structures/constants/translation.js';
-import { aprilFools } from '../vanilla/aprilFools.js';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global } from 'src/utils/global';
+import { isApril, IMAGES } from 'src/utils/isApril';
+import { window } from 'src/utils/1.variables';
+import Translation from 'src/structures/constants/translation';
+import { aprilFools } from '../vanilla/aprilFools';
 
 const setting = settings.register({
   name: Translation.Setting('persist.bgm'),

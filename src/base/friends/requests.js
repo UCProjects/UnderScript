@@ -1,10 +1,10 @@
 import axios from 'axios';
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { toast } from 'src/utils/2.toasts.js';
-import each from 'src/utils/each.js';
-import { noop } from 'src/utils/1.variables.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { toast } from 'src/utils/2.toasts';
+import each from 'src/utils/each';
+import { noop } from 'src/utils/1.variables';
+import Translation from 'src/structures/constants/translation';
 
 const setting = settings.register({
   name: Translation.Setting('friend.request'),

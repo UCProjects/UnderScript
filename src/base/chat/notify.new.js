@@ -1,13 +1,13 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global, globalSet } from 'src/utils/global.js';
-import pendingIgnore from 'src/utils/pendingIgnore.js';
-import pingRegex from 'src/utils/pingRegex.js';
-import { infoToast } from 'src/utils/2.toasts.js';
-import Translation from 'src/structures/constants/translation.js';
-import style from 'src/utils/style.js';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global, globalSet } from 'src/utils/global';
+import pendingIgnore from 'src/utils/pendingIgnore';
+import pingRegex from 'src/utils/pingRegex';
+import { infoToast } from 'src/utils/2.toasts';
+import Translation from 'src/structures/constants/translation';
+import style from 'src/utils/style';
 
-import { pingExtras } from './toast.js';
+import { pingExtras } from './toast';
 
 style.add('.us-ping { color: yellow; }');
 

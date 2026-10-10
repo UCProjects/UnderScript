@@ -1,9 +1,9 @@
-import { global } from 'src/utils/global.js';
-import Base from '../base.js';
+import { global } from 'src/utils/global';
+import Base from '../base';
 
 export default class Deck extends Base {
   /**
-   * @type {import("./storage.js").default}
+   * @type {import("./storage").default}
    */
   #owner;
   #soul;

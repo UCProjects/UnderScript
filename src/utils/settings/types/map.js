@@ -1,5 +1,5 @@
-import Translation from 'src/structures/constants/translation.js';
-import Setting from './array.js';
+import Translation from 'src/structures/constants/translation';
+import Setting from './array';
 
 export default class MapList extends Setting {
   constructor(name = 'map') {

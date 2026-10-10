@@ -1,6 +1,6 @@
-import toArray from 'src/utils/toArray.js';
-import { translateText } from 'src/utils/translate.js';
-import Setting from './text.js';
+import toArray from 'src/utils/toArray';
+import { translateText } from 'src/utils/translate';
+import Setting from './text';
 
 export default class Select extends Setting {
   constructor(name = 'select') {

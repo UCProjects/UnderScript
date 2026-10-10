@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import addToastClass from '../../src/utils/toastClass.js';
+import addToastClass from '../../src/utils/toastClass';
 
 describe('addToastClass', () => {
   it('returns just the class when there is nothing to add to', () => {

@@ -1,8 +1,8 @@
 import { expect } from 'chai';
-import Constant from 'src/structures/constants/constant.js';
-import Item from 'src/structures/constants/item.js';
-import Priority from 'src/structures/constants/priority.js';
-import Rarity from 'src/structures/constants/rarity.js';
+import Constant from 'src/structures/constants/constant';
+import Item from 'src/structures/constants/item';
+import Priority from 'src/structures/constants/priority';
+import Rarity from 'src/structures/constants/rarity';
 
 function constants(values) {
   class Test extends Constant {}

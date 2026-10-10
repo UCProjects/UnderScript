@@ -1,14 +1,14 @@
-export { default as ArrayType } from './array.js';
-export { default as Boolean } from './boolean.js';
-export { default as Color } from './color.js';
-export { default as List } from './list.js';
-export { default as Password } from './password.js';
-export { default as Remove } from './remove.js';
-export { default as Select } from './select.js';
-export { default as Slider } from './slider.js';
-export { default as Text } from './text.js';
-export { default as MapType } from './map.js';
-export { default as Keybind } from './keybind.js';
+export { default as ArrayType } from './array';
+export { default as Boolean } from './boolean';
+export { default as Color } from './color';
+export { default as List } from './list';
+export { default as Password } from './password';
+export { default as Remove } from './remove';
+export { default as Select } from './select';
+export { default as Slider } from './slider';
+export { default as Text } from './text';
+export { default as MapType } from './map';
+export { default as Keybind } from './keybind';
 
 // Must always be last
-export { default as AdvancedMap } from './map2.js';
+export { default as AdvancedMap } from './map2';

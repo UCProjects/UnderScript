@@ -1,9 +1,9 @@
-import eventManager from 'src/utils/eventManager.js';
-import onPage from 'src/utils/onPage.js';
-import { debug } from 'src/utils/debug.js';
-import wrap from 'src/utils/2.pokemon.js';
-import { globalSet } from 'src/utils/global.js';
-import { window } from 'src/utils/1.variables.js';
+import eventManager from 'src/utils/eventManager';
+import onPage from 'src/utils/onPage';
+import { debug } from 'src/utils/debug';
+import wrap from 'src/utils/2.pokemon';
+import { globalSet } from 'src/utils/global';
+import { window } from 'src/utils/1.variables';
 
 function gameHook() {
   debug('Playing Game');

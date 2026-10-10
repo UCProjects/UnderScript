@@ -1,6 +1,6 @@
 import css from './checkboxGroup.css';
-import styles from './style.js';
-import toArray from './toArray.js';
+import styles from './style';
+import toArray from './toArray';
 
 styles.add(css);
 

@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { HOUR } from './1.variables.js';
-import { debug } from './debug.js';
-import { pluginRegistry } from './debugFlags.js';
-import createParser from './parser/index.js';
-import { getPluginNames, getVersion } from './plugin.js';
+import { HOUR } from './1.variables';
+import { debug } from './debug';
+import { pluginRegistry } from './debugFlags';
+import createParser from './parser/index';
+import { getPluginNames, getVersion } from './plugin';
 
 const URL = 'https://raw.githubusercontent.com/UCProjects/UnderScript/refs/heads/master/plugins.json';
 const LIST = 'underscript.registry.list';

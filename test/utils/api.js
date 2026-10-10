@@ -4,7 +4,7 @@ describe('underscript api', () => {
   let api;
 
   before(async () => {
-    api = await import('../../src/utils/4.api.js');
+    api = await import('../../src/utils/4.api');
   });
 
   after(() => {

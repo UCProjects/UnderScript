@@ -1,6 +1,6 @@
-import charCount from './charCount.js';
-import eventManager from './eventManager.js';
-import last from './last.js';
+import charCount from './charCount';
+import eventManager from './eventManager';
+import last from './last';
 
 // Custom CSS classes are great.
 export function newStyle(plugin = false) {

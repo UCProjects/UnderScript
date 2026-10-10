@@ -1,7 +1,7 @@
-import Translation from 'src/structures/constants/translation.ts';
-import wrap from 'src/utils/2.pokemon.js';
-import { registerModule } from 'src/utils/plugin.js';
-import * as settings from 'src/utils/settings/index.js';
+import Translation from 'src/structures/constants/translation';
+import wrap from 'src/utils/2.pokemon';
+import { registerModule } from 'src/utils/plugin';
+import * as settings from 'src/utils/settings/index';
 
 // TODO: translation
 const enable = ['Enabled with toast', 'Enabled silently'];

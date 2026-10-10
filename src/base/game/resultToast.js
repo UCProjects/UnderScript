@@ -1,8 +1,8 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { toast as basicToast } from 'src/utils/2.toasts.js';
-import { globalSet } from 'src/utils/global.js';
-import Translation from 'src/structures/constants/translation.js';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { toast as basicToast } from 'src/utils/2.toasts';
+import { globalSet } from 'src/utils/global';
+import Translation from 'src/structures/constants/translation';
 
 const setting = settings.register({
   name: Translation.Setting('disable.resultToast'),

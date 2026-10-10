@@ -1,4 +1,4 @@
-import * as settings from 'src/utils/settings/index.js';
+import * as settings from 'src/utils/settings/index';
 
 export default settings.register({
   key: 'underscript.debug',

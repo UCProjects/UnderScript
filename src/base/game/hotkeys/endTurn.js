@@ -1,11 +1,11 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global } from 'src/utils/global.js';
-import { infoToast } from 'src/utils/2.toasts.js';
-import Hotkey from 'src/utils/hotkey.class.js';
-import { hotkeys } from 'src/utils/1.variables.js';
-import { BUTTON as MOUSE_BUTTON } from 'src/utils/mouse.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global } from 'src/utils/global';
+import { infoToast } from 'src/utils/2.toasts';
+import Hotkey from 'src/utils/hotkey.class';
+import { hotkeys } from 'src/utils/1.variables';
+import { BUTTON as MOUSE_BUTTON } from 'src/utils/mouse';
+import Translation from 'src/structures/constants/translation';
 
 const fullDisable = settings.register({
   name: Translation.Setting('endTurn'),

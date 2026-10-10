@@ -1,6 +1,6 @@
-import Collection from 'src/utils/collection.js';
-import Base from '../base.js';
-import Message from './message.js';
+import Collection from 'src/utils/collection';
+import Base from '../base';
+import Message from './message';
 
 export default class Channel extends Base {
   constructor(data, owner) {

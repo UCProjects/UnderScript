@@ -1,7 +1,7 @@
-import { translateText } from 'src/utils/translate.js';
-import Reward from './Reward.js';
-import Progress from './Progress.js';
-import Base from '../base.js';
+import { translateText } from 'src/utils/translate';
+import Reward from './Reward';
+import Progress from './Progress';
+import Base from '../base';
 
 export default class Quest extends Base {
   #args;

@@ -1,7 +1,7 @@
-import Translation from 'src/structures/constants/translation.ts';
-import Setting from './map.js';
-import SettingType from './setting.js';
-import { getSettingType, isSettingType } from '../settingRegistry.js';
+import Translation from 'src/structures/constants/translation';
+import Setting from './map';
+import SettingType from './setting';
+import { getSettingType, isSettingType } from '../settingRegistry';
 
 const mapTypes = new Set();
 let baseRegistered = false;

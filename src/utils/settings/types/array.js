@@ -1,4 +1,4 @@
-import Setting from './setting.js';
+import Setting from './setting';
 
 export default class ArrayType extends Setting {
   constructor(name = 'array') {

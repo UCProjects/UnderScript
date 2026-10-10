@@ -1,5 +1,5 @@
-import Translation from 'src/structures/constants/translation.js';
-import * as settings from './settings/index.js';
+import Translation from 'src/structures/constants/translation';
+import * as settings from './settings/index';
 
 export default function ignoreUser(name, key, set = false) {
   const setting = settings.register({

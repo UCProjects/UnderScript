@@ -1,7 +1,7 @@
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import { assert as assertInc } from '../counter.js';
-import eventEmitter from '../../src/utils/eventEmitter.js';
+import { assert as assertInc } from '../counter';
+import eventEmitter from '../../src/utils/eventEmitter';
 
 chai.use(chaiAsPromised);
 

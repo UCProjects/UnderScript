@@ -1,12 +1,12 @@
 import axios from 'axios';
-import * as settings from 'src/utils/settings/index.js';
-import { infoToast } from 'src/utils/2.toasts.js';
-import debugToast from 'src/utils/debugToast.js';
-import onPage from 'src/utils/onPage.js';
-import decrypt from 'src/utils/decrypt.emails.js';
-import translate from 'src/utils/translate.js';
-import eventManager from 'src/utils/eventManager.js';
-import Translation from 'src/structures/constants/translation.ts';
+import * as settings from 'src/utils/settings/index';
+import { infoToast } from 'src/utils/2.toasts';
+import debugToast from 'src/utils/debugToast';
+import onPage from 'src/utils/onPage';
+import decrypt from 'src/utils/decrypt.emails';
+import translate from 'src/utils/translate';
+import eventManager from 'src/utils/eventManager';
+import Translation from 'src/structures/constants/translation';
 
 const setting = settings.register({
   name: Translation.Setting('gamelist.refresh'),

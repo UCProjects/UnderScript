@@ -1,5 +1,5 @@
-import Collection from 'src/utils/collection.js';
-import Channel from './channel.js';
+import Collection from 'src/utils/collection';
+import Channel from './channel';
 
 export default class Chat {
   constructor(data) {

@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
-import Rarity from 'src/structures/constants/rarity.js';
-import * as api from './4.api.js';
-import { debug } from './debug.js';
-import eventManager from './eventManager.js';
-import { translateText } from './translate.js';
+import Rarity from 'src/structures/constants/rarity';
+import * as api from './4.api';
+import { debug } from './debug';
+import eventManager from './eventManager';
+import { translateText } from './translate';
 
 const cardMap = new Map();
 

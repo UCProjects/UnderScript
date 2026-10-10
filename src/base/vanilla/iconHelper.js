@@ -1,7 +1,7 @@
 import tippy from 'tippy.js';
-import eventManager from 'src/utils/eventManager.js';
-import style from 'src/utils/style.js';
-import each from 'src/utils/each.js';
+import eventManager from 'src/utils/eventManager';
+import style from 'src/utils/style';
+import each from 'src/utils/each';
 
 // TODO: translation?
 const icons = {

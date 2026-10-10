@@ -1,6 +1,6 @@
 import axios from 'axios';
-import Quest, { getId } from 'src/structures/quests/Quest.js';
-import eventManager from './eventManager.js';
+import Quest, { getId } from 'src/structures/quests/Quest';
+import eventManager from './eventManager';
 
 /**
  * @type {Map<number, Quest>}

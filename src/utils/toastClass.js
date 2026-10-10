@@ -1,4 +1,4 @@
-import toArray from './toArray.js';
+import toArray from './toArray';
 
 export default function addToastClass(className, name) {
   if (className && typeof className === 'object' && !Array.isArray(className)) {

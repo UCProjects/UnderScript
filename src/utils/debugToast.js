@@ -1,11 +1,11 @@
-import { toast } from './2.toasts.js';
-import addToastClass from './toastClass.js';
-import { enabled } from './debug.js';
-import { general } from './debugFlags.js';
+import { toast } from './2.toasts';
+import addToastClass from './toastClass';
+import { enabled } from './debug';
+import { general } from './debugFlags';
 
 /**
  * @param {string | object} arg
- * @param {import('./debugFlags.js').DebugFlag} [flag]
+ * @param {import('./debugFlags').DebugFlag} [flag]
  */
 export default function debugToast(arg, flag = general) {
   if (!enabled(flag)) return false;

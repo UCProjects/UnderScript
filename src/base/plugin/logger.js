@@ -1,5 +1,5 @@
-import wrap from 'src/utils/2.pokemon.js';
-import { registerModule } from 'src/utils/plugin.js';
+import wrap from 'src/utils/2.pokemon';
+import { registerModule } from 'src/utils/plugin';
 
 wrap(() => {
   const name = 'logger';

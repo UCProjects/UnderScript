@@ -1,10 +1,10 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global } from 'src/utils/global.js';
-import { errorToast } from 'src/utils/2.toasts.js';
-import { debug } from 'src/utils/debug.js';
-import isFriend from 'src/utils/isFriend.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global } from 'src/utils/global';
+import { errorToast } from 'src/utils/2.toasts';
+import { debug } from 'src/utils/debug';
+import isFriend from 'src/utils/isFriend';
+import Translation from 'src/structures/constants/translation';
 
 const name = Translation.Setting('custom.friends');
 const setting = settings.register({

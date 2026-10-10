@@ -1,10 +1,10 @@
-import Translation from 'src/structures/constants/translation.js';
-import { script } from './1.variables.js';
-import merge from './merge.js';
-import eventManager from './eventManager.js';
-import toArray from './toArray.js';
-import addToastClass from './toastClass.js';
-import applyToastCss from './toastCss.js';
+import Translation from 'src/structures/constants/translation';
+import { script } from './1.variables';
+import merge from './merge';
+import eventManager from './eventManager';
+import toArray from './toArray';
+import addToastClass from './toastClass';
+import applyToastCss from './toastCss';
 
 const SimpleToast = script.SimpleToast;
 

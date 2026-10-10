@@ -1,9 +1,9 @@
 import axios from 'axios';
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { toast } from 'src/utils/2.toasts.js';
-import getLevel from 'src/utils/getFriendshipLevel.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { toast } from 'src/utils/2.toasts';
+import getLevel from 'src/utils/getFriendshipLevel';
+import Translation from 'src/structures/constants/translation';
 
 const setting = settings.register({
   name: Translation.Setting('friendship.notification'),

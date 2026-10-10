@@ -1,4 +1,4 @@
-import { window } from './1.variables.js';
+import { window } from './1.variables';
 
 function setup() {
   // eslint-disable-next-line no-undef

@@ -1,13 +1,13 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global } from 'src/utils/global.js';
-import { toast as basicToast, errorToast } from 'src/utils/2.toasts.js';
-import * as hover from 'src/utils/hover.js';
-import each from 'src/utils/each.js';
-import some from 'src/utils/some.js';
-import clear from 'src/utils/clear.js';
-import Item from 'src/structures/constants/item.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global } from 'src/utils/global';
+import { toast as basicToast, errorToast } from 'src/utils/2.toasts';
+import * as hover from 'src/utils/hover';
+import each from 'src/utils/each';
+import some from 'src/utils/some';
+import clear from 'src/utils/clear';
+import Item from 'src/structures/constants/item';
+import Translation from 'src/structures/constants/translation';
 
 const setting = settings.register({
   name: Translation.Setting('friendship'),

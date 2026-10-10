@@ -1,8 +1,8 @@
-import Translation from 'src/structures/constants/translation.ts';
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import style from 'src/utils/style.js';
-import VarStore from 'src/utils/VarStore.js';
+import Translation from 'src/structures/constants/translation';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import style from 'src/utils/style';
+import VarStore from 'src/utils/VarStore';
 
 const setting = settings.register({
   name: Translation.Setting('skins.full'),

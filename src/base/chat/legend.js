@@ -1,10 +1,10 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global } from 'src/utils/global.js';
-import { toast } from 'src/utils/2.toasts.js';
-import isFriend from 'src/utils/isFriend.js';
-import { self, name } from 'src/utils/user.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global } from 'src/utils/global';
+import { toast } from 'src/utils/2.toasts';
+import isFriend from 'src/utils/isFriend';
+import { self, name } from 'src/utils/user';
+import Translation from 'src/structures/constants/translation';
 
 const category = Translation.Setting('category.announce.user');
 

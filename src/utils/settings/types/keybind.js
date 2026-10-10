@@ -1,6 +1,6 @@
-import { translateText } from 'src/utils/translate.js';
-import Translation from 'src/structures/constants/translation.ts';
-import Text from './text.js';
+import { translateText } from 'src/utils/translate';
+import Translation from 'src/structures/constants/translation';
+import Text from './text';
 
 const baseLabels = {
   ' ': 'Space',

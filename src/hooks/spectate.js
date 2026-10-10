@@ -1,9 +1,9 @@
-import eventManager from 'src/utils/eventManager.js';
-import { globalSet } from 'src/utils/global.js';
-import { debug } from 'src/utils/debug.js';
-import onPage from 'src/utils/onPage.js';
-import wrap from 'src/utils/2.pokemon.js';
-import { window } from 'src/utils/1.variables.js';
+import eventManager from 'src/utils/eventManager';
+import { globalSet } from 'src/utils/global';
+import { debug } from 'src/utils/debug';
+import onPage from 'src/utils/onPage';
+import wrap from 'src/utils/2.pokemon';
+import { window } from 'src/utils/1.variables';
 
 onPage('Spectate', () => {
   eventManager.singleton.emit('GameStart');

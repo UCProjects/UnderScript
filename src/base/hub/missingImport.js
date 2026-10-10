@@ -1,9 +1,9 @@
-import eventManager from 'src/utils/eventManager.js';
-import { global } from 'src/utils/global.js';
-import style from 'src/utils/style.js';
-import { dismissable } from 'src/utils/2.toasts.js';
-import Translation from 'src/structures/constants/translation.ts';
-import Rarity from 'src/structures/constants/rarity.js';
+import eventManager from 'src/utils/eventManager';
+import { global } from 'src/utils/global';
+import style from 'src/utils/style';
+import { dismissable } from 'src/utils/2.toasts';
+import Translation from 'src/structures/constants/translation';
+import Rarity from 'src/structures/constants/rarity';
 import styles from './missingImport.css';
 
 style.add(styles);

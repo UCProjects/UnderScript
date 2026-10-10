@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { createFilter, parse, serialize } from '../../src/utils/settings/portable.js';
+import { createFilter, parse, serialize } from '../../src/utils/settings/portable';
 
 const setting = (key, extra = {}) => ({ key, exportable: true, ...extra });
 

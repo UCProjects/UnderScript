@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import tooltipPosition from '../../src/utils/tooltipPosition.js';
+import tooltipPosition from '../../src/utils/tooltipPosition';
 
 describe('tooltip position', () => {
   const view = { viewWidth: 1000, viewHeight: 800 };

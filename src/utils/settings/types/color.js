@@ -1,4 +1,4 @@
-import Setting from './text.js';
+import Setting from './text';
 
 export default class Color extends Setting {
   constructor(name = 'color') {

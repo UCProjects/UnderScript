@@ -1,10 +1,10 @@
-import Quest from 'src/structures/quests/Quest.js'; // eslint-disable-line no-unused-vars
-import { toast } from 'src/utils/2.toasts.js';
-import * as settings from 'src/utils/settings/index.js';
-import onPage from 'src/utils/onPage.js';
-import eventManager from 'src/utils/eventManager.js';
-import { fetch } from 'src/utils/quests.js';
-import Translation from 'src/structures/constants/translation.js';
+import Quest from 'src/structures/quests/Quest'; // eslint-disable-line no-unused-vars
+import { toast } from 'src/utils/2.toasts';
+import * as settings from 'src/utils/settings/index';
+import onPage from 'src/utils/onPage';
+import eventManager from 'src/utils/eventManager';
+import { fetch } from 'src/utils/quests';
+import Translation from 'src/structures/constants/translation';
 
 const setting = settings.register({
   name: Translation.Setting('disable.questNotifications'),

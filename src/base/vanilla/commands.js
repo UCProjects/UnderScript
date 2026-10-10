@@ -1,6 +1,6 @@
-import { isPriority, self } from 'src/utils/user.js';
-import { register } from 'src/utils/chatCommands.js';
-import Translation from 'src/structures/constants/translation.js';
+import { isPriority, self } from 'src/utils/user';
+import { register } from 'src/utils/chatCommands';
+import Translation from 'src/structures/constants/translation';
 
 function moderation(command, priority, usage) {
   register({

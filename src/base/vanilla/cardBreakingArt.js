@@ -1,9 +1,9 @@
-import Translation from 'src/structures/constants/translation.ts';
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import style from 'src/utils/style.js';
-import VarStore from 'src/utils/VarStore.js';
-import { getTranslationArray } from '../underscript/translation.js';
+import Translation from 'src/structures/constants/translation';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import style from 'src/utils/style';
+import VarStore from 'src/utils/VarStore';
+import { getTranslationArray } from '../underscript/translation';
 
 const def = 'Breaking (Default)';
 const tran = 'Covered (Transparent)';

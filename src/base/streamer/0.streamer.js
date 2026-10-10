@@ -1,9 +1,9 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import * as api from 'src/utils/4.api.js';
-import { toast } from 'src/utils/2.toasts.js';
-import * as menu from 'src/utils/menu.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import * as api from 'src/utils/4.api';
+import { toast } from 'src/utils/2.toasts';
+import * as menu from 'src/utils/menu';
+import Translation from 'src/structures/constants/translation';
 
 const silent = 'Yes (silent)';
 const disabled = 'No';

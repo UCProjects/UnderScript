@@ -1,5 +1,5 @@
-import { debug } from './debug.js';
-import { extractMeta as flag } from './debugFlags.js';
+import { debug } from './debug';
+import { extractMeta as flag } from './debugFlags';
 
 const regex = /\B\/\/ ==UserScript==\r?\n([\S\s]*?)\r?\n\/\/ ==\/UserScript==/;
 

@@ -1,5 +1,5 @@
-import Translation from 'src/structures/constants/translation.js';
-import { translateText } from 'src/utils/translate.js';
+import Translation from 'src/structures/constants/translation';
+import { translateText } from 'src/utils/translate';
 
 const decoder = document.createElement('template');
 

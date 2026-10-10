@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import ts from 'typescript';
 import glob from 'fast-glob';
-import { buildTypes, bundleTypes, PUBLIC_TYPES, typesBanner } from '../../scripts/types.js';
+import { buildTypes, bundleTypes, PUBLIC_TYPES, typesBanner } from '../../scripts/types';
 
 function toGlob(dir) {
   return `${dir.split(path.sep).join('/')}/**/*.d.ts`;

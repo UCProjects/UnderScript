@@ -1,21 +1,21 @@
 /* eslint-disable no-multi-assign, no-nested-ternary */
-import eventManager from 'src/utils/eventManager.js';
-import eventEmitter from 'src/utils/eventEmitter.js';
-import { global, globalSet } from 'src/utils/global.js';
-import onPage from 'src/utils/onPage.js';
-import * as hover from 'src/utils/hover.js';
-import { blankToast, toast as basicToast } from 'src/utils/2.toasts.js';
-import * as api from 'src/utils/4.api.js';
-import { enabled, debug } from 'src/utils/debug.js';
-import { packs as packsFlag } from 'src/utils/debugFlags.js';
-import { retryAfter, waitSeconds } from 'src/utils/rateLimit.js';
-import formatNumber from 'src/utils/formatNumber.js';
-import { getCollection } from 'src/utils/user.js';
-import { window } from 'src/utils/1.variables.js';
-import Item from 'src/structures/constants/item.js';
+import eventManager from 'src/utils/eventManager';
+import eventEmitter from 'src/utils/eventEmitter';
+import { global, globalSet } from 'src/utils/global';
+import onPage from 'src/utils/onPage';
+import * as hover from 'src/utils/hover';
+import { blankToast, toast as basicToast } from 'src/utils/2.toasts';
+import * as api from 'src/utils/4.api';
+import { enabled, debug } from 'src/utils/debug';
+import { packs as packsFlag } from 'src/utils/debugFlags';
+import { retryAfter, waitSeconds } from 'src/utils/rateLimit';
+import formatNumber from 'src/utils/formatNumber';
+import { getCollection } from 'src/utils/user';
+import { window } from 'src/utils/1.variables';
+import Item from 'src/structures/constants/item';
 import length from 'src/utils/length';
 import isCtrl from 'src/utils/isCtrl';
-import Rarity from 'src/structures/constants/rarity.js';
+import Rarity from 'src/structures/constants/rarity';
 
 const SILENCE_PINGS = 25;
 const ORPHAN_LIFETIME = 30000;

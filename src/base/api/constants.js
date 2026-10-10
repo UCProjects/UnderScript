@@ -1,8 +1,8 @@
-import * as api from 'src/utils/4.api.js';
-import eventManager from 'src/utils/eventManager.js';
-import Item from 'src/structures/constants/item.js';
+import * as api from 'src/utils/4.api';
+import eventManager from 'src/utils/eventManager';
+import Item from 'src/structures/constants/item';
 import Priority from 'src/structures/constants/priority';
-import Rarity from 'src/structures/constants/rarity.js';
+import Rarity from 'src/structures/constants/rarity';
 
 const constants = api.mod.constants;
 Object.entries(Item).forEach((([key, value]) => {

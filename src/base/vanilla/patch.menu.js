@@ -1,6 +1,6 @@
-import Translation from 'src/structures/constants/translation.ts';
-import { window } from 'src/utils/1.variables.js';
-import * as menu from 'src/utils/menu.js';
+import Translation from 'src/structures/constants/translation';
+import { window } from 'src/utils/1.variables';
+import * as menu from 'src/utils/menu';
 
 menu.addButton({
   text: Translation.Menu('gamelog'),

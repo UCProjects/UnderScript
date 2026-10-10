@@ -1,6 +1,6 @@
-import eventManager from 'src/utils/eventManager.js';
-import { globalSet } from 'src/utils/global.js';
-import { toast } from 'src/utils/2.toasts.js';
+import eventManager from 'src/utils/eventManager';
+import { globalSet } from 'src/utils/global';
+import { toast } from 'src/utils/2.toasts';
 
 const toasts = {};
 eventManager.on(':preload:leaderboard', () => {

@@ -1,4 +1,4 @@
-import { captureError } from './sentry.js';
+import { captureError } from './sentry';
 
 export default function wrap(callback, prefix = '', logger = console) {
   try {

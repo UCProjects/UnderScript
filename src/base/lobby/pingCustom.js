@@ -1,5 +1,5 @@
-import { global } from 'src/utils/global.js';
-import onPage from 'src/utils/onPage.js';
+import { global } from 'src/utils/global';
+import onPage from 'src/utils/onPage';
 
 onPage('GamesList', function keepAlive() {
   setInterval(() => {

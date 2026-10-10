@@ -1,10 +1,10 @@
-import Translation from 'src/structures/constants/translation.js';
+import Translation from 'src/structures/constants/translation';
 
-import * as settings from './settings/index.js';
-import sleep from './sleep.js';
-import { toast } from './2.toasts.js';
-import { window } from './1.variables.js';
-import compound from './compoundEvent.js';
+import * as settings from './settings/index';
+import sleep from './sleep';
+import { toast } from './2.toasts';
+import { window } from './1.variables';
+import compound from './compoundEvent';
 
 const setting = settings.register({
   key: 'underscript.notification.dismissPrompt',

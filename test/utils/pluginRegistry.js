@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import axios from 'axios';
-import * as registry from 'src/utils/pluginRegistry.js';
+import * as registry from 'src/utils/pluginRegistry';
 
 const LIST = 'underscript.registry.list';
 const script = (version, download) => [

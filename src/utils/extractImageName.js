@@ -1,4 +1,4 @@
-import extendLangParser from './extendLangParser.js';
+import extendLangParser from './extendLangParser';
 
 let extract = false;
 

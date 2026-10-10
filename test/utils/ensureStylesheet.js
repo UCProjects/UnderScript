@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import ensureStylesheet from '../../src/utils/ensureStylesheet.js';
+import ensureStylesheet from '../../src/utils/ensureStylesheet';
 
 const NAME = 'bootstrap-dialog';
 const HREF = 'https://undercards.net/css/bootstrap-dialog.min.css';

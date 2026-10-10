@@ -1,6 +1,6 @@
-import eventManager from 'src/utils/eventManager.js';
-import { global, globalSet } from 'src/utils/global.js';
-import each from 'src/utils/each.js';
+import eventManager from 'src/utils/eventManager';
+import { global, globalSet } from 'src/utils/global';
+import each from 'src/utils/each';
 
 const prefix = 'underscript.history.';
 const history = {};

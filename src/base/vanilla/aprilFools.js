@@ -1,7 +1,7 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { isApril, IMAGES } from 'src/utils/isApril.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { isApril, IMAGES } from 'src/utils/isApril';
+import Translation from 'src/structures/constants/translation';
 
 const year = `${new Date().getFullYear()}`;
 export const aprilFools = settings.register({

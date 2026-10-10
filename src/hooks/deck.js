@@ -1,6 +1,6 @@
-import eventManager from 'src/utils/eventManager.js';
-import { globalSet } from 'src/utils/global.js';
-import onPage from 'src/utils/onPage.js';
+import eventManager from 'src/utils/eventManager';
+import { globalSet } from 'src/utils/global';
+import onPage from 'src/utils/onPage';
 
 onPage('Decks', function deckPage() {
   eventManager.on('jQuery', () => {

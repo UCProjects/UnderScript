@@ -1,7 +1,7 @@
 import luxon from 'luxon';
-import Translation from 'src/structures/constants/translation.ts';
-import wrap from 'src/utils/2.pokemon.js';
-import compound from 'src/utils/compoundEvent.js';
+import Translation from 'src/structures/constants/translation';
+import wrap from 'src/utils/2.pokemon';
+import compound from 'src/utils/compoundEvent';
 
 wrap(function localTime() {
   compound(':load:Quests', 'underscript:ready', updateTime);

@@ -1,7 +1,7 @@
-import * as settings from 'src/utils/settings/index.js';
-import { global } from 'src/utils/global.js';
-import { register, highlight } from 'src/utils/autocomplete.js';
-import Translation from 'src/structures/constants/translation.js';
+import * as settings from 'src/utils/settings/index';
+import { global } from 'src/utils/global';
+import { register, highlight } from 'src/utils/autocomplete';
+import Translation from 'src/structures/constants/translation';
 
 const setting = settings.register({
   name: Translation.Setting('autocomplete.emotes'),

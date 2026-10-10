@@ -1,9 +1,9 @@
-import style from 'src/utils/style.js';
-import wrap from 'src/utils/2.pokemon.js';
+import style from 'src/utils/style';
+import wrap from 'src/utils/2.pokemon';
 import debugToast from 'src/utils/debugToast';
-import { toast as Toast } from 'src/utils/2.toasts.js';
-import semver from 'src/utils/version.js';
-import { scriptVersion, window } from 'src/utils/1.variables.js';
+import { toast as Toast } from 'src/utils/2.toasts';
+import semver from 'src/utils/version';
+import { scriptVersion, window } from 'src/utils/1.variables';
 import createParser from 'src/utils/parser';
 import eventManager from 'src/utils/eventManager';
 import {
@@ -13,7 +13,7 @@ import {
   validate,
 } from 'src/hooks/updates';
 import plugin from 'src/utils/underscript';
-import Translation from 'src/structures/constants/translation.ts';
+import Translation from 'src/structures/constants/translation';
 import styles from './updates.css';
 
 // Check for script updates

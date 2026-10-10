@@ -1,8 +1,8 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import VarStore from 'src/utils/VarStore.js';
-import style from 'src/utils/style.js';
-import Translation from 'src/structures/constants/translation.ts';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import VarStore from 'src/utils/VarStore';
+import style from 'src/utils/style';
+import Translation from 'src/structures/constants/translation';
 
 const setting = settings.register({
   name: Translation.Setting('card.tribe.outline'),

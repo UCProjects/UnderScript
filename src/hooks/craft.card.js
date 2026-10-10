@@ -1,7 +1,7 @@
 import { cardName } from 'src/utils/cardHelper';
-import eventManager from 'src/utils/eventManager.js';
-import { global, globalSet } from 'src/utils/global.js';
-import onPage from 'src/utils/onPage.js';
+import eventManager from 'src/utils/eventManager';
+import { global, globalSet } from 'src/utils/global';
+import onPage from 'src/utils/onPage';
 
 onPage('Crafting', () => {
   eventManager.on('jQuery', () => {

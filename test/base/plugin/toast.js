@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import 'src/base/plugin/logger.js';
-import 'src/base/plugin/toast.js';
-import loadSimpleToast, { clearToasts } from '../../setup/simpletoast.js';
+import 'src/base/plugin/logger';
+import 'src/base/plugin/toast';
+import loadSimpleToast, { clearToasts } from '../../setup/simpletoast';
 
 let counter = 0;
 

@@ -1,7 +1,7 @@
-import Translation from 'src/structures/constants/translation.ts';
-import eventManager from 'src/utils/eventManager.js';
-import { global } from 'src/utils/global.js';
-import * as menu from 'src/utils/menu.js';
+import Translation from 'src/structures/constants/translation';
+import eventManager from 'src/utils/eventManager';
+import { global } from 'src/utils/global';
+import * as menu from 'src/utils/menu';
 
 eventManager.on(':preload', () => {
   const fetchAllCards = global('fetchAllCards', { throws: false });

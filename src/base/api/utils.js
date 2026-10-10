@@ -1,18 +1,18 @@
-import * as api from 'src/utils/4.api.js';
-import eventEmitter from 'src/utils/eventEmitter.js';
-import each from 'src/utils/each.js';
-import sleep from 'src/utils/sleep.js';
-import VarStore from 'src/utils/VarStore.js';
-import { global, globalSet } from 'src/utils/global.js';
-import Hotkey from 'src/utils/hotkey.class.js';
-import { hide, show, tip } from 'src/utils/hover.js';
-import notify from 'src/utils/notifications.js';
-import shuffle from 'src/utils/shuffle.js';
-import some from 'src/utils/some.js';
-import TabManager from 'src/utils/tabbedView.js';
-import rand from 'src/utils/rand.js';
-import SettingType from 'src/utils/settings/types/setting.js';
-import { translateText } from 'src/utils/translate.js';
+import * as api from 'src/utils/4.api';
+import eventEmitter from 'src/utils/eventEmitter';
+import each from 'src/utils/each';
+import sleep from 'src/utils/sleep';
+import VarStore from 'src/utils/VarStore';
+import { global, globalSet } from 'src/utils/global';
+import Hotkey from 'src/utils/hotkey.class';
+import { hide, show, tip } from 'src/utils/hover';
+import notify from 'src/utils/notifications';
+import shuffle from 'src/utils/shuffle';
+import some from 'src/utils/some';
+import TabManager from 'src/utils/tabbedView';
+import rand from 'src/utils/rand';
+import SettingType from 'src/utils/settings/types/setting';
+import { translateText } from 'src/utils/translate';
 
 const utils = api.mod.utils;
 

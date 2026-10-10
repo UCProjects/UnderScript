@@ -1,9 +1,9 @@
 import tippy from 'tippy.js';
-import Translation from 'src/structures/constants/translation.js';
-import eventManager from './eventManager.js';
-import { footer, footer2, window } from './1.variables.js';
-import { debug } from './debug.js';
-import tooltipPosition from './tooltipPosition.js';
+import Translation from 'src/structures/constants/translation';
+import eventManager from './eventManager';
+import { footer, footer2, window } from './1.variables';
+import { debug } from './debug';
+import tooltipPosition from './tooltipPosition';
 
 let e;
 let x;

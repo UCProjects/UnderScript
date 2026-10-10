@@ -1,4 +1,4 @@
-import toArray from './toArray.js';
+import toArray from './toArray';
 
 function apply(element, style) {
   const previous = {};

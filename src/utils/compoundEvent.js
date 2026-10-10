@@ -1,5 +1,5 @@
-import eventManager from './eventManager.js';
-import wrap from './2.pokemon.js';
+import eventManager from './eventManager';
+import wrap from './2.pokemon';
 
 export default function compound(...events) {
   const callback = events.pop();

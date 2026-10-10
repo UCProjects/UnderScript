@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { jsonResponse, mockFetch } from './setup/fetch.js';
+import { jsonResponse, mockFetch } from './setup/fetch';
 
 describe('test environment', () => {
   describe('localStorage', () => {

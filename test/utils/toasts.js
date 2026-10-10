@@ -1,8 +1,8 @@
 import { expect } from 'chai';
-import Translation from '../../src/structures/constants/translation.js';
-import { blankToast, dismissable, errorToast, infoToast, toast } from '../../src/utils/2.toasts.js';
-import eventManager from '../../src/utils/eventManager.js';
-import loadSimpleToast, { clearToasts } from '../setup/simpletoast.js';
+import Translation from '../../src/structures/constants/translation';
+import { blankToast, dismissable, errorToast, infoToast, toast } from '../../src/utils/2.toasts';
+import eventManager from '../../src/utils/eventManager';
+import loadSimpleToast, { clearToasts } from '../setup/simpletoast';
 
 describe('toasts', function toastTests() {
   before(function load() {

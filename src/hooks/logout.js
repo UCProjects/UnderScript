@@ -1,5 +1,5 @@
-import eventManager from 'src/utils/eventManager.js';
-import onPage from 'src/utils/onPage.js';
+import eventManager from 'src/utils/eventManager';
+import onPage from 'src/utils/onPage';
 
 onPage('Disconnect', function logout() {
   eventManager.singleton.emit('logout');

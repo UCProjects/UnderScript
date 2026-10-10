@@ -1,3 +1,3 @@
-import plugin from './plugin.js';
+import plugin from './plugin';
 
 export default plugin('UnderScript');

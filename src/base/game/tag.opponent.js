@@ -1,9 +1,9 @@
-import eventManager from 'src/utils/eventManager.js';
-import * as settings from 'src/utils/settings/index.js';
-import { global } from 'src/utils/global.js';
-import style from 'src/utils/style.js';
-import { infoToast } from 'src/utils/2.toasts.js';
-import Translation from 'src/structures/constants/translation.js';
+import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
+import { global } from 'src/utils/global';
+import style from 'src/utils/style';
+import { infoToast } from 'src/utils/2.toasts';
+import Translation from 'src/structures/constants/translation';
 
 const tag = settings.register({
   name: Translation.Setting('tag.opponent'),

@@ -1,7 +1,7 @@
 import {
   scriptVersion,
   window,
-} from './1.variables.js';
+} from './1.variables';
 
 const underscript = {
   version: scriptVersion,

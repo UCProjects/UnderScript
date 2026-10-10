@@ -1,6 +1,6 @@
-import { window } from './1.variables.js';
-import { debug } from './debug.js';
-import hasOwn from './hasOwn.js';
+import { window } from './1.variables';
+import { debug } from './debug';
+import hasOwn from './hasOwn';
 
 export function global(...key) {
   const {
