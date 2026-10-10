@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import { FlatCompat } from '@eslint/eslintrc';
 import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 const compat = new FlatCompat({
   baseDirectory: fileURLToPath(new URL('.', import.meta.url)),
@@ -13,6 +14,8 @@ export default [
   {
     ignores: [
       '**/*.ignore*',
+      '**/*.d.ts',
+      'test/types/**',
       'dist/**',
       'node_modules/**',
       '_site/**',
@@ -66,7 +69,7 @@ export default [
         bundledDependencies: false,
       }],
       'import/no-unresolved': ['error', {
-        ignore: ['src/'],
+        ignore: ['src/', '^typescript-eslint$'],
       }],
       'max-len': ['error', {
         code: 120,
@@ -127,10 +130,26 @@ export default [
     },
   },
   {
+    files: ['**/*.ts'],
+    languageOptions: {
+      parser: tseslint.parser,
+    },
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
+    },
+    rules: {
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
+      'no-use-before-define': 'off',
+      '@typescript-eslint/no-use-before-define': ['error', { functions: false }],
+    },
+  },
+  {
     files: ['src/utils/**'],
     rules: {
       'no-return-assign': 'off',
       'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
       'no-console': 'off',
     },
   },
