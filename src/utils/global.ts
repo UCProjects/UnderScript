@@ -11,7 +11,7 @@ type GlobalSetOptions = {
   throws?: boolean;
 };
 
-const target = window as unknown as Record<string, any>;
+const target = window;
 
 export function global(...keys: [string, ...string[]]): any;
 export function global(...args: [...keys: [string, ...string[]], options: GlobalOptions]): any;

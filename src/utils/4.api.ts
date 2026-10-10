@@ -38,11 +38,11 @@ export const mod: Registry = new Proxy(modules, {
   },
 });
 
-(window as unknown as { underscript: unknown }).underscript = new Proxy(underscript, {
+window.underscript = new Proxy(underscript, {
   get(...args) {
     const value = Reflect.get(...args);
     if (value === null || (typeof value !== 'object' && typeof value !== 'function')) return value;
     return new Proxy(value, { set() { return false; } });
   },
   set() { return false; },
-});
+}) as unknown as UnderScriptAPI;
