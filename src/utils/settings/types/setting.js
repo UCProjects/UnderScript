@@ -2,10 +2,13 @@
  * Base setting type used by UnderScript settings.
  */
 export default class SettingType {
+  /**
+   * @param {string} name
+   */
   constructor(name) {
     const isString = typeof name === 'string';
     /**
-     * @type {String}
+     * @type {string}
      */
     this.name = name && isString ? name.trim() : name;
     if (!isString || !this.name) throw new Error('Name not provided');
@@ -45,12 +48,12 @@ export default class SettingType {
   /**
    * Create element
    * @param {*} value current value to generate document element
-   * @param {Function} update set the value of the setting. Pass `undefined` to delete the value from storage
+   * @param {(value?: unknown) => void} update set the value of the setting. Pass `undefined` to delete the value from storage
    * @param {object} data Optional data attached to setting
-   * @param {Boolean} data.remove true if expects "undefined" on removal
+   * @param {boolean} [data.remove] true if expects "undefined" on removal
    * @param {HTMLElement | JQuery} data.container child container you can manipulate, placed after main setting
-   * @param {String} data.key setting key, for use in `container`
-   * @returns {HTMLElement | JQueryElement} element that controls the setting
+   * @param {string} [data.key] setting key, for use in `container`
+   * @returns {HTMLElement | JQuery} element that controls the setting
    */
   element(value, update, {
     data = undefined,
@@ -63,7 +66,7 @@ export default class SettingType {
 
   /**
    * Styles to apply on settings
-   * @returns {String[]} styles to apply on registration
+   * @returns {string[]} styles to apply on registration
    */
   styles() {
     return [];
@@ -71,7 +74,7 @@ export default class SettingType {
 
   /**
    * Controls if element label is prepended or appended
-   * @returns {Boolean | null} True (default) to prepend label.
+   * @returns {boolean | null} True (default) to prepend label.
    *
    * False to append label.
    *

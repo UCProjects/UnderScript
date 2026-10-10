@@ -1,47 +1,84 @@
 import Translation from 'src/structures/constants/translation';
-import EventEmitter from '../eventEmitter';
+import type { Nullish } from 'src/types/utility';
 import { translateText } from '../translate';
 import SettingType from './types/setting';
 
 const refresh = Translation.Setting('note.refresh');
 
+type SettingOwner = {
+  name: string;
+  logger?: { error(...args: unknown[]): unknown };
+};
+
+type SettingPage = string | SettingOwner | { plugin: SettingOwner; tab: string; name: string };
+
+type Flag = UnderScriptDynamic<Nullish<boolean>>;
+
+type Text = UnderScriptDynamic<Nullish<string | Translation>>;
+
+type Name = UnderScriptDynamic<string | Translation>;
+
+export type RegisteredSettingOptions = {
+  category?: { toString(): string };
+  converter?(stored: string): unknown;
+  data?: unknown;
+  default?: unknown;
+  description?: Text;
+  disabled?: Flag;
+  export?: Flag;
+  extraPrefix?: string;
+  events?: UnderScriptEventEmitter;
+  hidden?: Flag;
+  key?: string;
+  name?: Name;
+  note?: Text;
+  onChange?(value: any, previous: any): unknown;
+  page?: SettingPage;
+  refresh?: Flag;
+  remove?: Flag;
+  reset?: Flag;
+  transform?(value: any): any;
+  type?: SettingType;
+};
+
 export default class RegisteredSetting {
-  /** @type {string} */
-  #key;
-  /** @type {string | function(): string} */
-  #name;
-  /** @type {SettingType} */
-  #type;
-  /** @type {string} (or plugin) */
-  #page;
-  /** @type {string} */
-  #category;
-  #default;
-  /** @type {boolean | null | function(): boolean?} */
-  #disabled;
-  /** @type {boolean | null | function(): boolean?} */
-  #hidden;
-  /** @type {boolean | null | function(): boolean?} */
-  #remove;
-  /** @type {boolean | null | function(): boolean?} */
-  #export;
-  /** @type {string?} */
-  #prefix;
-  /** @type {boolean | null | function(): boolean?} */
-  #reset;
-  #data;
-  /** @type {string | null | function(): string?} */
-  #note;
-  /** @type {string | null | function(): string?} */
-  #description;
-  /** @type {boolean | null | function(): boolean?} */
-  #refresh;
-  /** @type {function(any, any): void} */
-  #onChange;
-  /** @type {typeof EventEmitter} */
-  #events;
-  /** @type {function(value: any): any} */
-  #transformer;
+  #key: string;
+
+  #name: Name;
+
+  #type: SettingType;
+
+  #page: SettingPage;
+
+  #category?: { toString(): string };
+
+  #default: unknown;
+
+  #disabled: Flag;
+
+  #hidden: Flag;
+
+  #remove: Flag;
+
+  #export: Flag;
+
+  #prefix?: string;
+
+  #reset: Flag;
+
+  #data: unknown;
+
+  #note: Text;
+
+  #description: Text;
+
+  #refresh: Flag;
+
+  #onChange?: (value: any, previous: any) => unknown;
+
+  #events: UnderScriptEventEmitter;
+
+  #transformer?: (value: any) => any;
 
   constructor({
     category,
@@ -64,11 +101,11 @@ export default class RegisteredSetting {
     reset,
     transform,
     type,
-  } = {}) {
-    this.#key = key;
-    this.#name = name || key;
-    this.#type = type;
-    this.#page = page;
+  }: RegisteredSettingOptions = {}) {
+    this.#key = key as string;
+    this.#name = name || (key as string);
+    this.#type = type as SettingType;
+    this.#page = page as SettingPage;
     this.#category = category;
     this.#default = def;
     this.#disabled = disabled;
@@ -81,7 +118,7 @@ export default class RegisteredSetting {
     this.#note = note;
     this.#description = description;
     this.#refresh = refreshText;
-    this.#events = events;
+    this.#events = events as UnderScriptEventEmitter;
     this.#transformer = transform;
     if (typeof onChange === 'function') {
       this.#onChange = onChange;
@@ -92,67 +129,61 @@ export default class RegisteredSetting {
     }
   }
 
-  get key() {
+  get key(): string {
     return this.#key;
   }
 
-  /**
-   * @returns {string}
-   */
-  get name() {
+  get name(): string {
     return translateText(this.#value(this.#name));
   }
 
-  get type() {
+  get type(): SettingType {
     return this.#type;
   }
 
-  get page() {
+  get page(): SettingPage {
     return this.#page;
   }
 
-  get category() {
+  get category(): { toString(): string } | undefined {
     return this.#category;
   }
 
-  get disabled() {
+  get disabled(): boolean {
     return this.#value(this.#disabled) === true;
   }
 
-  get hidden() {
+  get hidden(): boolean {
     return this.#value(this.#hidden) === true;
   }
 
-  get remove() {
+  get remove(): boolean {
     return this.#value(this.#remove) === true;
   }
 
-  get exportable() {
+  get exportable(): boolean {
     return this.#value(this.#export) !== false;
   }
 
-  get extraPrefix() {
+  get extraPrefix(): string | undefined {
     return this.#prefix;
   }
 
-  get reset() {
+  get reset(): boolean {
     return this.#value(this.#reset) === true;
   }
 
-  /**
-   * @returns {unknown}
-   */
-  get data() {
+  get data(): unknown {
     return this.#value(this.#data);
   }
 
-  get description() {
+  get description(): string {
     const value = this.#value(this.#description);
     return value ? translateText(value) : '';
   }
 
-  get note() {
-    const notes = [];
+  get note(): string {
+    const notes: string[] = [];
 
     const note = this.#value(this.#note);
     if (note) {
@@ -160,13 +191,13 @@ export default class RegisteredSetting {
     }
 
     if (this.#value(this.#refresh)) {
-      notes.push(refresh);
+      notes.push(`${refresh}`);
     }
 
     return notes.join('<br>');
   }
 
-  update(val) {
+  update(val: unknown): void {
     const {
       key,
       type,
@@ -182,11 +213,11 @@ export default class RegisteredSetting {
     this.#events.emit('setting:change', key, this.value, prev);
   }
 
-  set value(val) {
+  set value(val: unknown) {
     this.update(val);
   }
 
-  get value() {
+  get value(): any {
     const val = localStorage.getItem(this.key);
     if (val === null) {
       return this.default;
@@ -194,10 +225,7 @@ export default class RegisteredSetting {
     return this.#transform(this.type.value(val, this.data));
   }
 
-  /**
-   * @returns {unknown}
-   */
-  get default() {
+  get default(): any {
     const val = this.#default;
     if (val !== undefined) {
       return this.#transform(this.type.value(this.#value(val), this.data));
@@ -205,7 +233,7 @@ export default class RegisteredSetting {
     return this.#transform(this.type.default(this.data));
   }
 
-  #convert(converter) {
+  #convert(converter: (stored: string) => unknown): void {
     const { key } = this;
     const current = localStorage.getItem(key);
     if (current === null) return;
@@ -218,16 +246,16 @@ export default class RegisteredSetting {
     }
   }
 
-  #transform(value) {
+  #transform(value: unknown): any {
     if (typeof this.#transformer === 'function') {
       return this.#transformer(value);
     }
     return value;
   }
 
-  #value(input) {
+  #value<T>(input: UnderScriptDynamic<T>): T {
     if (typeof input === 'function') {
-      return input();
+      return (input as () => T)();
     }
     return input;
   }

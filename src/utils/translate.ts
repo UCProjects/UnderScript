@@ -1,10 +1,11 @@
+import type Translation from 'src/structures/constants/translation';
 import { window } from './1.variables';
 import { global } from './global';
 import toLocale from './toLocale';
 
 type TranslateOptions = {
   args?: string[];
-  fallback?: string;
+  fallback?: string | Translation;
   locale?: string;
 };
 
@@ -16,7 +17,7 @@ export default (element: string | Element | JQuery): JQuery => {
   return target;
 };
 
-export function translateText(text: string, {
+export function translateText(text: string | Translation, {
   args = [],
   fallback = text,
   locale,

@@ -4,7 +4,7 @@ interface UnderScriptI18nInstance {
 
 interface UnderScriptI18n {
   (): UnderScriptI18nInstance;
-  (key: string, ...args: unknown[]): string;
+  (key: string, ...args: string[]): string;
   messageStore: {
     messages: Record<string, Record<string, string>>;
   };
