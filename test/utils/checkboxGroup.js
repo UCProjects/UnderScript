@@ -525,4 +525,57 @@ describe('checkboxGroup', () => {
       expect(values(root)).to.deep.equal(['l1']);
     });
   });
+
+  describe('accessibility', () => {
+    function toggle(group) {
+      return group.children('legend').children('.checkToggle');
+    }
+
+    it('names the toggle after the group', () => {
+      const group = checkboxGroup('Legendary', ['a']);
+      expect(toggle(group).attr('aria-label')).to.equal('Legendary');
+    });
+
+    it('names the toggle with the text of an html label', () => {
+      const group = checkboxGroup('Dad &amp; Dog x2', ['a']);
+      expect(toggle(group).attr('aria-label')).to.equal('Dad & Dog x2');
+    });
+
+    it('keeps the name when the group collapses', () => {
+      const group = checkboxGroup('Legendary', ['a']);
+      toggle(group).trigger('click');
+      expect(toggle(group).attr('aria-label')).to.equal('Legendary');
+      expect(toggle(group).attr('aria-expanded')).to.equal('false');
+    });
+
+    it('points the toggle at the members it controls', () => {
+      const sub = checkboxGroup('Sub', ['b']);
+      const group = checkboxGroup('Root', ['a', sub]);
+      const ids = toggle(group).attr('aria-controls').split(' ');
+      expect(ids).to.have.length(2);
+      const members = group.children().not('legend');
+      expect(ids).to.deep.equal(members.toArray().map((el) => el.id));
+    });
+
+    it('adds members to aria-controls as they join', () => {
+      const group = checkboxGroup('Root');
+      expect(toggle(group).attr('aria-controls')).to.equal(undefined);
+      const sub = checkboxGroup('Sub', ['x']);
+      group.data('checkboxGroup').add(sub);
+      expect(toggle(group).attr('aria-controls')).to.equal(sub.attr('id'));
+    });
+
+    it('never reuses an id', () => {
+      const one = checkboxGroup('One', ['a', 'b']);
+      const two = checkboxGroup('Two', ['c', 'd']);
+      const ids = [one, two].flatMap((group) => toggle(group).attr('aria-controls').split(' '));
+      expect(new Set(ids).size).to.equal(4);
+    });
+
+    it('keeps an id the caller already set', () => {
+      const sub = checkboxGroup('Sub', ['b']).attr('id', 'mine');
+      const group = checkboxGroup('Root', [sub]);
+      expect(toggle(group).attr('aria-controls')).to.equal('mine');
+    });
+  });
 });

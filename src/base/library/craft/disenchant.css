@@ -21,7 +21,7 @@
   display: flex;
   gap: 10px;
   align-items: flex-start;
-  font-size: 12px;
+  font-size: large;
   line-height: 1.3;
 
   .us-disenchant-column {

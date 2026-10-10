@@ -6,6 +6,16 @@ styles.add(css);
 
 const KEY = 'checkboxGroup';
 
+let uid = 0;
+
+function ensureId(element) {
+  if (!element.attr('id')) {
+    uid += 1;
+    element.attr('id', `checkboxGroup-${uid}`);
+  }
+  return element.attr('id');
+}
+
 function createBox(name, text) {
   const input = $('<input type="checkbox">').attr('name', name).val(text);
   const label = $('<label>').append(input, ' ', $('<span>').append(text));
@@ -53,6 +63,7 @@ class Group {
       .data(KEY, this);
     if (collapsible) {
       this.toggle = $('<button type="button" class="checkToggle">')
+        .attr('aria-label', label.text().trim())
         .on('click', () => {
           this.collapsed = !this.collapsed;
         });
@@ -93,6 +104,7 @@ class Group {
     this.members.push(member);
     this.placeholder.detach();
     this.element.append(member.element);
+    this.toggle?.attr('aria-controls', this.members.map((m) => ensureId(m.element)).join(' '));
     this.refresh();
   }
 
