@@ -29,6 +29,7 @@
     "bundle": "node scripts/lang.js",
     "lang": "node scripts/lang-template.js",
     "types": "tsc",
+    "types:build": "tsc -p src/tsconfig.json",
     "types:bundle": "node scripts/types.js",
     "//": "versioning scripts",
     "patch": "npm version patch --m=\"chore(patch): Release v%s\"",
