@@ -3,6 +3,7 @@ import showdown from 'showdown';
 import axios from 'axios';
 import { scriptVersion } from 'src/utils/1.variables';
 import style from 'src/utils/style';
+import { authenticatedGet } from 'src/utils/githubAuth';
 import * as menu from 'src/utils/menu';
 import Translation from 'src/structures/constants/translation';
 import styles from './changelog.css';
@@ -66,7 +67,7 @@ export async function get(version = 'latest', short = false) {
   }
 
   if (short) {
-    const { data: { body: text, name, published_at: published } } = await axios.get(`https://api.github.com/repos/UCProjects/UnderScript/releases/tags/${version}`);
+    const { data: { body: text, name, published_at: published } } = await authenticatedGet(axios.get, `https://api.github.com/repos/UCProjects/UnderScript/releases/tags/${version}`);
     const date = luxon.DateTime.fromISO(published).toLocaleString(luxon.DateTime.DATE_MED);
     return getHtml(`## ${name} (${date})\n${text}`);
   }

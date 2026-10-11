@@ -211,7 +211,11 @@
       ]
     },
     "plugin": "Disable Auto Updates",
-    "silent": "Run automatic updates in the background"
+    "silent": "Run automatic updates in the background",
+    "token": {
+      "~": "GitHub token",
+      "note": "Optional. Only needed if update checks fail because GitHub's request limit was reached. A token with no permissions is enough, and it is only ever sent to api.github.com."
+    }
   },
   "vanilla": {
     "card": {
