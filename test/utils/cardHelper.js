@@ -128,6 +128,12 @@ describe('cardHelper', () => {
       expect(check('LEGENDARY', { owned: 1 })).to.equal(false);
     });
 
+    it('does not craft a card that has not been given its quantity yet', () => {
+      document.body.innerHTML = '<span id="dust">1000</span><div id="101" class="card"></div>';
+      expect(helper.quantity(document.getElementById('101'))).to.be.NaN;
+      expect(helper.craftable(document.getElementById('101'))).to.equal(false);
+    });
+
     it('crafts a determination card with enough fragments', () => {
       expect(check('DETERMINATION')).to.equal(true);
       expect(check('DETERMINATION', { shiny: true })).to.equal(false);
