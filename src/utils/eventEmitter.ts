@@ -174,11 +174,13 @@ export default function eventEmitter(): UnderScriptEventEmitter {
     },
     emit(first: string | EmitOptions, ...rest: unknown[]) {
       if (typeof first !== 'object' || first === null) {
-        return emit(first, singletonEvents[first] || events[first], ...rest);
+        const event = first as string;
+        return emit(event, singletonEvents[event] || events[event], ...rest);
       }
+      const given = first as EmitOptions;
       const [event, ...data] = rest as [string, ...unknown[]];
       (['cancelable', 'canceled', 'singleton', 'async'] as const).forEach((key) => {
-        if (first[key] !== undefined) options[key] = !!first[key];
+        if (given[key] !== undefined) options[key] = !!given[key];
       });
       return emit(event, singletonEvents[event] || events[event], ...data);
     },
