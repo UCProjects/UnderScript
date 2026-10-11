@@ -86,7 +86,7 @@ export function rarity(el) {
  * @returns {number}
  */
 export function quantity(el) {
-  return parseInt(el.querySelector('.cardQuantity .nb, #quantity .nb, .quantity .nb').textContent, 10);
+  return parseInt(el.querySelector('.cardQuantity .nb, #quantity .nb, .quantity .nb')?.textContent ?? '', 10);
 }
 
 /**
@@ -108,7 +108,8 @@ export function totalDust() {
  */
 export function craftable(el) {
   const r = rarity(el);
-  if (quantity(el) >= max(r)) {
+  const owned = quantity(el);
+  if (Number.isNaN(owned) || owned >= max(r)) {
     return false;
   }
   const s = isShiny(el);

@@ -36,7 +36,7 @@ onPage('Crafting', function craftMax() {
     if (Rarity.DETERMINATION.equals(rarity)) return;
     const max = cardHelper.max(rarity);
     const amount = cardHelper.quantity(el);
-    if (amount >= max) return;
+    if (Number.isNaN(amount) || amount >= max) return;
     const cost = cardHelper.dustCost(el);
     const total = cardHelper.totalDust();
     eventManager.on('underscript:ready', () => {
