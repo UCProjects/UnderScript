@@ -1,4 +1,4 @@
-type UnderScriptStyleInput = string | readonly string[];
+type UnderScriptStyleInput = string | ReadonlyArray<string>;
 
 type UnderScriptStyle = {
   remove(): UnderScriptStyle;

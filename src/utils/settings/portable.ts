@@ -6,7 +6,7 @@ type PortableSetting = {
   exportable: boolean;
 };
 
-export function createFilter(settings: readonly PortableSetting[]): (key: string) => boolean {
+export function createFilter(settings: ReadonlyArray<PortableSetting>): (key: string) => boolean {
   const keys = new Set<string>();
   const excluded = new Set<string>();
   const prefixes = [...ALWAYS_PREFIXES];

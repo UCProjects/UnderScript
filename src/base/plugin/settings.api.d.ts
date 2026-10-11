@@ -32,7 +32,7 @@ type UnderScriptSettingOptions<T = unknown> = {
   refresh?: UnderScriptDynamic<boolean | null>;
   extraPrefix?: string;
   data?: UnderScriptDynamic<unknown>;
-  options?: readonly unknown[];
+  options?: ReadonlyArray<unknown>;
   min?: number;
   max?: number;
   step?: number;
