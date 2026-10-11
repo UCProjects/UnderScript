@@ -64,8 +64,12 @@
     "~": "Update",
     "available": "{{PLURAL:$1|Update|$1 updates|0=No updates}} available.",
     "checking": "Checking for updates. Please wait.",
+    "ratelimit": "GitHub's request limit was reached, so update checks may be incomplete. You can add a GitHub token in the settings to raise it.",
     "title": "[UnderScript] Update Available!",
-    "text": "Version $1."
+    "text": "Version $1.",
+    "token": {
+      "rejected": "GitHub rejected your token, so update checks are running without it. Check the token in the settings."
+    }
   },
   "updater": "UnderScript updater"
 }

@@ -10,6 +10,7 @@ import Translation from 'src/structures/constants/translation';
 import { DAY, HOUR, scriptVersion, UNDERSCRIPT } from 'src/utils/1.variables';
 import sleep from 'src/utils/sleep';
 import createParser from 'src/utils/parser';
+import { onRateLimited, onTokenRejected, setTokenSource } from 'src/utils/githubAuth';
 import DialogHelper from 'src/utils/DialogHelper';
 import compound from 'src/utils/compoundEvent';
 import { getTranslationArray } from 'src/base/underscript/translation';
@@ -36,6 +37,37 @@ export const silent = settings.register({
   key: 'underscript.updates.silent',
   category: Translation.CATEGORY_UPDATES,
 });
+
+const githubToken = settings.register({
+  name: Translation.Setting('update.token'),
+  key: 'underscript.updates.token',
+  note: Translation.Setting('update.token.note'),
+  type: 'password',
+  export: false,
+  category: Translation.CATEGORY_UPDATES,
+});
+
+setTokenSource(() => githubToken.value());
+
+const tokenNotices = new Set();
+function tokenNotice(key) {
+  if (tokenNotices.has(key)) return;
+  tokenNotices.add(key);
+  Toast({
+    title: Translation.Toast('updater'),
+    text: Translation.Toast(key),
+    className: 'dismissable',
+    buttons: {
+      text: Translation.OPEN,
+      onClick() {
+        githubToken.show(true);
+      },
+    },
+  });
+}
+
+onRateLimited(() => tokenNotice('update.ratelimit'));
+onTokenRejected(() => tokenNotice('update.token.rejected'));
 
 const keys = {
   frequency: Translation.Setting('update.frequency.option').key,
