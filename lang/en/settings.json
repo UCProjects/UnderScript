@@ -214,7 +214,8 @@
     "silent": "Run automatic updates in the background",
     "token": {
       "~": "GitHub token",
-      "note": "Optional. Only needed if update checks fail because GitHub's request limit was reached. A token with no permissions is enough, and it is only ever sent to api.github.com."
+      "description": "Optional, for when update checks hit GitHub's request limit. <a href=\"https://github.com/settings/personal-access-tokens/new\" target=\"_blank\" rel=\"noreferrer\">Create a token</a> with no extra permissions.",
+      "note": "Only ever sent to api.github.com."
     }
   },
   "vanilla": {
