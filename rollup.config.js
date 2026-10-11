@@ -1,4 +1,6 @@
 import { readFileSync } from 'fs';
+import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import cleanup from 'rollup-plugin-cleanup';
 import multi from '@rollup/plugin-multi-entry';
@@ -31,6 +33,21 @@ const lexicalThis = {
 };
 
 export default [{
+  input: 'src/bundle/bundle.js',
+  treeshake: false,
+  watch: false,
+  output: {
+    file: 'dist/dependencies.js',
+    format: 'cjs',
+  },
+  context: 'this',
+  plugins: [
+    nodeResolve({ browser: true }),
+    commonjs(),
+    json(),
+    cleanup(),
+  ],
+}, {
   input: {
     include: [
       'src/utils/0.publicist.js',
