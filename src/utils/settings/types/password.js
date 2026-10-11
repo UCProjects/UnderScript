@@ -7,7 +7,7 @@ export default class Password extends Setting {
   }
 
   element(value, update) {
-    return $('<input type="password">')
+    return $('<input type="password" autocomplete="new-password">')
       .val(value)
       .on('blur.script', (e) => update(e.target.value))
       .css({
