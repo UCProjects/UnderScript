@@ -21,7 +21,7 @@ describe('password setting type', () => {
 
   it('tells browsers not to fill saved logins', () => {
     const { input } = build();
-    expect(input.attr('autocomplete')).to.equal('new-password');
+    expect(input.attr('autocomplete')).to.equal('off');
   });
 
   it('shows and hides the value with the button', () => {
