@@ -52,7 +52,7 @@ type UnderScriptSetting<T = unknown> = {
 };
 
 type UnderScriptSettingsPage = {
-  add<T = unknown>(setting: UnderScriptSettingOptions<T>): UnderScriptSetting<T> | undefined;
+  add<T = unknown>(setting: UnderScriptSettingOptions<T>): UnderScriptSetting<T>;
   open(): void;
 };
 

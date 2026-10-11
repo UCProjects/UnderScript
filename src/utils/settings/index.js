@@ -316,7 +316,7 @@ function showSetting(key, scroll) {
 /**
  * @template [T=unknown]
  * @param {string | SettingOptions<T>} data
- * @returns {UnderScriptSetting<T> | undefined}
+ * @returns {UnderScriptSetting<T>}
  */
 export function register(data) {
   if (typeof data !== 'string' && !data.key) throw new Error('No key provided');
@@ -374,7 +374,10 @@ export function register(data) {
       default: break;
     }
   }
-  if (!isSettingType(setting.type)) return undefined; // TODO: Throw error?
+  if (!isSettingType(setting.type)) {
+    const type = typeof data.type === 'string' ? `"${data.type}"` : 'object';
+    throw new Error(`${key} has an unknown setting type: ${type}`);
+  }
 
   const conf = init(page);
 
