@@ -11,7 +11,7 @@ import applyToastCss from './toastCss';
  * @typedef {Omit<UnderScriptToastOptions, 'text' | 'title' | 'buttons'> & {
  *   text?: string | Translation;
  *   title?: string | Translation;
- *   buttons?: ToastButton | readonly ToastButton[];
+ *   buttons?: ToastButton | ReadonlyArray<ToastButton>;
  * }} ToastOptions
  */
 

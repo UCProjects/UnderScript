@@ -16,7 +16,7 @@ type UnderScriptTipOptions = {
   offset?: string;
 };
 
-type UnderScriptTipTarget = string | Element | readonly Element[] | NodeListOf<Element>;
+type UnderScriptTipTarget = string | Element | ReadonlyArray<Element> | NodeListOf<Element>;
 
 type UnderScriptHover = {
   hide(): void;
