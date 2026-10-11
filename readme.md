@@ -20,7 +20,7 @@ npm install
 
 ### Trying it out ###
 
-Install a userscript manager such as [Tampermonkey](https://www.tampermonkey.net/), allow it to access file URLs, and add a script that loads your build. Chrome, Edge and Opera also need "Developer mode" turned on at `chrome://extensions` (`edge://extensions`, `opera://extensions`), or "Allow User Scripts" for Tampermonkey on Chrome 138 or newer:
+Install a userscript manager such as [Tampermonkey](https://www.tampermonkey.net/), allow it to access file URLs, and add a script that loads your build. Chrome, Edge and Opera also need Tampermonkey allowed to run userscripts: turn on its "Allow User Scripts" toggle (right-click the icon and choose "Manage extension"), or if there isn't one, turn on "Developer mode" at `chrome://extensions` (`edge://extensions`, `opera://extensions`):
 
 ```js
 // ==UserScript==
