@@ -42,6 +42,7 @@ const githubToken = settings.register({
   name: Translation.Setting('update.token'),
   key: 'underscript.updates.token',
   note: Translation.Setting('update.token.note'),
+  description: Translation.Setting('update.token.description'),
   type: 'password',
   export: false,
   category: Translation.CATEGORY_UPDATES,
