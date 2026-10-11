@@ -130,6 +130,16 @@ export default [
     },
   },
   {
+    files: ['src/bundle/**'],
+    languageOptions: {
+      sourceType: 'module',
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+    },
+  },
+  {
     files: ['src/base/plugin/**'],
     languageOptions: {
       globals: {
