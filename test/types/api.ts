@@ -20,8 +20,8 @@ const enabled = settings.add({
   refresh: true,
   onChange(value: boolean, previous: boolean) {},
 });
-enabled?.value() satisfies boolean | undefined;
-enabled?.set(true);
+enabled.value() satisfies boolean;
+enabled.set(true);
 
 const page = settings.page('Advanced');
 page.add({ key: 'advanced.limit', type: 'slider', min: 0, max: 10, step: 1, default: 5 });

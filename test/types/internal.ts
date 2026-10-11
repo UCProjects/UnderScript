@@ -135,8 +135,8 @@ const enabled = settings.register({
     previous satisfies boolean;
   },
 });
-enabled?.value() satisfies boolean | undefined;
-enabled?.set(false);
+enabled.value() satisfies boolean;
+enabled.set(false);
 settings.register('underscript.bare');
 settings.register({ key: 'underscript.dynamic', hidden: () => false, note: () => 'note', min: 0, max: 10 });
 settings.register({ key: 'underscript.tabbed', page: 'Chat', tab: 'Ignored' });

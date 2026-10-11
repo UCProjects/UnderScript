@@ -10,6 +10,8 @@
 ### Plugins
 1. `events.emit` now (optionally) takes "emit options" as its first argument: `events.emit({ cancelable: true, async: true }, 'event', data)`<extended>
     - This works on `plugin.events` and `underscript.utils.eventEmitter()`. The options are `cancelable`, `canceled`, `singleton` and `async`.</extended>
+1. `plugin.settings().add()` now throws an error when the setting's `type` isn't one that exists, instead of quietly returning `undefined`<extended>
+    - The error names the setting and the type, so a typo like `type: 'slidr'` is easy to find. Its type definition no longer includes `undefined`, so you can use the returned setting without checking it first.</extended>
 
 ## Version 0.65.1 (2026-10-10)
 1. Fixed the Craftable cards notice on the Crafting page showing no text
