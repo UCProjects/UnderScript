@@ -19,8 +19,9 @@ Tampermonkey is a script manager program that loads scripts automatically, and i
 ### Chrome, Edge and Opera ###
 These browsers only let Tampermonkey run userscripts after you allow it, so UnderScript will not load until you do.
 
-* Turn on "Developer mode" with the toggle at the top right of `chrome://extensions` (`edge://extensions` in Edge, `opera://extensions` in Opera)
-* On Chrome 138 or newer you can instead right-click the Tampermonkey icon, choose "Manage extension", and turn on "Allow User Scripts"
+* Right-click the Tampermonkey icon, choose "Manage extension", and turn on "Allow User Scripts" if you see it
+* If there is no such toggle, turn on "Developer mode" with the toggle at the top right of `chrome://extensions` (`edge://extensions` in Edge, `opera://extensions` in Opera)
+* If scripts stop running after you change either setting, turn "Allow User Scripts" off and on again
 
 ## Features ##
 
