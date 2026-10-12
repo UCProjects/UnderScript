@@ -9,8 +9,8 @@ interface UnderScriptPlugin {
   readonly version?: string | number;
 }
 
-declare const underscript: UnderScriptAPI;
+declare const underscript: Readonly<UnderScriptAPI>;
 
 interface Window {
-  underscript: UnderScriptAPI;
+  underscript: Readonly<UnderScriptAPI>;
 }
