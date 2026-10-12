@@ -1,5 +1,10 @@
 {
   "broadcast": "[INFO] Undercards Broadcast Message",
+  "chat": {
+    "reconnect": "Reconnect",
+    "replaced": "Chat was opened in another session, so this one disconnected.",
+    "title": "Chat disconnected"
+  },
   "craftable": "Craftable cards are highlighted in {{STYLE:highlight-green|green}}",
   "custom": {
     "ban": {
