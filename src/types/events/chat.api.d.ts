@@ -3,6 +3,7 @@ interface UnderScriptEvents {
   'Chat:Connected': [];
   'Chat:Disconnected': [];
   'Chat:Reconnected': [];
+  'Chat:Replaced': [];
   'Chat:focused': [data: unknown];
   'Chat:unfocused': [data: unknown];
   'Chat:getHistory': [data: unknown];

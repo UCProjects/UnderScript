@@ -1,22 +1,34 @@
-import { SOCKET_SCRIPT_CLOSED } from 'src/utils/1.variables';
+import { SOCKET_SCRIPT_CLOSED, isApp, window } from 'src/utils/1.variables';
 import eventManager from 'src/utils/eventManager';
 import { debug } from 'src/utils/debug';
 import { rawChat } from 'src/utils/debugFlags';
 import { global, globalSet } from 'src/utils/global';
 import VarStore from 'src/utils/VarStore';
 import { attach } from 'src/utils/autocomplete';
+import { toast as Toast } from 'src/utils/2.toasts';
+import Translation from 'src/structures/constants/translation';
+import {
+  canReconnect,
+  createFlapGuard,
+  createPolicy,
+  isSessionReplaced,
+} from 'src/utils/chatReconnect';
 import { isActive, updateIfActive } from './session';
 
 // TODO: Use Message object
 // TODO: Better history management
 let reconnectAttempts = 0;
+const policy = createPolicy(isApp, SOCKET_SCRIPT_CLOSED);
+const flaps = createFlapGuard();
 const guestMode = new VarStore(false);
 const historyIds = new Set();
 
 function handleClose(event) {
   console.debug('Disconnected', event);
-  if (![1000, 1006].includes(event.code)) return;
-  setTimeout(reconnect, 1000 * reconnectAttempts);
+  flaps.closed(Date.now());
+  if (isSessionReplaced(event.reason)) eventManager.emit('Chat:Replaced');
+  if (!policy.retries(event.code, event.reason)) return;
+  setTimeout(reconnect, Math.max(policy.delay(reconnectAttempts), isApp ? flaps.penalty() : 0));
 }
 
 function bind(socketChat) {
@@ -42,6 +54,7 @@ function bind(socketChat) {
     eventManager.emit(`Chat:${action}`, data);
 
     if (action === 'getSelfInfos') {
+      flaps.connected(Date.now());
       eventManager.singleton.emit('Chat:Connected');
       getMessages(data);
     }
@@ -55,7 +68,12 @@ function bind(socketChat) {
 }
 
 export default function reconnect(force = false) {
-  if (!force && (!isActive() || guestMode.isSet() || reconnectAttempts > 3 || global('socketChat', { throws: false })?.readyState !== WebSocket.CLOSED)) return;
+  if (!force && !canReconnect(policy, {
+    active: isActive(),
+    guest: guestMode.isSet(),
+    attempts: reconnectAttempts,
+    closed: global('socketChat', { throws: false })?.readyState === WebSocket.CLOSED,
+  })) return;
   reconnectAttempts += 1;
   const socket = new WebSocket(`wss://${location.hostname}/chat`);
   globalSet('socketChat', socket);
@@ -66,6 +84,7 @@ export default function reconnect(force = false) {
     switch (action) {
       case 'getSelfInfos': { // We're only connected if we get self info
         // Reconnected
+        flaps.connected(Date.now());
         socket.onmessage = global('onMessageChat');
         socket.onclose = global('onCloseChat');
         bind(socket);
@@ -126,6 +145,13 @@ eventManager.on(':preload', () => {
     globalSet('sendPrivateMessage', sendMessageWrapper);
     // Attempt to reconnect when coming back to this window
     document.addEventListener('visibilitychange', () => reconnect());
+    if (isApp) {
+      window.addEventListener('online', () => {
+        reconnectAttempts = 0;
+        flaps.reset();
+        reconnect();
+      });
+    }
 
     // Simulate old getHistory
     globalSet('appendChat', function appendChat(idRoom = '', chatMessages = [], isPrivate = true) {
@@ -177,8 +203,28 @@ eventManager.on(':preload', () => {
     guestMode.set(true);
   });
 
+  let replacedToast;
+  eventManager.on('Chat:Replaced', () => {
+    if (replacedToast?.exists()) return;
+    replacedToast = Toast({
+      title: Translation.Toast('chat.title'),
+      text: Translation.Toast('chat.replaced'),
+      className: 'dismissable',
+      buttons: {
+        text: Translation.Toast('chat.reconnect'),
+        onClick() {
+          replacedToast?.close();
+          reconnectAttempts = 0;
+          flaps.reset();
+          reconnect(true);
+        },
+      },
+    });
+  });
+
   eventManager.on('Chat:Reconnected', () => {
     console.debug('Reconnected');
+    replacedToast?.close();
     $('.chat-messages').find('.red:last').remove();
   });
 });

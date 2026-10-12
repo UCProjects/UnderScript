@@ -8,6 +8,7 @@ export const footer2 = `<div style="width:100%;text-align:center;font-size:12px;
 /** @type {import('./hotkey.class').default[]} */
 export const hotkeys = [];
 export const scriptVersion = GM_info.script.version;
+export const isApp = GM_info.scriptHandler === 'UnderScriptApp';
 /** @type {UserWindow} */
 export const window = typeof unsafeWindow === 'object' ? unsafeWindow : globalThis;
 /** @type {UserWindow} */
