@@ -6,6 +6,8 @@ import { global, globalSet } from 'src/utils/global';
 import VarStore from 'src/utils/VarStore';
 import { attach } from 'src/utils/autocomplete';
 import { toast as Toast } from 'src/utils/2.toasts';
+import chat, { attach as attachChat, emit as emitChat } from 'src/structures/chat/chat';
+import { channelFromData, channelFromRoom, parseChatMessage } from 'src/structures/chat/message';
 import Translation from 'src/structures/constants/translation';
 import {
   canReconnect,
@@ -26,9 +28,25 @@ const historyIds = new Set();
 function handleClose(event) {
   console.debug('Disconnected', event);
   flaps.closed(Date.now());
-  if (isSessionReplaced(event.reason)) eventManager.emit('Chat:Replaced');
+  if (isSessionReplaced(event.reason)) emitChat('replaced');
   if (!policy.retries(event.code, event.reason)) return;
   setTimeout(reconnect, Math.max(policy.delay(reconnectAttempts), isApp ? flaps.penalty() : 0));
+}
+
+function emitMessage(data) {
+  if (data.action !== 'getMessage' && data.action !== 'getPrivateMessage') return;
+  const channel = channelFromData(data);
+  const message = channel && parseChatMessage(data.chatMessage, channel, Date.now());
+  if (message) emitChat('message', message);
+}
+
+function emitHistory({ room, history }) {
+  const channel = channelFromRoom(room);
+  if (!channel) return;
+  const messages = JSON.parse(history)
+    .map((entry) => parseChatMessage(entry, channel))
+    .filter((message) => message !== undefined);
+  emitChat('history', { channel, messages });
 }
 
 function bind(socketChat) {
@@ -52,10 +70,12 @@ function bind(socketChat) {
     oHandler(event);
     eventManager.emit('ChatMessage', data);
     eventManager.emit(`Chat:${action}`, data);
+    emitMessage(data);
 
     if (action === 'getSelfInfos') {
       flaps.connected(Date.now());
       eventManager.singleton.emit('Chat:Connected');
+      emitChat('connected');
       getMessages(data);
     }
   };
@@ -63,6 +83,7 @@ function bind(socketChat) {
   socketChat.onclose = (e) => {
     if (e.code !== SOCKET_SCRIPT_CLOSED) oClose();
     eventManager.emit('Chat:Disconnected');
+    emitChat('disconnected', { code: e.code, reason: e.reason });
     handleClose(e);
   };
 }
@@ -98,6 +119,7 @@ export default function reconnect(force = false) {
         });
 
         eventManager.emit('Chat:Reconnected');
+        emitChat('reconnected');
         reconnectAttempts = 0;
         break;
       }
@@ -123,6 +145,14 @@ function getMessages({ discussionHistory, otherHistory }) {
   return history;
 }
 
+function manualReconnect() {
+  const state = global('socketChat', { throws: false })?.readyState;
+  if (state === WebSocket.OPEN || state === WebSocket.CONNECTING) return;
+  reconnectAttempts = 0;
+  flaps.reset();
+  reconnect(true);
+}
+
 function sendMessageWrapper(...args) {
   if (global('socketChat').readyState !== WebSocket.OPEN) {
     updateIfActive(); // TODO: Have a way to detect activity other than manually resetting it
@@ -139,6 +169,16 @@ eventManager.on(':preload', () => {
     eventManager.singleton.emit('ChatDetected');
 
     bind(global('socketChat'));
+    attachChat({
+      connected: () => global('socketChat', { throws: false })?.readyState === WebSocket.OPEN,
+      reconnect: manualReconnect,
+      send({ type, id }, text) {
+        const send = global(type === 'public' ? 'sendMessage' : 'sendPrivateMessage', { throws: false });
+        if (typeof send !== 'function') return false;
+        send(text, id);
+        return true;
+      },
+    });
 
     // Attempt to reconnect when sending messages
     globalSet('sendMessage', sendMessageWrapper);
@@ -169,6 +209,7 @@ eventManager.on(':preload', () => {
       this.super(idRoom, chatMessages, isPrivate);
       if (newRoom) {
         eventManager.emit('Chat:getHistory', data);
+        emitHistory(data);
       }
     }, {
       throws: false,
@@ -204,7 +245,7 @@ eventManager.on(':preload', () => {
   });
 
   let replacedToast;
-  eventManager.on('Chat:Replaced', () => {
+  chat.on('replaced', () => {
     if (replacedToast?.exists()) return;
     replacedToast = Toast({
       title: Translation.Toast('chat.title'),
@@ -214,9 +255,7 @@ eventManager.on(':preload', () => {
         text: Translation.Toast('chat.reconnect'),
         onClick() {
           replacedToast?.close();
-          reconnectAttempts = 0;
-          flaps.reset();
-          reconnect(true);
+          manualReconnect();
         },
       },
     });
