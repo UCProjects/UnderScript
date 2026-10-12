@@ -13,6 +13,7 @@ import styles from './filter.css';
 
 export const crafting = onPage('Crafting');
 export const decks = onPage('Decks');
+/** @type {Array<Priority | UnderScriptFilter>} */
 export const filters = [
   /**
    * @param {Card} card

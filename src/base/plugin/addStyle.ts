@@ -5,9 +5,9 @@ import { registerModule } from 'src/utils/plugin';
 wrap(() => {
   const name = 'addStyle';
 
-  function mod(plugin) {
+  function mod(plugin: UnderScriptPlugin) {
     const style = newStyle(plugin);
-    return (...styles) => style.add(...styles);
+    return (...styles: UnderScriptStyleInput[]): UnderScriptStyle => style.add(...styles);
   }
 
   registerModule(name, mod);

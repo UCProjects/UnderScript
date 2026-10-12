@@ -4,27 +4,24 @@ import Hotkey from 'src/utils/hotkey.class';
 import { hotkeys } from 'src/utils/1.variables';
 
 class PluginHotkey extends Hotkey {
-  constructor(plugin, hotkey) {
+  readonly plugin: UnderScriptPlugin;
+
+  readonly hotkey: UnderScriptHotkey;
+
+  constructor(plugin: UnderScriptPlugin, hotkey: UnderScriptHotkey) {
     super();
     this.plugin = plugin;
     this.hotkey = hotkey;
+    Object.defineProperties(this, {
+      name: { get: () => `[${hotkey.name}]` },
+      keys: { get: () => hotkey.keys },
+      clicks: { get: () => hotkey.clicks },
+    });
   }
 
-  get name() {
-    return `[${this.hotkey.name}]`;
-  }
-
-  get keys() {
-    return this.hotkey.keys;
-  }
-
-  get clicks() {
-    return this.hotkey.clicks;
-  }
-
-  run(...args) {
+  run(event?: unknown, ...rest: unknown[]): unknown {
     try {
-      return this.hotkey.run(...args);
+      return this.hotkey.run(event, ...rest);
     } catch (e) {
       this.plugin.logger.error(`Hotkey${this.name || ''}${e instanceof Error ? '' : ' Error:'}`, e);
     }
@@ -34,8 +31,8 @@ class PluginHotkey extends Hotkey {
 
 wrap(() => {
   const name = 'hotkey';
-  function mod(plugin) {
-    const registry = new Map();
+  function mod(plugin: UnderScriptPlugin): UnderScriptPluginHotkeys {
+    const registry = new Map<UnderScriptHotkey, PluginHotkey>();
     return {
       register(hotkey) {
         validate(hotkey);
@@ -57,6 +54,6 @@ wrap(() => {
   registerModule(name, mod);
 });
 
-function validate(hotkey) {
+function validate(hotkey: UnderScriptHotkey): void {
   if (!(hotkey instanceof Hotkey)) throw new Error('Not valid hotkey');
 }

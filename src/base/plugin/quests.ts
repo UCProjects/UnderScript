@@ -4,16 +4,16 @@ import { getQuests, fetch } from 'src/utils/quests';
 
 wrap(() => {
   const name = 'quests';
-  function mod(plugin) {
+  function mod(): UnderScriptPluginQuests {
     return {
       getQuests,
       update(event = false) {
         return new Promise((res, rej) => {
-          fetch(({ error, ...rest }) => {
+          fetch(({ error, quests, previous }) => {
             if (error) {
               rej(error);
             } else {
-              res({ ...rest });
+              res({ quests: quests ?? [], previous: previous ?? [] });
             }
           }, event);
         });

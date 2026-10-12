@@ -3,15 +3,12 @@ import wrap from 'src/utils/2.pokemon';
 import { registerModule } from 'src/utils/plugin';
 import * as settings from 'src/utils/settings/index';
 
-// TODO: translation
 const enable = ['Enabled with toast', 'Enabled silently'];
 
-const setting = settings.register({
-  // TODO: translation
+const setting = settings.register<string>({
   name: 'New plugin behavior',
   key: 'underscript.plugins.init',
   category: 'Plugins',
-  // TODO: translation
   data: [...enable, 'Disabled with toast', 'Disabled silently'],
   type: 'select',
 });
@@ -19,11 +16,10 @@ const setting = settings.register({
 wrap(() => {
   const name = 'enabled';
 
-  function mod(plugin) {
+  function mod(plugin: UnderScriptPlugin) {
     if (!plugin.version) return;
     const enabled = plugin.settings().add({
       key: 'plugin.enabled',
-      // TODO: translation
       name: 'Enabled',
       default: enable.includes(setting.value()),
     });
@@ -42,19 +38,18 @@ wrap(() => {
     plugin.events.on(':load', () => {
       const isEnabled = enabled.value();
       plugin.toast({
-        // TODO: translation
         title: 'New Plugin Detected',
         text: `"${plugin.name}" has been <span class="${isEnabled ? 'green' : 'gray'}">${isEnabled ? 'enabled' : 'disabled'}</span> by default.`,
-        error: true, // Make it red.
+        error: true,
         className: 'dismissable',
         buttons: [{
-          text: Translation.General(isEnabled ? 'disable' : 'enable'),
+          text: `${Translation.General(isEnabled ? 'disable' : 'enable')}`,
           onClick() {
             enabled.set(!isEnabled);
             registered.set(true);
           },
         }, {
-          text: Translation.DISMISS,
+          text: `${Translation.DISMISS}`,
           onClick() {
             enabled.set(isEnabled);
             registered.set(true);

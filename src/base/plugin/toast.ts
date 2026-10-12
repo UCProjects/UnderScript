@@ -4,30 +4,27 @@ import { toast as basicToast, errorToast } from 'src/utils/2.toasts';
 import toArray from 'src/utils/toArray';
 
 wrap(() => {
-  const buildFooter = (plugin, text) => [text, plugin.name, 'via UnderScript'].filter(Boolean).join(' • ');
+  const buildFooter = (plugin: UnderScriptPlugin, text?: string) => [text, plugin.name, 'via UnderScript'].filter(Boolean).join(' • ');
   const name = 'toast';
-  /**
-   * @param {*} plugin
-   * @param {import('simpletoast').SimpleToastOptions} options
-   * @returns {import('simpletoast').SimpleToastHandle}
-   */
-  function pluginToast(plugin, options) {
+
+  function pluginToast(plugin: UnderScriptPlugin, options: UnderScriptToastOptions): UnderScriptToast {
     const footer = buildFooter(plugin, options.footer);
     const toast = { ...options, footer };
-    if (toast.error) return errorToast(toast);
-    return basicToast(toast);
+    const created = toast.error ? errorToast(toast) : basicToast(toast);
+    if (!created) throw new Error('Toast was not created');
+    return created;
   }
 
-  function mod(plugin) {
-    const warned = new Set();
-    function warn(key, message) {
+  function mod(plugin: UnderScriptPlugin) {
+    const warned = new Set<string>();
+    function warn(key: string, message: string) {
       if (warned.has(key)) return;
       warned.add(key);
       plugin.logger.warn(message);
     }
 
-    return (data) => {
-      const options = typeof data === 'object' ? { ...data } : { text: data };
+    return (data: string | UnderScriptToastOptions): UnderScriptToast => {
+      const options: UnderScriptToastOptions = typeof data === 'object' ? { ...data } : { text: data };
       const buttons = toArray(options.buttons);
       if (options.css || buttons.some((button) => button?.css)) {
         warn('css', 'toast(): `css` is deprecated, please use `className` instead.');
