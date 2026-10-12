@@ -1,3 +1,5 @@
+import ChatChannel from './channel';
+
 const STAFF_PRIORITY = 6;
 const MOD_PRIORITY = 4;
 const ROOM_PATTERN = /^chat-(public|private)-(.+)$/;
@@ -123,7 +125,7 @@ export function channelFromRoom(room: unknown): UnderScriptChatChannel | undefin
   const match = ROOM_PATTERN.exec(room);
   if (!match) return undefined;
   const [, type, id] = match;
-  return { type: type as 'public' | 'private', id, room };
+  return new ChatChannel(type as 'public' | 'private', id);
 }
 
 export function channelFromData(data: unknown): UnderScriptChatChannel | undefined {
@@ -131,10 +133,10 @@ export function channelFromData(data: unknown): UnderScriptChatChannel | undefin
   if (typeof data.room === 'string') return channelFromRoom(data.room);
   const { action, idRoom, idFriend } = data;
   if (action === 'getMessage' && idRoom !== undefined) {
-    return { type: 'public', id: `${idRoom}`, room: `chat-public-${idRoom}` };
+    return new ChatChannel('public', `${idRoom}`);
   }
   if (action === 'getPrivateMessage' && idFriend !== undefined) {
-    return { type: 'private', id: `${idFriend}`, room: `chat-private-${idFriend}` };
+    return new ChatChannel('private', `${idFriend}`);
   }
   return undefined;
 }
