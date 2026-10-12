@@ -75,7 +75,7 @@ export default function eventEmitter(): UnderScriptEventEmitter {
 
     let ran = false;
     let canceled = canceledState;
-    const promises: Promise<unknown>[] = [];
+    const promises: Array<Promise<unknown>> = [];
 
     if (Array.isArray(e) && e.length) {
       ran = true;
@@ -190,7 +190,7 @@ export default function eventEmitter(): UnderScriptEventEmitter {
     },
   };
 
-  (Object.keys(options) as (keyof Options)[]).forEach((key) => {
+  (Object.keys(options) as Array<keyof Options>).forEach((key) => {
     Object.defineProperty(emitter, key, {
       get() {
         options[key] = true;

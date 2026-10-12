@@ -15,7 +15,7 @@ const target = window;
 
 export function global(...keys: [string, ...string[]]): any;
 export function global(...args: [...keys: [string, ...string[]], options: GlobalOptions]): any;
-export function global(...args: (string | GlobalOptions)[]): any {
+export function global(...args: Array<string | GlobalOptions>): any {
   const {
     throws = true,
   } = typeof args[args.length - 1] === 'object' ? args.pop() as GlobalOptions : {};
