@@ -38,11 +38,19 @@ export const mod: Registry = new Proxy(modules, {
   },
 });
 
+const readOnly: ProxyHandler<object> = {
+  set: () => false,
+  defineProperty: () => false,
+  deleteProperty: () => false,
+  setPrototypeOf: () => false,
+  preventExtensions: () => false,
+};
+
 window.underscript = new Proxy(underscript, {
+  ...readOnly,
   get(...args) {
     const value = Reflect.get(...args);
     if (value === null || (typeof value !== 'object' && typeof value !== 'function')) return value;
-    return new Proxy(value, { set() { return false; } });
+    return new Proxy(value, readOnly);
   },
-  set() { return false; },
 }) as unknown as UnderScriptAPI;
