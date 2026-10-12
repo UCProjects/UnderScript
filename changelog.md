@@ -14,8 +14,12 @@
     - If the connection keeps dropping within seconds of connecting, it waits a minute between attempts so it does not fight another client for the socket.</extended>
 1. When another session of your account takes over chat, this one no longer reconnects on its own and takes it back, which made two sessions kick each other in a loop<extended>
     - A toast tells you chat was opened elsewhere and has a Reconnect button. Switching back to the tab, or sending a message, still reconnects as before.
-    - Plugins can listen for the new `Chat:Replaced` event.</extended>
+    - Plugins can listen for it with `plugin.chat.on('replaced', ...)`.</extended>
 ### Plugins
+1. New `plugin.chat` for chat: `chat.on('message' | 'history' | 'connected' | 'disconnected' | 'reconnected' | 'replaced', ...)`, `chat.connected`, `chat.replaced`, `chat.reconnect()` and `chat.send(channel, text)`. `underscript.chat` exposes just the read-only `connected` and `replaced`<extended>
+    - Messages arrive already parsed: `message.text`, `message.author` (`name`, `avatar`, `division`, `groups`, `isMod`, `isStaff`), `message.channel`, `action`, `rainbow` and `deleted`, with the original data on `message.raw`. The existing `Chat:*` events and their raw data are unchanged.
+    - `message` fires for each public or private message, and `history` fires when a chat window is first filled in, with `{ channel, messages }`.
+    - An error in one of your listeners is logged under your plugin's name, with the event and its arguments.</extended>
 1. `events.emit` now (optionally) takes "emit options" as its first argument: `events.emit({ cancelable: true, async: true }, 'event', data)`<extended>
     - This works on `plugin.events` and `underscript.utils.eventEmitter()`. The options are `cancelable`, `canceled`, `singleton` and `async`.</extended>
 1. `plugin.settings().add()` now throws an error when the setting's `type` isn't one that exists, instead of quietly returning `undefined`<extended>
