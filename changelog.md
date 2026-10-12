@@ -15,6 +15,8 @@
 1. When another session of your account takes over chat, this one no longer reconnects on its own and takes it back, which made two sessions kick each other in a loop<extended>
     - A toast tells you chat was opened elsewhere and has a Reconnect button. Switching back to the tab, or sending a message, still reconnects as before.
     - Plugins can listen for it with `plugin.chat.on('replaced', ...)`.</extended>
+1. Chat history now survives page loads: the last 50 public messages of each room come back after a quiet spell instead of vanishing after five minutes<extended>
+    - The game drops stored history older than five minutes when a page loads, so a short break between pages emptied your chat. UnderScript now keeps its own copy and puts it back before the game reads it. There is a setting to turn it off.</extended>
 ### Plugins
 1. New `plugin.chat` for chat: `chat.on('message' | 'history' | 'connected' | 'disconnected' | 'reconnected' | 'replaced', ...)`, `chat.connected`, `chat.replaced`, `chat.reconnect()` and `chat.send(channel, text)`. `underscript.chat` exposes just the read-only `connected` and `replaced`<extended>
     - Messages arrive already parsed: `message.text`, `message.author` (`name`, `avatar`, `division`, `groups`, `isMod`, `isStaff`), `message.channel`, `action`, `rainbow` and `deleted`, with the original data on `message.raw`. The existing `Chat:*` events and their raw data are unchanged.
