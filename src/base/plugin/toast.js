@@ -19,12 +19,21 @@ wrap(() => {
   }
 
   function mod(plugin) {
-    let warned = false;
+    const warned = new Set();
+    function warn(key, message) {
+      if (warned.has(key)) return;
+      warned.add(key);
+      plugin.logger.warn(message);
+    }
+
     return (data) => {
       const options = typeof data === 'object' ? { ...data } : { text: data };
-      if (!warned && (options.css || toArray(options.buttons).some((button) => button?.css))) {
-        warned = true;
-        plugin.logger.warn('toast(): `css` is deprecated, please use `className` instead.');
+      const buttons = toArray(options.buttons);
+      if (options.css || buttons.some((button) => button?.css)) {
+        warn('css', 'toast(): `css` is deprecated, please use `className` instead.');
+      }
+      if (buttons.some((button) => button?.onclick)) {
+        warn('onclick', 'toast(): `onclick` is deprecated, please use `onClick` instead.');
       }
       const toast = pluginToast(plugin, options);
       if (!toast.exists()) return toast;

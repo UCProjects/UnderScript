@@ -231,4 +231,49 @@ describe('plugin toast', function pluginToastTests() {
       expect(warnings).to.have.length(1);
     });
   });
+
+  describe('onclick warning', () => {
+    it('stays quiet when buttons use onClick', () => {
+      const { toast } = setup();
+      toast({ text: 'plain', buttons: [{ text: 'a', onClick() {} }, { text: 'b' }] });
+      expect(warnings).to.have.length(0);
+    });
+
+    it('warns when a button has onclick', () => {
+      const { toast } = setup();
+      toast({ text: 'old', buttons: { text: 'a', onclick() {} } });
+      expect(warnings).to.have.length(1);
+      expect(messages()[0]).to.contain('onclick').and.contain('onClick');
+    });
+
+    it('names the plugin in the warning', () => {
+      const { name, toast } = setup();
+      toast({ text: 'old', buttons: { text: 'a', onclick() {} } });
+      expect(String(warnings[0][0])).to.contain(name).and.contain('/warn');
+    });
+
+    it('warns once per plugin', () => {
+      const { toast } = setup();
+      toast({ text: 'one', buttons: { text: 'a', onclick() {} } });
+      toast({ text: 'two', buttons: { text: 'a', onclick() {} } });
+      expect(warnings).to.have.length(1);
+    });
+
+    it('does not use up the css warning, or the other way round', () => {
+      const { toast } = setup();
+      toast({ text: 'old', buttons: { text: 'a', onclick() {} } });
+      toast({ text: 'styled', css: { color: 'red' } });
+      expect(warnings).to.have.length(2);
+      expect(messages()[0]).to.contain('onclick');
+      expect(messages()[1]).to.contain('css');
+    });
+
+    it('still calls the handler', () => {
+      const { toast } = setup();
+      let called = 0;
+      const instance = toast({ text: 'old', buttons: { text: 'a', onclick() { called += 1; } } });
+      instance.element.querySelector('.simpletoast-button').click();
+      expect(called).to.equal(1);
+    });
+  });
 });
