@@ -162,6 +162,10 @@ export default [
       '@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
       'no-use-before-define': 'off',
       '@typescript-eslint/no-use-before-define': ['error', { functions: false }],
+      '@typescript-eslint/array-type': ['error', {
+        default: 'array-simple',
+        readonly: 'generic',
+      }],
     },
   },
   {

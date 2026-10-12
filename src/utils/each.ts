@@ -6,7 +6,7 @@ export default function each<T extends object>(
   t?: unknown,
 ): void {
   if (!o) return;
-  (Object.keys(o) as Extract<keyof T, string>[]).forEach((x) => {
+  (Object.keys(o) as Array<Extract<keyof T, string>>).forEach((x) => {
     f.call(t, o[x], x, o);
   });
 }

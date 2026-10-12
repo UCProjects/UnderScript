@@ -9,7 +9,7 @@ export const BUTTON = Object.freeze({
 });
 
 export function getName(button: number): string {
-  const names = Object.keys(BUTTON) as (keyof typeof BUTTON)[];
+  const names = Object.keys(BUTTON) as Array<keyof typeof BUTTON>;
   return names.find((key) => BUTTON[key] === button) || 'Unknown';
 }
 
