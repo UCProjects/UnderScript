@@ -29,7 +29,8 @@ interface UnderScriptChatMessage {
   readonly channel: UnderScriptChatChannel;
   readonly author: UnderScriptChatUser;
   readonly text: string;
-  readonly action: boolean;
+  /** A message that starts with `:me:`, which the game shows as an action line ("* name text") */
+  readonly emote: boolean;
   readonly rainbow: boolean;
   readonly deleted: boolean;
   readonly timestamp?: number;

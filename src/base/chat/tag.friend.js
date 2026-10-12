@@ -1,4 +1,4 @@
-import eventManager from 'src/utils/eventManager';
+import chat from 'src/structures/chat/chat';
 import * as settings from 'src/utils/settings/index';
 import { global } from 'src/utils/global';
 import { infoToast } from 'src/utils/2.toasts';
@@ -27,26 +27,26 @@ style.add(styles);
 setColor(color.value());
 
 let toast;
-function processMessage(message, room) {
+/** @param {UnderScriptChatMessage} message */
+function processMessage(message) {
   if (!tag.value()) return;
-  if (global('isFriend')(message.user.id)) {
+  const room = message.channel.room;
+  if (global('isFriend')(message.author.id)) {
     if (!toast) {
       toast = infoToast('<span class="friend">Friends</span> are now highlighted in chat.', 'underscript.notice.highlighting', '1');
     }
     $(`#${room} #message-${message.id} .chat-user`).addClass('friend');
-    if (message.me) { // emotes
+    if (message.emote) { // emotes
       $(`#${room} #message-${message.id} .chat-message`).addClass('friend');
     }
   }
 }
 
-eventManager.on('Chat:getHistory', (data) => {
-  JSON.parse(data.history).forEach((message) => {
-    processMessage(message, data.room);
-  });
+chat.on('history', ({ messages }) => {
+  messages.forEach(processMessage);
 });
-eventManager.on('Chat:getMessage', function tagFriends(data) {
-  processMessage(JSON.parse(data.chatMessage), data.room);
+chat.on('message', (message) => {
+  if (message.channel.type === 'public') processMessage(message);
 });
 
 function setColor(newColor) {

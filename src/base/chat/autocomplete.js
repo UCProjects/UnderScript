@@ -1,4 +1,5 @@
 import eventManager from 'src/utils/eventManager';
+import chat from 'src/structures/chat/chat';
 import * as settings from 'src/utils/settings/index';
 import { global, globalSet } from 'src/utils/global';
 import * as fnUser from 'src/utils/user';
@@ -51,15 +52,16 @@ function add(user, list) {
   list.push(name);
 }
 
-eventManager.on('Chat:getHistory', ({ room, history }) => {
+chat.on('history', ({ channel: { room }, messages }) => {
   if (lists[room] === undefined) {
     lists[room] = [];
   }
   const list = lists[room];
-  JSON.parse(history).forEach(({ user }) => add(user, list));
+  messages.forEach(({ author }) => add(author.raw, list));
 });
-eventManager.on('Chat:getMessage', ({ room, chatMessage }) => {
-  add(JSON.parse(chatMessage).user, lists[room]);
+chat.on('message', ({ channel, author }) => {
+  if (channel.type !== 'public') return;
+  add(author.raw, lists[channel.room]);
 });
 eventManager.on('ChatDetected', () => {
   globalSet('autoComplete', function autoComplete(...args) {
