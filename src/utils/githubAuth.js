@@ -29,16 +29,16 @@ function isRateLimit({ response } = {}) {
   return `${response.headers?.['x-ratelimit-remaining']}` === '0';
 }
 
-function token() {
+function getToken() {
   return `${tokenSource() ?? ''}`.trim();
 }
 
 function currentToken(url) {
-  return isGithubApi(url) ? token() : '';
+  return isGithubApi(url) ? getToken() : '';
 }
 
 export function hasToken() {
-  return !!token();
+  return !!getToken();
 }
 
 async function anonymous(request, url, config) {
