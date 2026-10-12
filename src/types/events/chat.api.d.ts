@@ -1,4 +1,4 @@
-interface UnderScriptChatChannel {
+type UnderScriptChatChannel = {
   readonly type: 'public' | 'private';
   readonly id: string;
   readonly room: string;
@@ -6,16 +6,16 @@ interface UnderScriptChatChannel {
   readonly name?: string;
   /** Whether this chat's window is open right now */
   readonly open: boolean;
-}
+};
 
-interface UnderScriptChatGroup {
+type UnderScriptChatGroup = {
   readonly id: number | string;
   readonly name: string;
   readonly priority: number;
   readonly icon?: string;
-}
+};
 
-interface UnderScriptChatUser {
+type UnderScriptChatUser = {
   readonly id: number | string;
   readonly name: string;
   readonly avatar?: { readonly image: string; readonly rarity: string };
@@ -26,9 +26,9 @@ interface UnderScriptChatUser {
   readonly isStaff: boolean;
   readonly isMod: boolean;
   readonly raw: Readonly<Record<string, unknown>>;
-}
+};
 
-interface UnderScriptChatMessage {
+type UnderScriptChatMessage = {
   readonly id: number | string;
   readonly channel: UnderScriptChatChannel;
   readonly author: UnderScriptChatUser;
@@ -45,9 +45,9 @@ interface UnderScriptChatMessage {
   display(text: string, options?: { html?: boolean }): boolean;
   /** Puts back what the game rendered. Returns `false` if nothing was changed */
   restore(): boolean;
-}
+};
 
-interface UnderScriptChatEvents {
+type UnderScriptChatEvents = {
   /** Before the game handles a message. Set `this.canceled = true` to stop it being shown or stored. `message.element` is `null` here */
   preMessage: [message: UnderScriptChatMessage];
   message: [message: UnderScriptChatMessage];
@@ -56,20 +56,20 @@ interface UnderScriptChatEvents {
   disconnected: [info: { code: number; reason: string }];
   reconnected: [];
   replaced: [];
-}
+};
 
-interface UnderScriptChatState {
+type UnderScriptChatState = {
   readonly connected: boolean;
   readonly replaced: boolean;
-}
+};
 
-interface UnderScriptChat extends UnderScriptChatState {
+type UnderScriptChat = UnderScriptChatState & {
   on<K extends keyof UnderScriptChatEvents>(event: K, listener: (this: UnderScriptEventMeta, ...args: UnderScriptChatEvents[K]) => unknown): UnderScriptChat;
   once<K extends keyof UnderScriptChatEvents>(event: K, listener: (this: UnderScriptEventMeta, ...args: UnderScriptChatEvents[K]) => unknown): UnderScriptChat;
   off<K extends keyof UnderScriptChatEvents>(event: K, listener: (...args: UnderScriptChatEvents[K]) => unknown): UnderScriptChat;
   reconnect(): void;
   send(channel: UnderScriptChatChannel | string, text: string): boolean;
-}
+};
 
 interface UnderScriptAPI {
   readonly chat: UnderScriptChatState;
