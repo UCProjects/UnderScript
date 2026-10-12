@@ -2,16 +2,23 @@ import wrap from 'src/utils/2.pokemon';
 import { registerModule } from 'src/utils/plugin';
 import chat from 'src/structures/chat/chat';
 
+type ChatEvent = keyof UnderScriptChatEvents;
+
+type ChatListener<K extends ChatEvent> = (
+  this: UnderScriptEventMeta,
+  ...args: UnderScriptChatEvents[K]
+) => unknown;
+
 wrap(() => {
   const name = 'chat';
 
-  function mod(plugin) {
-    function log(error, event, args) {
+  function mod(plugin: UnderScriptPlugin): Readonly<UnderScriptChat> {
+    function log(error: unknown, event: string, args: unknown[]) {
       plugin.logger.error(`Chat event error (${event}):\n`, error, '\n', JSON.stringify({ args }));
     }
 
-    function wrapper(fn, event) {
-      function listener(...args) {
+    function wrapper<K extends ChatEvent>(fn: ChatListener<K>, event: K) {
+      function listener(this: UnderScriptEventMeta, ...args: UnderScriptChatEvents[K]) {
         try {
           const val = fn.call(this, ...args);
           if (val instanceof Promise) {
@@ -28,7 +35,7 @@ wrap(() => {
       return listener;
     }
 
-    const obj = {
+    const obj: UnderScriptChat = {
       get connected() {
         return chat.connected;
       },

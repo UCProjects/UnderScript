@@ -72,6 +72,11 @@ describe('plugin events', () => {
     expect(calls).to.equal(1);
   });
 
+  it('gives back the plugin events from off', () => {
+    const { events, event } = setup();
+    expect(events.off(event, () => {})).to.equal(events);
+  });
+
   it('removes a listener from every event with off', () => {
     const { events, event } = setup();
     let calls = 0;

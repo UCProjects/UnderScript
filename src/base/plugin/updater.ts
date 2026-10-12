@@ -5,7 +5,7 @@ import * as settings from 'src/utils/settings/index';
 import Translation from 'src/structures/constants/translation';
 
 const text = Translation.Setting('update.plugin');
-const setting = settings.register({
+const setting = settings.register<boolean>({
   name: text,
   key: 'underscript.disable.plugins.update',
   category: Translation.CATEGORY_PLUGINS,
@@ -13,12 +13,12 @@ const setting = settings.register({
 
 wrap(() => {
   const name = 'updater';
-  function mod(plugin) {
+  function mod(plugin: UnderScriptPlugin) {
     if (!plugin.version) return undefined;
 
-    let updater = false;
+    let updater: false | (() => void) = false;
     const update = plugin.settings().add({
-      name: text,
+      name: () => `${text}`,
       key: 'plugin.update',
       default: () => setting.value(),
       disabled: () => setting.value(),
@@ -30,16 +30,17 @@ wrap(() => {
       get: () => updater && !setting.value() && !update.value(),
     });
 
-    return (data = {}) => {
+    return (data: UnderScriptPluginUpdate): (() => void) => {
       if (!['string', 'object'].includes(typeof data)) throw new Error();
       if (updater) throw new Error('Already registered');
       const {
         downloadURL = typeof data === 'string' ? data : undefined,
         updateURL,
-      } = data;
-      updater = registerPlugin(plugin, { downloadURL, updateURL });
+      }: { downloadURL?: string; updateURL?: string } = typeof data === 'string' ? {} : data;
+      const unregister = registerPlugin(plugin, { downloadURL, updateURL });
+      updater = unregister;
       return () => {
-        updater();
+        unregister();
         updater = false;
       };
     };

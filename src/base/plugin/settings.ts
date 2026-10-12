@@ -5,11 +5,11 @@ import SettingType from 'src/utils/settings/types/setting';
 
 wrap(() => {
   const name = 'settings';
-  function add(plugin, tab) {
+  function add(plugin: UnderScriptPlugin, tab?: string): UnderScriptSettingsPage['add'] {
     const prefix = `underscript.plugin.${plugin.name}`;
 
-    return (data = {}) => {
-      if (!data.key) throw new Error('Key must be provided');
+    return (data: UnderScriptSettingOptions<any, any>) => {
+      if (!data?.key) throw new Error('Key must be provided');
 
       const setting = {
         ...data,
@@ -22,8 +22,8 @@ wrap(() => {
     };
   }
 
-  function mod(plugin) {
-    const obj = {
+  function mod(plugin: UnderScriptPlugin) {
+    const obj: UnderScriptSettings = {
       add: add(plugin),
       page(tabName) {
         if (typeof tabName !== 'string') throw new Error(`Page name must be a string, got ${typeof tabName}`);
@@ -40,7 +40,7 @@ wrap(() => {
         if (!title) throw new Error('Name must be provided');
         return settings.setMainName(plugin, title);
       },
-      on: (...args) => settings.on(...args),
+      on: (event: string, listener: (...args: any[]) => unknown) => settings.on(event, listener),
       open: () => settings.open(plugin),
       isOpen: () => settings.isOpen(),
       addType(type) {
@@ -58,7 +58,7 @@ wrap(() => {
         return settings.value(key);
       },
     };
-    return () => Object.freeze(obj);
+    return (): Readonly<UnderScriptSettings> => Object.freeze(obj);
   }
 
   registerModule(name, mod);

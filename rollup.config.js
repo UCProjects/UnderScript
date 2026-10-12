@@ -16,7 +16,7 @@ import importString from './scripts/import-string.js';
 import bundle from './scripts/lang.js';
 
 const debug = process.argv.includes('--configDebug');
-const exclude = ['**/*.ignore/*', '**/*.ignore*'];
+const exclude = ['**/*.ignore/*', '**/*.ignore*', '**/*.d.ts'];
 
 if (!debug) {
   exclude.push(
@@ -52,6 +52,7 @@ export default [{
     include: [
       'src/utils/0.publicist.js',
       'src/base/**/*.js',
+      'src/base/**/*.ts',
       'src/hooks/**/*.js',
     ],
     exclude,

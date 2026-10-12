@@ -3,18 +3,23 @@ import { registerModule } from 'src/utils/plugin';
 import Priority from 'src/structures/constants/priority';
 import { crafting, decks, filters } from '../library/filter';
 
+type PluginFilter = UnderScriptFilter & { displayName?: string };
+
 wrap(() => {
   if (!(crafting || decks)) return;
   const name = 'addFilter';
   let counter = 0;
-  function mod(plugin) {
-    return (filter, priority = Priority.NORMAL) => {
+  function mod(plugin: UnderScriptPlugin) {
+    return (
+      filter: PluginFilter,
+      priority: UnderScriptPriority | UnderScriptPriorityName = Priority.NORMAL,
+    ): void => {
       const fixedPriority = Priority.get(priority);
       if (!fixedPriority) throw new Error('Must pass a valid priority');
       if (typeof filter !== 'function') throw new Error('Must pass a function');
       counter += 1;
       const functionName = filter.displayName || filter.name || `filter${counter}`;
-      function customFilter(...args) {
+      function customFilter(this: unknown, ...args: Parameters<UnderScriptFilter>) {
         try {
           return filter.call(this, ...args);
         } catch (e) {

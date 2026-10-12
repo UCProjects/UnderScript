@@ -3,7 +3,7 @@ import charCount from './charCount';
 import eventManager from './eventManager';
 import last from './last';
 
-type StyleInput = string | string[];
+type StyleInput = string | ReadonlyArray<string>;
 
 type StyleHandle = {
   remove(): StyleHandle;
