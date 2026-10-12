@@ -47,11 +47,31 @@ type UnderScriptChatMessage = {
   restore(): boolean;
 };
 
+type UnderScriptChatNotice = {
+  /** Where it came from: `info` (a gray line), `auto` (a yellow announcement), `broadcast`, `error` (a red line) or `denied` (an error dialog) */
+  readonly kind: 'info' | 'auto' | 'broadcast' | 'error' | 'denied';
+  /** The translation key the server sent, when it sent one */
+  readonly key?: string;
+  /** The arguments that go with `key` */
+  readonly args: readonly unknown[];
+  /** What the game shows, translated into the player's language */
+  readonly text: string;
+  /** For `auto`: what happened, such as `legendary-drop` */
+  readonly type?: string;
+  /** For `auto`: the user it is about */
+  readonly userId?: number | string;
+  readonly raw: Readonly<Record<string, unknown>>;
+};
+
 type UnderScriptChatEvents = {
   /** Before the game handles a message. Set `this.canceled = true` to stop it being shown or stored. `message.element` is `null` here */
   preMessage: [message: UnderScriptChatMessage];
   message: [message: UnderScriptChatMessage];
   history: [history: { channel: UnderScriptChatChannel; messages: UnderScriptChatMessage[] }];
+  /** A system line from the server: info, an announcement or a broadcast */
+  notice: [notice: UnderScriptChatNotice];
+  /** The server refused or failed something you tried. Nothing is sent for every refusal, some are dropped silently */
+  rejected: [notice: UnderScriptChatNotice];
   connected: [];
   disconnected: [info: { code: number; reason: string }];
   reconnected: [];
