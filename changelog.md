@@ -19,6 +19,7 @@
 1. New `plugin.chat` for chat: `chat.on('message' | 'history' | 'connected' | 'disconnected' | 'reconnected' | 'replaced', ...)`, `chat.connected`, `chat.replaced`, `chat.reconnect()` and `chat.send(channel, text)`. `underscript.chat` exposes just the read-only `connected` and `replaced`<extended>
     - Messages arrive already parsed: `message.text`, `message.author` (`name`, `avatar`, `division`, `groups`, `isMod`, `isStaff`), `message.channel`, `action`, `rainbow` and `deleted`, with the original data on `message.raw`. The existing `Chat:*` events and their raw data are unchanged.
     - `message` fires for each public or private message, and `history` fires when a chat window is first filled in, with `{ channel, messages }`.
+    - `message.display(text)` changes what is shown for a message, as plain text (or HTML with `{ html: true }`), without touching the message itself, and `message.restore()` puts the original back. A message in a chat window that is closed has no `message.element` yet, so apply it again from the `history` event.
     - An error in one of your listeners is logged under your plugin's name, with the event and its arguments.</extended>
 1. `events.emit` now (optionally) takes "emit options" as its first argument: `events.emit({ cancelable: true, async: true }, 'event', data)`<extended>
     - This works on `plugin.events` and `underscript.utils.eventEmitter()`. The options are `cancelable`, `canceled`, `singleton` and `async`.</extended>

@@ -34,6 +34,12 @@ interface UnderScriptChatMessage {
   readonly deleted: boolean;
   readonly timestamp?: number;
   readonly raw: Readonly<Record<string, unknown>>;
+  /** The message's element in its chat window, or `null` while that window is closed */
+  readonly element: HTMLElement | null;
+  /** Replaces what is shown for this message, as plain text unless `html` is set. Returns `false` when it is not on screen */
+  display(text: string, options?: { html?: boolean }): boolean;
+  /** Puts back what the game rendered. Returns `false` if nothing was changed */
+  restore(): boolean;
 }
 
 interface UnderScriptChatEvents {
