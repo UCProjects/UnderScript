@@ -20,6 +20,7 @@
 ### Plugins
 1. New `plugin.chat` for chat: `chat.on('message' | 'history' | 'connected' | 'disconnected' | 'reconnected' | 'replaced', ...)`, `chat.connected`, `chat.replaced`, `chat.reconnect()` and `chat.send(channel, text)`. `underscript.chat` exposes just the read-only `connected` and `replaced`<extended>
     - Messages arrive already parsed: `message.text`, `message.author` (`name`, `avatar`, `division`, `groups`, `isMod`, `isStaff`), `message.channel`, `emote`, `rainbow` and `deleted`, with the original data on `message.raw`. The existing `Chat:*` events and their raw data are unchanged.
+    - `message.channel` has `type`, `id`, `room`, `name` (the room's key, such as `chat-roleplay`) and `open` (whether its window is open right now).
     - `message` fires for each public or private message, and `history` fires when a chat window is first filled in, with `{ channel, messages }`.
     - `preMessage` fires first, before the game has shown or stored the message. Set `this.canceled = true` in your listener to stop it, and check `this.canceled` to see whether something before you already did.
     - `message.display(text)` changes what is shown for a message, as plain text (or HTML with `{ html: true }`), without touching the message itself, and `message.restore()` puts the original back. A message in a chat window that is closed has no `message.element` yet, so apply it again from the `history` event.

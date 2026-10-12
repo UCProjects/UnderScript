@@ -2,6 +2,10 @@ interface UnderScriptChatChannel {
   readonly type: 'public' | 'private';
   readonly id: string;
   readonly room: string;
+  /** The game's name key for a public room, such as `chat-roleplay`, and `undefined` for a private chat */
+  readonly name?: string;
+  /** Whether this chat's window is open right now */
+  readonly open: boolean;
 }
 
 interface UnderScriptChatGroup {
