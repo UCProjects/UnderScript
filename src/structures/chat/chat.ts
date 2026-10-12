@@ -55,6 +55,14 @@ export function emit<K extends keyof UnderScriptChatEvents>(
   events.emit(event, ...args);
 }
 
+export function emitCancelable<K extends keyof UnderScriptChatEvents>(
+  event: K,
+  canceled: boolean,
+  ...args: UnderScriptChatEvents[K]
+): boolean {
+  return events.emit({ cancelable: true, canceled }, event, ...args).canceled;
+}
+
 api.register('chat', Object.freeze({
   get connected() {
     return chat.connected;
