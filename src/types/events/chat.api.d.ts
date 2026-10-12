@@ -44,6 +44,8 @@ interface UnderScriptChatMessage {
 }
 
 interface UnderScriptChatEvents {
+  /** Before the game handles a message. Set `this.canceled = true` to stop it being shown or stored. `message.element` is `null` here */
+  preMessage: [message: UnderScriptChatMessage];
   message: [message: UnderScriptChatMessage];
   history: [history: { channel: UnderScriptChatChannel; messages: UnderScriptChatMessage[] }];
   connected: [];
@@ -58,8 +60,8 @@ interface UnderScriptChatState {
 }
 
 interface UnderScriptChat extends UnderScriptChatState {
-  on<K extends keyof UnderScriptChatEvents>(event: K, listener: (...args: UnderScriptChatEvents[K]) => unknown): UnderScriptChat;
-  once<K extends keyof UnderScriptChatEvents>(event: K, listener: (...args: UnderScriptChatEvents[K]) => unknown): UnderScriptChat;
+  on<K extends keyof UnderScriptChatEvents>(event: K, listener: (this: UnderScriptEventMeta, ...args: UnderScriptChatEvents[K]) => unknown): UnderScriptChat;
+  once<K extends keyof UnderScriptChatEvents>(event: K, listener: (this: UnderScriptEventMeta, ...args: UnderScriptChatEvents[K]) => unknown): UnderScriptChat;
   off<K extends keyof UnderScriptChatEvents>(event: K, listener: (...args: UnderScriptChatEvents[K]) => unknown): UnderScriptChat;
   reconnect(): void;
   send(channel: UnderScriptChatChannel | string, text: string): boolean;

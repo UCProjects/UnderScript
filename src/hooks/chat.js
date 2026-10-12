@@ -6,7 +6,11 @@ import { global, globalSet } from 'src/utils/global';
 import VarStore from 'src/utils/VarStore';
 import { attach } from 'src/utils/autocomplete';
 import { toast as Toast } from 'src/utils/2.toasts';
-import chat, { attach as attachChat, emit as emitChat } from 'src/structures/chat/chat';
+import chat, {
+  attach as attachChat,
+  emit as emitChat,
+  emitCancelable as emitChatCancelable,
+} from 'src/structures/chat/chat';
 import { channelFromData, channelFromRoom, parseChatMessage } from 'src/structures/chat/message';
 import Translation from 'src/structures/constants/translation';
 import {
@@ -33,11 +37,26 @@ function handleClose(event) {
   setTimeout(reconnect, Math.max(policy.delay(reconnectAttempts), isApp ? flaps.penalty() : 0));
 }
 
+const parsed = new WeakMap();
+
+function parsedMessage(data) {
+  if (data.action !== 'getMessage' && data.action !== 'getPrivateMessage') return undefined;
+  if (!parsed.has(data)) {
+    const channel = channelFromData(data);
+    parsed.set(data, channel && parseChatMessage(data.chatMessage, channel, Date.now()));
+  }
+  return parsed.get(data);
+}
+
 function emitMessage(data) {
-  if (data.action !== 'getMessage' && data.action !== 'getPrivateMessage') return;
-  const channel = channelFromData(data);
-  const message = channel && parseChatMessage(data.chatMessage, channel, Date.now());
+  const message = parsedMessage(data);
   if (message) emitChat('message', message);
+}
+
+function preMessageCanceled(data, canceled) {
+  const message = parsedMessage(data);
+  if (!message) return canceled;
+  return emitChatCancelable('preMessage', canceled, message);
 }
 
 function emitHistory({ room, history }) {
@@ -66,7 +85,8 @@ function bind(socketChat) {
     }
 
     eventManager.emit('preChatMessage', data);
-    if (eventManager.cancelable.emit(`preChat:${action}`, data).canceled) return;
+    const raw = eventManager.cancelable.emit(`preChat:${action}`, data);
+    if (preMessageCanceled(data, raw.canceled)) return;
     oHandler(event);
     eventManager.emit('ChatMessage', data);
     eventManager.emit(`Chat:${action}`, data);
