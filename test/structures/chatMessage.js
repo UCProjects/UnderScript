@@ -21,7 +21,7 @@ describe('parseChatMessage', () => {
     expect(message.text).to.equal('hello');
     expect(message.channel).to.equal(channel);
     expect(message.timestamp).to.equal(1234);
-    expect(message.action).to.equal(false);
+    expect(message.emote).to.equal(false);
     expect(message.rainbow).to.equal(false);
     expect(message.deleted).to.equal(false);
   });
@@ -37,7 +37,7 @@ describe('parseChatMessage', () => {
 
   it('reads the flags', () => {
     const message = parseChatMessage(raw({ me: true, rainbow: true, deleted: true }), channel);
-    expect(message.action).to.equal(true);
+    expect(message.emote).to.equal(true);
     expect(message.rainbow).to.equal(true);
     expect(message.deleted).to.equal(true);
   });

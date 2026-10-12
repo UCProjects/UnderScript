@@ -1,4 +1,5 @@
 import eventManager from 'src/utils/eventManager';
+import chat from 'src/structures/chat/chat';
 import * as settings from 'src/utils/settings/index';
 import { isApril, IMAGES } from 'src/utils/isApril';
 import Translation from 'src/structures/constants/translation';
@@ -42,12 +43,12 @@ eventManager.on('undercards:season', () => {
   eventManager.on('func:appendCard', (card, container) => {
     toggleFish(container);
   });
-  eventManager.on('Chat:getMessage', ({ chatMessage }) => {
-    const { id } = JSON.parse(chatMessage);
+  chat.on('message', ({ id, channel }) => {
+    if (channel.type !== 'public') return;
     toggleFish($(`#message-${id}`));
   });
-  eventManager.on('Chat:getHistory', ({ room }) => {
-    toggleFish($(`#${room}`));
+  chat.on('history', ({ channel }) => {
+    toggleFish($(`#${channel.room}`));
   });
   eventManager.on('Home:Refresh', () => {
     toggleFish($('table.spectateTable'));

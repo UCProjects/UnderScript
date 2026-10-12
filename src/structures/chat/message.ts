@@ -6,7 +6,7 @@ type Raw = Record<string, unknown>;
 
 type MessageFields = Pick<
 UnderScriptChatMessage,
-'id' | 'channel' | 'author' | 'text' | 'action' | 'rainbow' | 'deleted' | 'timestamp' | 'raw'
+'id' | 'channel' | 'author' | 'text' | 'emote' | 'rainbow' | 'deleted' | 'timestamp' | 'raw'
 >;
 
 const originals = new WeakMap<Element, string>();
@@ -16,7 +16,7 @@ export class ChatMessage implements UnderScriptChatMessage {
   readonly channel: MessageFields['channel'];
   readonly author: MessageFields['author'];
   readonly text: MessageFields['text'];
-  readonly action: MessageFields['action'];
+  readonly emote: MessageFields['emote'];
   readonly rainbow: MessageFields['rainbow'];
   readonly deleted: MessageFields['deleted'];
   readonly timestamp: MessageFields['timestamp'];
@@ -27,7 +27,7 @@ export class ChatMessage implements UnderScriptChatMessage {
     this.channel = fields.channel;
     this.author = fields.author;
     this.text = fields.text;
-    this.action = fields.action;
+    this.emote = fields.emote;
     this.rainbow = fields.rainbow;
     this.deleted = fields.deleted;
     this.timestamp = fields.timestamp;
@@ -155,7 +155,7 @@ export function parseChatMessage(
     channel,
     author,
     text: message,
-    action: me === true,
+    emote: me === true,
     rainbow: rainbow === true,
     deleted: deleted === true,
     timestamp: typeof timestamp === 'number' ? timestamp : receivedAt,
