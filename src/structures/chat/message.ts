@@ -9,6 +9,8 @@ UnderScriptChatMessage,
 'id' | 'channel' | 'author' | 'text' | 'action' | 'rainbow' | 'deleted' | 'timestamp' | 'raw'
 >;
 
+const originals = new WeakMap<Element, string>();
+
 export class ChatMessage implements UnderScriptChatMessage {
   readonly id: MessageFields['id'];
   readonly channel: MessageFields['channel'];
@@ -31,6 +33,37 @@ export class ChatMessage implements UnderScriptChatMessage {
     this.timestamp = fields.timestamp;
     this.raw = fields.raw;
     Object.freeze(this);
+  }
+
+  get element(): HTMLElement | null {
+    const room = document.getElementById(this.channel.room);
+    const id = `message-${this.id}`.replace(/["\\]/g, '');
+    return room?.querySelector<HTMLElement>(`[id="${id}"]`) ?? null;
+  }
+
+  private get body(): HTMLElement | null {
+    return this.element?.querySelector<HTMLElement>('.chat-message') ?? null;
+  }
+
+  display(text: string, { html = false }: { html?: boolean } = {}): boolean {
+    const target = this.body;
+    if (!target) return false;
+    if (!originals.has(target)) originals.set(target, target.innerHTML);
+    if (html) {
+      target.innerHTML = text;
+    } else {
+      target.textContent = text;
+    }
+    return true;
+  }
+
+  restore(): boolean {
+    const target = this.body;
+    const original = target ? originals.get(target) : undefined;
+    if (!target || original === undefined) return false;
+    target.innerHTML = original;
+    originals.delete(target);
+    return true;
   }
 }
 
