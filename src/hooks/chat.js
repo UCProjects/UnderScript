@@ -12,6 +12,7 @@ import chat, {
   emitCancelable as emitChatCancelable,
 } from 'src/structures/chat/chat';
 import { channelFromData, channelFromRoom, parseChatMessage } from 'src/structures/chat/message';
+import { noticeEvent, parseNotice } from 'src/structures/chat/notice';
 import Translation from 'src/structures/constants/translation';
 import {
   canReconnect,
@@ -53,6 +54,17 @@ function emitMessage(data) {
   if (message) emitChat('message', message);
 }
 
+function translateFromServer(message) {
+  return global('translateFromServerJson', { throws: false })?.(message);
+}
+
+function emitNotice(data) {
+  const event = noticeEvent(data.action);
+  if (!event) return;
+  const notice = parseNotice(data, translateFromServer);
+  if (notice) emitChat(event, notice);
+}
+
 function preMessageCanceled(data, canceled) {
   const message = parsedMessage(data);
   if (!message) return canceled;
@@ -91,6 +103,7 @@ function bind(socketChat) {
     eventManager.emit('ChatMessage', data);
     eventManager.emit(`Chat:${action}`, data);
     emitMessage(data);
+    emitNotice(data);
 
     if (action === 'getSelfInfos') {
       flaps.connected(Date.now());
