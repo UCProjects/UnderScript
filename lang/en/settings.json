@@ -46,6 +46,7 @@
     "game.emotes": "Emotes",
     "notifications": "Notifications"
   },
+  "chat.history": "Disable keeping chat history between page loads",
   "chat.rightclick": "Disable Chat Context (right click)",
   "command": "Disable $1 command",
   "craft": {
