@@ -35,6 +35,55 @@ settings.add({
 
 settings.add({ key: 'custom', type: 'Example:custom' });
 
+const mode = settings.add({ key: 'mode', options: ['Complete', 'Partial'] });
+mode.value() satisfies 'Complete' | 'Partial';
+mode.on((value, previous) => {
+  value satisfies 'Complete' | 'Partial';
+});
+
+const labeled = settings.add({
+  key: 'labeled',
+  default: 'b',
+  options: [['First', 'a'], ['Second', 'b']],
+  onChange(value) {
+    value satisfies 'a' | 'b';
+  },
+});
+labeled.value() satisfies 'a' | 'b';
+
+const numeric = settings.add({ key: 'numeric', options: [1, 2, 3] });
+numeric.value() satisfies '1' | '2' | '3';
+
+const count = settings.add({
+  key: 'count',
+  options: ['1', '2'],
+  transform: (value) => Number(value),
+});
+count.value() satisfies number;
+count.set('2');
+
+// @ts-expect-error set takes the stored value, not the transformed one
+count.set(2);
+
+const parsed = settings.add({
+  key: 'parsed',
+  default: '5',
+  transform(value: string) {
+    return Number(value);
+  },
+  converter(stored) {
+    return stored.trim();
+  },
+});
+parsed.value() satisfies number;
+parsed.set('6');
+
+const typed = settings.add<string>({ key: 'typed', options: ['a', 'b'] });
+typed.value() satisfies string;
+
+const listed = settings.add({ key: 'listed', type: 'list', options: ['a', 'b'] });
+listed.value() satisfies unknown;
+
 settings.value('underscript.plugin.Example.enabled') satisfies unknown;
 settings.isOpen() satisfies boolean;
 settings.on('open', () => {});
