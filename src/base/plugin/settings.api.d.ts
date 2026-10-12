@@ -16,11 +16,19 @@ type UnderScriptBuiltinSettingType =
 
 type UnderScriptSettingType = UnderScriptBuiltinSettingType | `${string}:${string}` | object;
 
-type UnderScriptSettingOptions<T = unknown> = {
+type UnderScriptSelectOption = string | number | readonly [label: string | number, value?: string | number];
+
+type UnderScriptSelectValue<O> =
+  O extends readonly [unknown, infer V extends string | number] ? `${V}`
+  : O extends readonly [infer L extends string | number] ? `${L}`
+  : O extends string | number ? `${O}`
+  : never;
+
+type UnderScriptSettingOptions<T = unknown, S = T> = {
   key: string;
   name?: UnderScriptDynamic<string>;
   type?: UnderScriptSettingType;
-  default?: UnderScriptDynamic<T>;
+  default?: UnderScriptDynamic<S>;
   category?: { toString(): string };
   note?: UnderScriptDynamic<string | null>;
   description?: UnderScriptDynamic<string | null>;
@@ -37,22 +45,31 @@ type UnderScriptSettingOptions<T = unknown> = {
   max?: number;
   step?: number;
   onChange?(value: T, previous: T): void;
-  converter?(stored: string): T | null | undefined;
-  transform?(value: unknown): T;
+  converter?(stored: string): S | null | undefined;
+  transform?(value: S): T;
 };
 
-type UnderScriptSetting<T = unknown> = {
+type UnderScriptSetting<T = unknown, S = T> = {
   readonly key: string;
   readonly disabled: boolean;
   value(): T;
-  set(value: T | null | undefined): void;
+  set(value: S | null | undefined): void;
   on(listener: (value: T, previous: T) => void): void;
   show(scroll?: boolean): void;
   refresh(): void;
 };
 
 type UnderScriptSettingsPage = {
-  add<T = unknown>(setting: UnderScriptSettingOptions<T>): UnderScriptSetting<T>;
+  add<
+    const O extends ReadonlyArray<UnderScriptSelectOption>,
+    T = UnderScriptSelectValue<O[number]>,
+  >(
+    setting: Omit<UnderScriptSettingOptions<T, UnderScriptSelectValue<O[number]>>, 'type' | 'options'> & {
+      type?: 'select';
+      options: O;
+    },
+  ): UnderScriptSetting<T, UnderScriptSelectValue<O[number]>>;
+  add<S = unknown, T = S>(setting: UnderScriptSettingOptions<T, S>): UnderScriptSetting<T, S>;
   open(): void;
 };
 

@@ -30,6 +30,10 @@
     - This works on `plugin.events` and `underscript.utils.eventEmitter()`. The options are `cancelable`, `canceled`, `singleton` and `async`.</extended>
 1. `plugin.settings().add()` now throws an error when the setting's `type` isn't one that exists, instead of quietly returning `undefined`<extended>
     - The error names the setting and the type, so a typo like `type: 'slidr'` is easy to find. Its type definition no longer includes `undefined`, so you can use the returned setting without checking it first.</extended>
+1. In the type definitions, `plugin.settings().add({ options })` is now a select, and its value is typed as the options you passed<extended>
+    - `options: ['Complete', 'Partial']` gives a setting whose `value()` is `'Complete' | 'Partial'`. For `[label, value]` options it is the values, and numbers are typed as strings because that is how they are stored.
+    - Passing another `type` alongside `options`, or an explicit type like `add<string>(...)`, behaves as before.
+    - `transform` now receives the stored value and sets the type of `value()`, `onChange` and `on`. `default`, `converter` and `set()` use the stored value, not the transformed one.</extended>
 
 ## Version 0.65.1 (2026-10-10)
 1. Fixed the Craftable cards notice on the Crafting page showing no text
