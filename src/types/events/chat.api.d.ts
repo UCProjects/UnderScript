@@ -36,6 +36,7 @@ type UnderScriptChatMessage = {
   /** A message that starts with `:me:`, which the game shows as an action line ("* name text") */
   readonly emote: boolean;
   readonly rainbow: boolean;
+  /** Whether a moderator removed it. Becomes  on a message you already have when its author's messages are removed */
   readonly deleted: boolean;
   readonly timestamp?: number;
   readonly raw: Readonly<Record<string, unknown>>;
@@ -79,6 +80,11 @@ type UnderScriptChatCommand = {
   output: string | undefined;
 };
 
+type UnderScriptChatDeletion = {
+  /** The user whose public messages were removed */
+  readonly userId: number | string;
+};
+
 type UnderScriptChatEvents = {
   /** Before the game handles a message. Set `this.canceled = true` to stop it being shown or stored. `message.element` is `null` here */
   preMessage: [message: UnderScriptChatMessage];
@@ -88,6 +94,8 @@ type UnderScriptChatEvents = {
   notice: [notice: UnderScriptChatNotice];
   /** The server refused or failed something you tried. Nothing is sent for every refusal, some are dropped silently */
   rejected: [notice: UnderScriptChatNotice];
+  /** A moderator removed all of a user's public messages. The open windows are already updated */
+  deleted: [deletion: UnderScriptChatDeletion];
   /** The player pressed Enter in a chat window, before the game or any command sees it. Set `this.canceled = true` to send nothing. Not fired for `chat.send` */
   send: [outgoing: UnderScriptChatOutgoing];
   /** The player sent a `/command`. Set `this.canceled = true` to stop it being sent */

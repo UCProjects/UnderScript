@@ -25,6 +25,7 @@
     - `notice` fires for the server's system lines (info, announcements and broadcasts) and `rejected` for the errors it sends back, both as `{ kind, key, args, text, raw }`, with `text` already translated.
     - `send` fires when the player presses Enter in a chat window, as `{ channel, text }`. Set `this.canceled = true` to send nothing, or assign `text` to change what is sent. It does not fire for `chat.send`.
     - `command` fires for a `/command`, as `{ channel, command, text, output }`. Set `this.canceled = true` to stop it, or assign `output` to send that instead.
+    - `deleted` fires with `{ userId }` when a moderator removes all of a user's public messages.
     - `chat.channels` (also on `underscript.chat`) lists the chat windows that are open right now, and `focus` and `blur` fire with the channel when the player clicks into or leaves a chat's text box.
     - `preMessage` fires first, before the game has shown or stored the message. Set `this.canceled = true` in your listener to stop it, and check `this.canceled` to see whether something before you already did.
     - `message.display(text)` changes what is shown for a message, as plain text (or HTML with `{ html: true }`), without touching the message itself, and `message.restore()` puts the original back. A message in a chat window that is closed has no `message.element` yet, so apply it again from the `history` event.

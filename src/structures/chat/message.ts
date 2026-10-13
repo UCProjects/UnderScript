@@ -1,4 +1,5 @@
 import ChatChannel from './channel';
+import { deletedSince, stamp } from './deletion';
 
 const STAFF_PRIORITY = 6;
 const MOD_PRIORITY = 4;
@@ -20,9 +21,10 @@ export class ChatMessage implements UnderScriptChatMessage {
   readonly text: MessageFields['text'];
   readonly emote: MessageFields['emote'];
   readonly rainbow: MessageFields['rainbow'];
-  readonly deleted: MessageFields['deleted'];
   readonly timestamp: MessageFields['timestamp'];
   readonly raw: MessageFields['raw'];
+  readonly #removed: boolean;
+  readonly #stampedAt: number;
 
   constructor(fields: MessageFields) {
     this.id = fields.id;
@@ -31,10 +33,15 @@ export class ChatMessage implements UnderScriptChatMessage {
     this.text = fields.text;
     this.emote = fields.emote;
     this.rainbow = fields.rainbow;
-    this.deleted = fields.deleted;
+    this.#removed = fields.deleted;
+    this.#stampedAt = stamp();
     this.timestamp = fields.timestamp;
     this.raw = fields.raw;
     Object.freeze(this);
+  }
+
+  get deleted(): boolean {
+    return this.#removed || (this.channel.type === 'public' && deletedSince(this.author.id, this.#stampedAt));
   }
 
   get element(): HTMLElement | null {
@@ -43,12 +50,12 @@ export class ChatMessage implements UnderScriptChatMessage {
     return room?.querySelector<HTMLElement>(`[id="${id}"]`) ?? null;
   }
 
-  private get body(): HTMLElement | null {
+  get #body(): HTMLElement | null {
     return this.element?.querySelector<HTMLElement>('.chat-message') ?? null;
   }
 
   display(text: string, { html = false }: { html?: boolean } = {}): boolean {
-    const target = this.body;
+    const target = this.#body;
     if (!target) return false;
     if (!originals.has(target)) originals.set(target, target.innerHTML);
     if (html) {
@@ -60,7 +67,7 @@ export class ChatMessage implements UnderScriptChatMessage {
   }
 
   restore(): boolean {
-    const target = this.body;
+    const target = this.#body;
     const original = target ? originals.get(target) : undefined;
     if (!target || original === undefined) return false;
     target.innerHTML = original;
