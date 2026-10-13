@@ -8,7 +8,7 @@
 // @connect      githubusercontent.com
 // @match        https://*.undercards.net/*
 // @match        https://feildmaster.github.io/UnderScript/*
-// @exclude      https://*.undercards.net/*/*
+// @exclude      https://*undercards.net/*/*
 // @require      https://unpkg.com/showdown@2.0.0/dist/showdown.min.js
 // @require      https://unpkg.com/popper.js@1.16.1/dist/umd/popper.min.js
 // @require      https://unpkg.com/tippy.js@4.3.5/umd/index.all.min.js
