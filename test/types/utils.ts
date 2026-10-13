@@ -85,6 +85,14 @@ maybe.set('text');
 // @ts-expect-error a number store needs a default
 new utils.VarStore<number>();
 
+const lazy = new utils.LazyStore(() => [1, 2, 3]);
+lazy.value satisfies number[];
+lazy.get() satisfies number[];
+lazy.isLoaded() satisfies boolean;
+lazy.reset() satisfies void;
+// @ts-expect-error the store is created with a function
+new utils.LazyStore(5);
+
 class Counter extends utils.SettingType {
   constructor() {
     super('counter');
