@@ -1,5 +1,6 @@
 import eventEmitter from 'src/utils/eventEmitter';
 import * as api from 'src/utils/4.api';
+import { openChannels } from './channel';
 import { channelFromRoom } from './message';
 
 type Hooks = {
@@ -18,6 +19,9 @@ const chat: UnderScriptChat = {
   },
   get replaced() {
     return replaced;
+  },
+  get channels() {
+    return openChannels();
   },
   on(event, listener) {
     events.on(event, listener);
@@ -69,6 +73,9 @@ api.register('chat', Object.freeze({
   },
   get replaced() {
     return chat.replaced;
+  },
+  get channels() {
+    return chat.channels;
   },
 }) satisfies UnderScriptChatState);
 

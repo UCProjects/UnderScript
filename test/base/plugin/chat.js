@@ -79,6 +79,17 @@ describe('plugin chat', () => {
     expect(() => chat.on('message', 5)).to.throw('Must pass a function');
   });
 
+  it('lists the open channels', () => {
+    const { chat } = setup();
+    globalThis.openPublicChats = [2];
+    try {
+      expect(chat.channels.map(({ room }) => room)).to.deep.equal(['chat-public-2']);
+      expect(globalThis.underscript.chat.channels.map(({ room }) => room)).to.deep.equal(['chat-public-2']);
+    } finally {
+      delete globalThis.openPublicChats;
+    }
+  });
+
   it('shares its state with the global object, which has no actions', () => {
     const { chat } = setup();
     attach({ connected: () => true, reconnect: () => {}, send: () => true });

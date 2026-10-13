@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import ChatChannel from '../../src/structures/chat/channel';
+import ChatChannel, { openChannels } from '../../src/structures/chat/channel';
 import { channelFromData, channelFromRoom } from '../../src/structures/chat/message';
 
 const names = ['chat-discussion', 'chat-strategy', 'chat-beginner', 'chat-tournament', 'chat-roleplay'];
@@ -67,6 +67,28 @@ describe('ChatChannel', () => {
     it('is false before the game has any chats', () => {
       expect(new ChatChannel('public', '1').open).to.equal(false);
       expect(new ChatChannel('private', '1').open).to.equal(false);
+    });
+  });
+
+  describe('openChannels', () => {
+    it('lists the open public and private chats', () => {
+      globalThis.openPublicChats = [1, 5];
+      globalThis.privateChats = { 9: [], 12: [] };
+      expect(openChannels().map(({ room }) => room)).to.deep.equal([
+        'chat-public-1',
+        'chat-public-5',
+        'chat-private-9',
+        'chat-private-12',
+      ]);
+    });
+
+    it('skips private entries that are not a history', () => {
+      globalThis.privateChats = { 9: [], 12: null };
+      expect(openChannels().map(({ room }) => room)).to.deep.equal(['chat-private-9']);
+    });
+
+    it('is empty before the game has any chats', () => {
+      expect(openChannels()).to.deep.equal([]);
     });
   });
 
