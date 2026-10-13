@@ -92,6 +92,10 @@ type UnderScriptChatEvents = {
   send: [outgoing: UnderScriptChatOutgoing];
   /** The player sent a `/command`. Set `this.canceled = true` to stop it being sent */
   command: [command: UnderScriptChatCommand];
+  /** The player clicked into a chat window's text box */
+  focus: [channel: UnderScriptChatChannel];
+  /** The player left a chat window's text box */
+  blur: [channel: UnderScriptChatChannel];
   connected: [];
   disconnected: [info: { code: number; reason: string }];
   reconnected: [];
@@ -101,6 +105,8 @@ type UnderScriptChatEvents = {
 type UnderScriptChatState = {
   readonly connected: boolean;
   readonly replaced: boolean;
+  /** The chat windows that are open right now */
+  readonly channels: readonly UnderScriptChatChannel[];
 };
 
 type UnderScriptChat = UnderScriptChatState & {

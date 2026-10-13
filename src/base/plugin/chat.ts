@@ -42,6 +42,9 @@ wrap(() => {
       get replaced() {
         return chat.replaced;
       },
+      get channels() {
+        return chat.channels;
+      },
       on(event, fn) {
         if (typeof fn !== 'function') throw new Error('Must pass a function');
         chat.on(event, wrapper(fn, event));

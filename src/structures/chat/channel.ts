@@ -29,3 +29,18 @@ export default class ChatChannel implements UnderScriptChatChannel {
     return Array.isArray(chats?.[this.id]);
   }
 }
+
+export function openChannels(): UnderScriptChatChannel[] {
+  const list: unknown = global('openPublicChats', { throws: false });
+  const chats: unknown = global('privateChats', { throws: false });
+  const channels: UnderScriptChatChannel[] = [];
+  if (Array.isArray(list)) {
+    list.forEach((id: unknown) => channels.push(new ChatChannel('public', `${id}`)));
+  }
+  if (typeof chats === 'object' && chats !== null) {
+    Object.entries(chats)
+      .filter(([, history]) => Array.isArray(history))
+      .forEach(([id]) => channels.push(new ChatChannel('private', id)));
+  }
+  return channels;
+}
