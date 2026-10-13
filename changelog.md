@@ -23,6 +23,8 @@
     - `message.channel` has `type`, `id`, `room`, `name` (the room's key, such as `chat-roleplay`) and `open` (whether its window is open right now).
     - `message` fires for each public or private message, and `history` fires when a chat window is first filled in, with `{ channel, messages }`.
     - `notice` fires for the server's system lines (info, announcements and broadcasts) and `rejected` for the errors it sends back, both as `{ kind, key, args, text, raw }`, with `text` already translated.
+    - `send` fires when the player presses Enter in a chat window, as `{ channel, text }`. Set `this.canceled = true` to send nothing, or assign `text` to change what is sent. It does not fire for `chat.send`.
+    - `command` fires for a `/command`, as `{ channel, command, text, output }`. Set `this.canceled = true` to stop it, or assign `output` to send that instead.
     - `preMessage` fires first, before the game has shown or stored the message. Set `this.canceled = true` in your listener to stop it, and check `this.canceled` to see whether something before you already did.
     - `message.display(text)` changes what is shown for a message, as plain text (or HTML with `{ html: true }`), without touching the message itself, and `message.restore()` puts the original back. A message in a chat window that is closed has no `message.element` yet, so apply it again from the `history` event.
     - An error in one of your listeners is logged under your plugin's name, with the event and its arguments.</extended>

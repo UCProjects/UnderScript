@@ -63,6 +63,22 @@ type UnderScriptChatNotice = {
   readonly raw: Readonly<Record<string, unknown>>;
 };
 
+type UnderScriptChatOutgoing = {
+  readonly channel: UnderScriptChatChannel;
+  /** What the player typed. Assign a string to change what is sent */
+  text: string;
+};
+
+type UnderScriptChatCommand = {
+  readonly channel: UnderScriptChatChannel;
+  /** The command's name, without the slash */
+  readonly command: string;
+  /** Everything after the command's name */
+  readonly text: string;
+  /** Assign a string to send that instead of the command */
+  output: string | undefined;
+};
+
 type UnderScriptChatEvents = {
   /** Before the game handles a message. Set `this.canceled = true` to stop it being shown or stored. `message.element` is `null` here */
   preMessage: [message: UnderScriptChatMessage];
@@ -72,6 +88,10 @@ type UnderScriptChatEvents = {
   notice: [notice: UnderScriptChatNotice];
   /** The server refused or failed something you tried. Nothing is sent for every refusal, some are dropped silently */
   rejected: [notice: UnderScriptChatNotice];
+  /** The player pressed Enter in a chat window, before the game or any command sees it. Set `this.canceled = true` to send nothing. Not fired for `chat.send` */
+  send: [outgoing: UnderScriptChatOutgoing];
+  /** The player sent a `/command`. Set `this.canceled = true` to stop it being sent */
+  command: [command: UnderScriptChatCommand];
   connected: [];
   disconnected: [info: { code: number; reason: string }];
   reconnected: [];

@@ -13,6 +13,7 @@ import chat, {
 } from 'src/structures/chat/chat';
 import { channelFromData, channelFromRoom, parseChatMessage } from 'src/structures/chat/message';
 import { noticeEvent, parseNotice } from 'src/structures/chat/notice';
+import { emitSend } from 'src/structures/chat/outgoing';
 import Translation from 'src/structures/constants/translation';
 import {
   canReconnect,
@@ -263,7 +264,8 @@ eventManager.on(':preload', () => {
         messages,
         input: this,
       };
-      if (eventManager.cancelable.emit('Chat:send', data).canceled) {
+      const canceled = emitSend(room, this);
+      if (eventManager.emit({ cancelable: true, canceled }, 'Chat:send', data).canceled) {
         debug('Canceled send');
         $(this).val('');
         e.preventDefault();

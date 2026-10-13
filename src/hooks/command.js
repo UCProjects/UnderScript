@@ -1,4 +1,5 @@
 import eventManager from 'src/utils/eventManager';
+import { emitCommand } from 'src/structures/chat/outgoing';
 
 eventManager.on('Chat:send', function chatCommand({ input, room }) {
   const raw = input.value;
@@ -8,7 +9,7 @@ eventManager.on('Chat:send', function chatCommand({ input, room }) {
   const text = index === undefined ? '' : raw.substring(index + 1);
   const data = { room, input, command, text, output: undefined };
   const event = eventManager.cancelable.emit('Chat:command', data);
-  this.canceled = event.canceled;
+  this.canceled = emitCommand(room, data, event.canceled);
   if (data.output === undefined) return;
   input.value = data.output;
 });
