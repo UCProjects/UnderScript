@@ -53,6 +53,8 @@ Events UnderScript emits. Listen to them with [`plugin.events`]({{ site.baseurl 
 : Chat is building its list of names to suggest. Add names to `list`.
 
 ## Chat
+Plugins can get messages already parsed, with events for sending, commands, notices and more, from [plugin.chat]({{ site.baseurl }}{% link _api/plugin/chat.md %}).
+
 `ChatDetected`
 : Chat exists on this page
 
