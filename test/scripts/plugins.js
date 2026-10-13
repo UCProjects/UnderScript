@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import fs from 'node:fs/promises';
 import axios from 'axios';
-import { check, resolve, validate } from '../../scripts/plugins.js';
+import { check, resolve, validate } from '../../scripts/plugins';
 
 const entry = (extra = {}) => ({
   name: 'Example',
