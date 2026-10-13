@@ -23,17 +23,33 @@ emit(*options*, *event*, ...*data*)
 : The same, with [options](#emit-options) that change how the event behaves.
 
 ## Listener
-The listener is called with the event's data. `this` is an object describing the event:
+The listener is called with the event's data. `this` is the [event object](#event-object), so use a regular `function` for a listener that needs it, because an arrow function has no `this`.
+
+## Event object
+event: `string`
+: The name of the event
+
+cancelable: `boolean`
+: Whether listeners can cancel it. Setting `canceled` only does something when this is `true`.
+
+canceled: `boolean`
+: Whether something canceled it. This always exists. Set it to `true` to cancel the event, and read it to see whether a listener before you already did.
+
+async: `boolean`
+: Whether `emit` waits for listeners that return a promise
+
+delayed: `boolean`
+: Whether the event already happened before you started listening
+
+singleton: `boolean`
+: Whether the event only happens once
 
 {% highlight javascript %}
-{
-  event,      // name of the event
-  cancelable, // true if listeners may cancel it
-  canceled,   // true once something canceled it, set it to cancel
-  async,      // true if listeners may return promises
-  delayed,    // true if the event already happened before you listened
-  singleton,  // true if the event only happens once
-}
+events.on('myevent', function listener(data) {
+  if (this.cancelable && !this.canceled) {
+    this.canceled = true;
+  }
+});
 {% endhighlight %}
 
 ## Emit options
