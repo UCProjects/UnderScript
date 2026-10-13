@@ -13,6 +13,7 @@ import chat, {
 } from 'src/structures/chat/chat';
 import { channelFromData, channelFromRoom, parseChatMessage } from 'src/structures/chat/message';
 import { noticeEvent, parseNotice } from 'src/structures/chat/notice';
+import parseDeletion, { recordDeletion } from 'src/structures/chat/deletion';
 import { emitSend } from 'src/structures/chat/outgoing';
 import Translation from 'src/structures/constants/translation';
 import {
@@ -66,6 +67,13 @@ function emitNotice(data) {
   if (notice) emitChat(event, notice);
 }
 
+function emitDeleted(data) {
+  const deletion = parseDeletion(data);
+  if (!deletion) return;
+  recordDeletion(deletion.userId);
+  emitChat('deleted', deletion);
+}
+
 function preMessageCanceled(data, canceled) {
   const message = parsedMessage(data);
   if (!message) return canceled;
@@ -105,6 +113,7 @@ function bind(socketChat) {
     eventManager.emit(`Chat:${action}`, data);
     emitMessage(data);
     emitNotice(data);
+    emitDeleted(data);
 
     if (action === 'getSelfInfos') {
       flaps.connected(Date.now());

@@ -21,8 +21,8 @@ eventManager.on('preChat:getSelfInfos', () => {
   if (!setting.value()) history.restore();
 });
 
-eventManager.on('Chat:deleteMessages', ({ idUser }) => {
-  history.removeUser(JSON.parse(idUser));
+chat.on('deleted', ({ userId }) => {
+  history.removeUser(userId);
 });
 
 eventManager.on(':unload', () => history.flush());

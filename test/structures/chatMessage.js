@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { recordDeletion } from '../../src/structures/chat/deletion';
 import { channelFromData, channelFromRoom, parseChatMessage } from '../../src/structures/chat/message';
 
 const user = (extra = {}) => ({
@@ -24,6 +25,38 @@ describe('parseChatMessage', () => {
     expect(message.emote).to.equal(false);
     expect(message.rainbow).to.equal(false);
     expect(message.deleted).to.equal(false);
+  });
+
+  describe('deleted', () => {
+    it('becomes true when the messages of its author are removed', () => {
+      const message = parseChatMessage(raw({ user: user({ id: 501 }) }), channel);
+      expect(message.deleted).to.equal(false);
+      recordDeletion(501);
+      expect(message.deleted).to.equal(true);
+    });
+
+    it('stays false for other users', () => {
+      const message = parseChatMessage(raw({ user: user({ id: 502 }) }), channel);
+      recordDeletion(503);
+      expect(message.deleted).to.equal(false);
+    });
+
+    it('stays false for a message that arrives after the removal', () => {
+      recordDeletion(504);
+      const message = parseChatMessage(raw({ user: user({ id: 504 }) }), channel);
+      expect(message.deleted).to.equal(false);
+    });
+
+    it('does not apply to private messages', () => {
+      const room = { type: 'private', id: '9', room: 'chat-private-9' };
+      const message = parseChatMessage(raw({ user: user({ id: 505 }) }), room);
+      recordDeletion(505);
+      expect(message.deleted).to.equal(false);
+    });
+
+    it('stays true when the server already flagged it', () => {
+      expect(parseChatMessage(raw({ deleted: true }), channel).deleted).to.equal(true);
+    });
   });
 
   it('reads a message that is already an object', () => {
