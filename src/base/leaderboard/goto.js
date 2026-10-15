@@ -36,7 +36,8 @@ function userLast() {
 
 if (onPage('leaderboard')) {
   const data = getData();
-  const skip = new VarStore(true);
+  const skip = new VarStore(false);
+  let ready = false;
   let replacePage;
 
   window.addEventListener('popstate', () => {
@@ -48,11 +49,14 @@ if (onPage('leaderboard')) {
   eventManager.on('Rankings:selectPage', () => {
     replacePage = false;
   });
-  eventManager.on('Rankings:init', () => load(data));
+  eventManager.on('Rankings:init', () => {
+    load(data);
+    ready = true;
+  });
 
   eventManager.on(':preload', () => {
     eventManager.on('ShowPage', function showPage(page) {
-      if (skip.consume()) return;
+      if (skip.consume() || !ready) return;
       set('page', page, replacePage);
       replacePage = undefined;
     });
