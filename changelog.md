@@ -25,6 +25,11 @@
 1. Fixed links to a player or page on the leaderboard (`?user=` and `?page=`) opening the friendship leaderboard instead of the ranked one
 ### Plugins
 1. The plugin names `UnderScript` and `Undercards` are now reserved, in any letter case, so a plugin can't pass for UnderScript itself
+1. New `plugin.commands.register({ command, description, usage, icon, enabled, handler })` for adding chat commands<extended>
+    - Commands are listed in the chat suggestions under your plugin's name, with the icon in front. `register` returns a handle, and its `remove()` takes the command away again.
+    - The handler gets `{ channel, command, text, output }`. Set `this.canceled = true` to send nothing, or assign `output` to send something else.
+    - If two plugins have a command with the same name, picking one completes to `/plugin-name:command`, and typing that runs only that plugin's command.
+    - Errors in your handler or `enabled` are logged under your plugin's name. No setting is made for your commands, so use `plugin.settings()` and `enabled` if players should be able to switch one off.</extended>
 1. New `plugin.chat` for chat: `chat.on('message' | 'history' | 'connected' | 'disconnected' | 'reconnected' | 'replaced', ...)`, `chat.connected`, `chat.replaced`, `chat.reconnect()` and `chat.send(channel, text)`. `underscript.chat` exposes just the read-only `connected`, `replaced` and `channels`<extended>
     - Messages arrive already parsed: `message.text`, `message.author` (`name`, `avatar`, `division`, `groups`, `isMod`, `isStaff`), `message.channel`, `emote`, `rainbow` and `deleted`, with the original data on `message.raw`. The existing `Chat:*` events and their raw data are unchanged.
     - `message.channel` has `type`, `id`, `room`, `name` (the room's key, such as `chat-roleplay`) and `open` (whether its window is open right now).

@@ -189,3 +189,38 @@ craft.craft = () => Promise.reject();
 craft.dust satisfies number | undefined;
 // @ts-expect-error dust is read only
 craft.dust = 5;
+
+const { commands } = plain;
+commands.register({ command: 'roll' }).remove() satisfies boolean;
+commands.register({
+  command: 'roll2',
+  description: 'Rolls a die',
+  usage: '<sides>',
+  icon: '/images/die.png',
+  enabled: () => true,
+  handler(command) {
+    command.command satisfies string;
+    command.text satisfies string;
+    command.channel.room satisfies string;
+    command.output satisfies string | undefined;
+    command.output = 'rolled';
+    this.canceled = true;
+    return Promise.resolve();
+  },
+}).remove() satisfies boolean;
+// @ts-expect-error a command needs a name
+commands.register({});
+// @ts-expect-error the name is a string
+commands.register({ command: 5 });
+// @ts-expect-error enabled is a function
+commands.register({ command: 'bad', enabled: false });
+// @ts-expect-error the handler is a function
+commands.register({ command: 'bad', handler: 'run' });
+// @ts-expect-error a plugin cannot choose the owner
+commands.register({ command: 'bad', owner: 'UnderScript' });
+// @ts-expect-error no setting is made for plugin commands
+commands.register({ command: 'bad', setting: true });
+// @ts-expect-error the handle has nothing but remove
+commands.register({ command: 'bad2' }).nope;
+// @ts-expect-error commands is read only
+commands.register = () => ({ remove: () => true });
