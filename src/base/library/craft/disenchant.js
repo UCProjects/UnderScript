@@ -1,10 +1,8 @@
-import axios from 'axios';
 import eventManager from 'src/utils/eventManager';
 import * as settings from 'src/utils/settings/index';
 import { global } from 'src/utils/global';
 import { toast as fnToast } from 'src/utils/2.toasts';
 import { debug } from 'src/utils/debug';
-import { craft as craftFlag } from 'src/utils/debugFlags';
 import debugToast from 'src/utils/debugToast';
 import * as cardHelper from 'src/utils/cardHelper';
 import onPage from 'src/utils/onPage';
@@ -13,7 +11,8 @@ import hasOwn from 'src/utils/hasOwn';
 import Translation from 'src/structures/constants/translation';
 import Rarity from 'src/structures/constants/rarity';
 import runQueue from 'src/utils/workQueue';
-import { isRateLimited, retryAfter } from 'src/utils/rateLimit';
+import { reportSmartDisenchant } from 'src/structures/craft/craft';
+import { attempt } from 'src/structures/craft/request';
 import * as hover from 'src/utils/hover';
 import checkboxGroup, {
   getChecked,
@@ -22,6 +21,7 @@ import checkboxGroup, {
   setChecked,
 } from 'src/utils/checkboxGroup';
 import style from 'src/utils/style';
+import showTotals from './totals';
 import styles from './disenchant.css';
 
 const setting = settings.register({
@@ -190,39 +190,8 @@ onPage('Crafting', function disenchantWrapper() {
     return cards.flatMap(({ id, shiny, quantity }) => Array.from({ length: quantity }, () => ({ id, shiny })));
   }
 
-  function logResponse({ status, headers }, card) {
-    debug(`CraftConfig ${status}`, craftFlag, card, headers);
-  }
-
   function attemptDisenchant({ id, shiny }) {
-    const card = { id, shiny };
-    return axios.post('CraftConfig', {
-      action: 'disenchant',
-      idCard: parseInt(id, 10),
-      isShiny: shiny,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then((response) => {
-      logResponse(response, card);
-      debug(response);
-      if (response.data === '') return { type: 'retry' };
-      if (response.data.status !== 'success') return { type: 'skip' };
-      return { type: 'ok', value: response };
-    }).catch((error) => {
-      const response = error?.response;
-      if (!response) {
-        debug(`CraftConfig failed: ${error?.message}`, craftFlag, card);
-        return { type: 'retry' };
-      }
-      logResponse(response, card);
-      const header = (name) => response.headers?.[name.toLowerCase()];
-      if (isRateLimited(response.status, header)) {
-        return { type: 'limited', retryAfter: retryAfter(header) };
-      }
-      return { type: 'retry' };
-    });
+    return attempt({ action: 'disenchant', idCard: parseInt(id, 10), isShiny: shiny });
   }
 
   function progress({ done, skipped, failed, total, waitSeconds, stopping, inFlight }) {
@@ -233,6 +202,7 @@ onPage('Crafting', function disenchantWrapper() {
   }
 
   function summary({ done, skipped, failed, stopped, total }, gained) {
+    // TODO: translation
     if (!done && failed) return 'Could not complete disenchanting.';
     const details = [];
     if (skipped) details.push(`${skipped} skipped`);
@@ -242,16 +212,6 @@ onPage('Crafting', function disenchantWrapper() {
     return `Finished disenchanting.\n+${gained} dust${extra}`;
   }
 
-  function showTotals(data) {
-    $('#dust').text(data.dust);
-    $('#totalDisenchant').text(data.totalDisenchant);
-    $('#nbDTFragments').text(data.DTFragments);
-    $('#btnCraftDT').prop('disabled', data.DTFragments < 2);
-    if (data.DTFragments) {
-      $('#DTFragmentsDiv').show();
-    }
-  }
-
   function disenchant(cards) {
     if (!cards.length || processing) return;
     processing = true;
@@ -259,6 +219,7 @@ onPage('Crafting', function disenchantWrapper() {
     const startDust = parseInt($('#dust').text(), 10);
     let latest = null;
     let run;
+    const disenchanted = new Map();
     const total = copies.length;
     // TODO: translation
     const toast = fnToast({
@@ -276,6 +237,8 @@ onPage('Crafting', function disenchantWrapper() {
       concurrency: 5,
       attempt: attemptDisenchant,
       onOk(copy, response) {
+        const key = `${copy.id}:${copy.shiny}`;
+        disenchanted.set(key, { id: copy.id, shiny: copy.shiny, quantity: (disenchanted.get(key)?.quantity ?? 0) + 1 });
         global('updateQuantity')(JSON.parse(response.data.card), -1);
         // There's no guarantee these are in order
         if (!latest || response.data.dust > latest.data.dust) {
@@ -294,8 +257,15 @@ onPage('Crafting', function disenchantWrapper() {
         global('showPage')(global('currentPage'));
       }
       const gained = latest ? latest.data.dust - startDust : 0;
-      // TODO: translation
       fnToast(summary(result, gained));
+      if (latest) {
+        reportSmartDisenchant({
+          cards: [...disenchanted.values()],
+          dust: latest.data.dust,
+          gained,
+          stopped: result.stopped,
+        });
+      }
     }).catch((e) => {
       console.error(e); // eslint-disable-line no-console
       toast.close('failed');

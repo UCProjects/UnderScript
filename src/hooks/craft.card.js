@@ -2,6 +2,7 @@ import { cardName } from 'src/utils/cardHelper';
 import eventManager from 'src/utils/eventManager';
 import { global, globalSet } from 'src/utils/global';
 import onPage from 'src/utils/onPage';
+import { report } from 'src/structures/craft/craft';
 
 onPage('Crafting', () => {
   eventManager.on('jQuery', () => {
@@ -30,6 +31,7 @@ onPage('Crafting', () => {
       } else {
         eventManager.emit(`Craft:${data.action}`, success, response, data);
       }
+      report(data.action, success, response, data);
     });
   });
 

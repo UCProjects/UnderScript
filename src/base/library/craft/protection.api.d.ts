@@ -1,4 +1,5 @@
 interface UnderScriptCraft {
+  readonly dust: number | undefined;
   bypassProtection(value: boolean): void;
 }
 
