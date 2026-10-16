@@ -9,7 +9,7 @@ type Hooks = {
   send(channel: UnderScriptChatChannel, text: string): boolean;
 };
 
-const events = eventEmitter();
+const events = eventEmitter<UnderScriptChatEvents>();
 let hooks: Hooks | undefined;
 let replaced = false;
 

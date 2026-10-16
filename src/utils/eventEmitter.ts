@@ -19,7 +19,9 @@ type Singleton = {
   async: boolean;
 };
 
-export default function eventEmitter(): UnderScriptEventEmitter {
+export default function eventEmitter<
+  M extends Record<keyof M, any[]> = Record<string, any[]>,
+>(): UnderScriptEventEmitter<{}, M> {
   const events: Record<string, Listener[]> = {
     // eventName: [events]
   };
@@ -199,5 +201,5 @@ export default function eventEmitter(): UnderScriptEventEmitter {
     });
   });
 
-  return Object.freeze(emitter) as unknown as UnderScriptEventEmitter;
+  return Object.freeze(emitter) as unknown as UnderScriptEventEmitter<{}, M>;
 }
