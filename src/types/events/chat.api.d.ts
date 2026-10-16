@@ -129,10 +129,6 @@ interface UnderScriptAPI {
   readonly chat: UnderScriptChatState;
 }
 
-interface UnderScriptPlugin {
-  readonly chat: Readonly<UnderScriptChat>;
-}
-
 interface UnderScriptEvents {
   'ChatDetected': [];
   'Chat:Connected': [];
