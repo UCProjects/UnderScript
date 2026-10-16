@@ -2,12 +2,12 @@ import eventManager from 'src/utils/eventManager';
 import onPage from 'src/utils/onPage';
 import rand from 'src/utils/rand';
 import * as $el from 'src/utils/elementHelper';
-import { register } from 'src/utils/chatCommands';
+import { registerWithSetting } from 'src/utils/chatCommands';
 
 eventManager.on('ChatDetected', function goodGame() {
   const list = ['good game', 'gg', 'Good Game', 'Good game'];
 
-  register({
+  registerWithSetting({
     command: 'gg',
     enabled: () => onPage('Game'),
     handler(data) {

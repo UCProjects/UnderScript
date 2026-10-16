@@ -1,8 +1,8 @@
 import { global } from 'src/utils/global';
 import { debug } from 'src/utils/debug';
-import { register } from 'src/utils/chatCommands';
+import { registerWithSetting } from 'src/utils/chatCommands';
 
-register({
+registerWithSetting({
   command: 'scroll',
   handler(data) {
     debug('Scroll command');
