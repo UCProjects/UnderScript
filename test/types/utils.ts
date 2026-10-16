@@ -68,6 +68,40 @@ emitter.emit('x') satisfies Promise<UnderScriptEmitResult>;
 // @ts-expect-error only the four flags exist
 emitter.nope;
 
+type Tracked = {
+  crafted: [card: { id: number }];
+  rejected: [message: string, status: number];
+  reset: [];
+};
+const tracked = utils.eventEmitter<Tracked>();
+tracked.on('crafted', function listener(card) {
+  card.id satisfies number;
+  this.event satisfies string;
+});
+tracked.once('rejected', (message, status) => {
+  message satisfies string;
+  status satisfies number;
+});
+tracked.on('crafted rejected', (...args: unknown[]) => args);
+tracked.on('anything else', (value: unknown) => value);
+tracked.off('crafted', (card: { id: number }) => card);
+tracked.emit('crafted', { id: 1 }) satisfies UnderScriptEmitResult;
+tracked.emit('reset') satisfies UnderScriptEmitResult;
+tracked.emit({ cancelable: true }, 'rejected', 'no', 500).canceled satisfies boolean;
+tracked.async.emit('reset') satisfies Promise<UnderScriptEmitResult>;
+// @ts-expect-error the listener gets the card, not a string
+tracked.on('crafted', (card: string) => card);
+// @ts-expect-error emit only takes events the map has
+tracked.emit('crafteed', { id: 1 });
+// @ts-expect-error the card needs an id
+tracked.emit('crafted', {});
+// @ts-expect-error the second argument is a number
+tracked.emit('rejected', 'no', 'status');
+// @ts-expect-error reset takes nothing
+tracked.emit('reset', 1);
+// @ts-expect-error options also check the event
+tracked.emit({ cancelable: true }, 'crafteed');
+
 const store = new utils.VarStore(5);
 store.value satisfies number;
 store.set(6) satisfies number;
