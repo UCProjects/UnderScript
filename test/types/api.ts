@@ -162,3 +162,6 @@ underscript.user.ignore('Someone');
 underscript.craft.bypassProtection(true);
 // @ts-expect-error the bypass is a boolean
 underscript.craft.bypassProtection('yes');
+underscript.craft.dust satisfies number | undefined;
+// @ts-expect-error dust is read only
+underscript.craft.dust = 5;

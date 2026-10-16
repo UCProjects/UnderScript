@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import axios from 'axios';
 import eventManager from '../../../../src/utils/eventManager';
+import craftEvents from '../../../../src/structures/craft/craft';
 import installClock from '../../../setup/clock';
 import { clearToasts } from '../../../setup/simpletoast';
 
@@ -18,6 +19,8 @@ describe('Smart Disenchant', () => {
   let refreshed;
   let dust;
   let originalAdapter;
+  let runs;
+  const onRun = (run) => runs.push(run);
 
   const answer = async (request, { status = 200, data, headers = {} }) => {
     request.done = true;
@@ -83,9 +86,11 @@ describe('Smart Disenchant', () => {
       requests.push({ config, resolve, reject });
     });
     await import('../../../../src/base/library/craft/disenchant');
+    craftEvents.on('smartDisenchanted', onRun);
   });
 
   after(() => {
+    craftEvents.off('smartDisenchanted', onRun);
     axios.defaults.adapter = originalAdapter;
     localStorage.removeItem('underscript.disable.disenchant');
     ['location', 'Element', 'HTMLElement', 'BootstrapDialog', 'updateQuantity', 'applyFilters', 'showPage', 'currentPage']
@@ -95,6 +100,7 @@ describe('Smart Disenchant', () => {
   beforeEach(() => {
     clock = installClock();
     requests = [];
+    runs = [];
     quantities = [];
     refreshed = 0;
     dust = 100;
@@ -147,6 +153,69 @@ describe('Smart Disenchant', () => {
     expect(refreshed).to.equal(1);
     expect(document.body.textContent).to.contain('Finished disenchanting');
     expect(document.body.textContent).to.contain('+60 dust');
+  });
+
+  it('reports everything it disenchanted in one event at the end', async () => {
+    await disenchantEverything();
+    while (open().length) {
+      // eslint-disable-next-line no-await-in-loop
+      await success(open()[0]);
+    }
+    await flush();
+    expect(runs).to.have.length(1);
+    expect(runs[0].cards).to.deep.equal([
+      { id: 1, shiny: false, quantity: 4 },
+      { id: 2, shiny: false, quantity: 3 },
+      { id: 3, shiny: false, quantity: 5 },
+    ]);
+    expect(runs[0].dust).to.equal(160);
+    expect(runs[0].gained).to.equal(60);
+    expect(runs[0].stopped).to.equal(false);
+  });
+
+  it('keeps shiny and normal copies of a card apart in the event', async () => {
+    globalThis.collection = [card(1, 2), card(1, 1, { shiny: true })];
+    eventManager.emit('jQuery');
+    await disenchantEverything();
+    while (open().length) {
+      // eslint-disable-next-line no-await-in-loop
+      await success(open()[0]);
+    }
+    await flush();
+    expect(runs[0].cards).to.deep.equal([
+      { id: 1, shiny: false, quantity: 2 },
+      { id: 1, shiny: true, quantity: 1 },
+    ]);
+  });
+
+  it('reports what was disenchanted when it is stopped', async () => {
+    globalThis.collection = [card(1, 10)];
+    eventManager.emit('jQuery');
+    await disenchantEverything();
+    await success(open()[0]);
+    document.querySelector('.simpletoast-button').click();
+    while (open().length) {
+      // eslint-disable-next-line no-await-in-loop
+      await success(open()[0]);
+    }
+    await flush();
+    expect(runs).to.have.length(1);
+    expect(runs[0].stopped).to.equal(true);
+    expect(runs[0].cards).to.deep.equal([{ id: 1, shiny: false, quantity: 6 }]);
+  });
+
+  it('reports nothing when no card was disenchanted', async () => {
+    globalThis.collection = [card(1, 1)];
+    eventManager.emit('jQuery');
+    await disenchantEverything();
+    for (let i = 0; i < 6; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await flush();
+      // eslint-disable-next-line no-await-in-loop
+      if (open().length) await answer(open()[0], { status: 500, data: '' });
+    }
+    await flush();
+    expect(runs).to.have.length(0);
   });
 
   it('waits out a rate limit and then carries on with the same cards', async () => {
@@ -204,7 +273,7 @@ describe('Smart Disenchant', () => {
       localStorage.removeItem('debugging.craft');
     });
 
-    it('logs each response with its status, the card and the rate limit headers', async () => {
+    it('logs each response with its status, the request and the rate limit headers', async () => {
       globalThis.collection = [card(1, 1)];
       eventManager.emit('jQuery');
       await disenchantEverything();
@@ -212,7 +281,7 @@ describe('Smart Disenchant', () => {
       const entry = logged.find(([label, message]) => label === '[debugging.craft]' && message === 'CraftConfig 429');
       expect(entry, 'a CraftConfig 429 line').to.not.equal(undefined);
       expect(entry[1]).to.equal('CraftConfig 429');
-      expect(entry[2]).to.deep.equal({ id: 1, shiny: false });
+      expect(entry[2]).to.deep.equal({ action: 'disenchant', idCard: 1, isShiny: false });
       expect(entry[3]).to.deep.equal({ 'retry-after': '7' });
     });
 

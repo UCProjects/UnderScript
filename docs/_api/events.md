@@ -102,6 +102,8 @@ Plugins can get messages already parsed, with events for sending, commands, noti
 : Hooks that run before or around the game's own events and functions
 
 ## Cards, decks and crafting
+Plugins can get crafting events already parsed, and craft from any page, with [plugin.craft]({{ site.baseurl }}{% link _api/plugin/craft.md %}).
+
 `allCardsReady`(*cards*)
 : Every card has loaded
 

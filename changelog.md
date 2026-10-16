@@ -34,6 +34,13 @@
     - `preMessage` fires first, before the game has shown or stored the message. Set `this.canceled = true` in your listener to stop it, and check `this.canceled` to see whether something before you already did.
     - `message.display(text)` changes what is shown for a message, as plain text (or HTML with `{ html: true }`), without touching the message itself, and `message.restore()` puts the original back. A message in a chat window that is closed has no `message.element` yet, so apply it again from the `history` event.
     - An error in one of your listeners is logged under your plugin's name, with the event and its arguments.</extended>
+1. New `plugin.craft` for crafting from any page: `craft.craft(id, { shiny })`, `craft.disenchant(id, { shiny })` and `craft.auto()` return promises, and `craft.on('crafted' | 'disenchanted' | 'smartDisenchanted' | 'autoed' | 'rejected', ...)` listens<extended>
+    - The methods work on any page, one request at a time, and reject with the server's message when it refuses. On the Crafting page they also update the cards and dust shown there. They do not show the game's dialog.
+    - `crafted` and `disenchanted` fire for one card as `{ id, name, dust, shiny }`, whether it came from the page's buttons or your plugin. Ctrl-click craft fires `crafted` for each copy it crafts.
+    - Smart Disenchant fires a single `smartDisenchanted` when it finishes or is stopped, as `{ cards, dust, gained, stopped }`, listing every card it disenchanted and how many of each.
+    - `autoed` has the cards the server changed and how many of each you own afterwards. `rejected` has `{ action, message, status }` with the message already translated.
+    - `craft.dust` (also on `underscript.craft`) is the dust UnderScript last saw you have, or `undefined` before it has seen any. It reads the Crafting page when you are on it, and otherwise the result of the last craft, disenchant or auto, which carries over to the next page in the same tab for half an hour, so it can be out of date.
+    - The existing `craftcard`, `crafterrror` and `Craft:*` events are unchanged.</extended>
 1. `events.emit` now (optionally) takes "emit options" as its first argument: `events.emit({ cancelable: true, async: true }, 'event', data)`<extended>
     - This works on `plugin.events` and `underscript.utils.eventEmitter()`. The options are `cancelable`, `canceled`, `singleton` and `async`.</extended>
 1. `plugin.settings().add()` now throws an error when the setting's `type` isn't one that exists, instead of quietly returning `undefined`<extended>
