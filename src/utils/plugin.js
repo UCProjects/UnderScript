@@ -1,6 +1,7 @@
 import * as api from './4.api';
 
 const nameRegex = /^[a-z0-9 ]+$/i;
+const reservedNames = ['underscript', 'undercards'];
 /**
  * @type Map<string, any>
  */
@@ -66,6 +67,7 @@ export default function Plugin(name = '', version = '') {
 
 api.register('plugin', (name, version) => {
   if (typeof name !== 'string' || !name.trim()) throw new Error('Plugin must have a name');
+  if (reservedNames.includes(name.trim().toLowerCase())) throw new Error(`Name is reserved (${name.trim()})`);
   if (version && !['string', 'number'].includes(typeof version)) throw new Error(`Version must be a string or number, not ${typeof version}`);
   return Plugin(name.trim(), version);
 });

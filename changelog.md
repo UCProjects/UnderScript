@@ -19,9 +19,12 @@
     - The game drops stored history older than five minutes when a page loads, so a short break between pages emptied your chat. UnderScript now keeps its own copy and puts it back before the game reads it. There is a setting to turn it off.</extended>
 1. Added a Leaderboard+ link to the Leaderboards menu in the footer
 1. The Card Editor link is back in the footer, in the Community menu next to the Wiki
+1. Chat command suggestions now show where each command comes from, on the right of the suggestion<extended>
+    - When two scripts have a command with the same name, picking it completes to `owner:command`, and typing `/owner:command` runs only that one. The owner is the script's name, with dashes instead of spaces.</extended>
 ### Fixes
 1. Fixed links to a player or page on the leaderboard (`?user=` and `?page=`) opening the friendship leaderboard instead of the ranked one
 ### Plugins
+1. The plugin names `UnderScript` and `Undercards` are now reserved, in any letter case, so a plugin can't pass for UnderScript itself
 1. New `plugin.chat` for chat: `chat.on('message' | 'history' | 'connected' | 'disconnected' | 'reconnected' | 'replaced', ...)`, `chat.connected`, `chat.replaced`, `chat.reconnect()` and `chat.send(channel, text)`. `underscript.chat` exposes just the read-only `connected`, `replaced` and `channels`<extended>
     - Messages arrive already parsed: `message.text`, `message.author` (`name`, `avatar`, `division`, `groups`, `isMod`, `isStaff`), `message.channel`, `emote`, `rainbow` and `deleted`, with the original data on `message.raw`. The existing `Chat:*` events and their raw data are unchanged.
     - `message.channel` has `type`, `id`, `room`, `name` (the room's key, such as `chat-roleplay`) and `open` (whether its window is open right now).

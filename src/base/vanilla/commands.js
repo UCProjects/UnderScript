@@ -5,6 +5,7 @@ import Translation from 'src/structures/constants/translation';
 function moderation(command, priority, usage) {
   register({
     command,
+    owner: 'Undercards',
     usage: usage && Translation.Command(`${command}.usage`),
     enabled: () => isPriority(self(), priority),
   });

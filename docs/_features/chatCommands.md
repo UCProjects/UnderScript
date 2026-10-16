@@ -15,3 +15,5 @@ Sends `good game @o`
 
 ### /scroll
 Scrolls the chat window to the bottom
+
+The suggestion list shows which script each command comes from. If two scripts have the same command, the suggestion completes to `/owner:command`, with the owner's name and dashes instead of spaces, so you can pick the one you want. Typing that form yourself works too.

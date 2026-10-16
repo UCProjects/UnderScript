@@ -37,3 +37,20 @@ div.autobox-active {
   opacity: 0.6;
   font-size: 0.85em;
 }
+
+.autobox-command {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.autobox-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.autobox-owner {
+  margin-left: auto;
+  padding-left: 1em;
+}

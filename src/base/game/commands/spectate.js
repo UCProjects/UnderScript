@@ -2,12 +2,12 @@ import eventManager from 'src/utils/eventManager';
 import { global } from 'src/utils/global';
 import onPage from 'src/utils/onPage';
 import { infoToast } from 'src/utils/2.toasts';
-import { register } from 'src/utils/chatCommands';
+import { registerWithSetting } from 'src/utils/chatCommands';
 import Translation from 'src/structures/constants/translation';
 
 let toast;
 
-register({
+registerWithSetting({
   command: 'spectate',
   usage: Translation.Command('spectate.usage'),
   note: Translation.Command('spectate.note'),

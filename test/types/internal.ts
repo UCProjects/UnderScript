@@ -95,8 +95,20 @@ chatCommands.register({
     this.canceled = true;
   },
 });
-chatCommands.register({ command: 'quiet', enabled: () => false, setting: false });
+chatCommands.register({ command: 'quiet', enabled: () => false });
+chatCommands.register({ command: 'removable' }).remove() satisfies boolean;
+chatCommands.registerWithSetting({ command: 'toggle', usage: '<name>', note: 'text', page: 'Chat', handler() {} }).key satisfies string;
+// @ts-expect-error a setting is not an option of register
+chatCommands.register({ command: 'bad', setting: false });
 chatCommands.list()[0].available() satisfies boolean;
+chatCommands.register({ command: 'owned', owner: 'Plugin', icon: '/images/plugin.png' });
+chatCommands.list()[0].owner satisfies string;
+chatCommands.list()[0].qualified satisfies string;
+chatCommands.list()[0].icon satisfies string | undefined;
+// @ts-expect-error the owner is a name
+chatCommands.register({ command: 'bad', owner: 5 });
+// @ts-expect-error the icon is an image address
+chatCommands.register({ command: 'bad', icon: false });
 // @ts-expect-error a command needs a name
 chatCommands.register({ description: 'nameless' });
 // @ts-expect-error enabled is a function

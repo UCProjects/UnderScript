@@ -13,12 +13,16 @@ export function emitSend(room: unknown, input: TextInput): boolean {
   return canceled;
 }
 
-export function emitCommand(room: unknown, data: CommandData, canceled: boolean): boolean {
+export function commandView(
+  room: unknown,
+  data: CommandData,
+  command = data.command,
+): UnderScriptChatCommand | undefined {
   const channel = channelFromRoom(room);
-  if (!channel) return canceled;
-  const command: UnderScriptChatCommand = {
+  if (!channel) return undefined;
+  return {
     channel,
-    command: data.command,
+    command,
     text: data.text,
     get output() {
       return data.output;
@@ -27,5 +31,10 @@ export function emitCommand(room: unknown, data: CommandData, canceled: boolean)
       data.output = value;
     },
   };
-  return emitCancelable('command', canceled, command);
+}
+
+export function emitCommand(room: unknown, data: CommandData, canceled: boolean): boolean {
+  const view = commandView(room, data);
+  if (!view) return canceled;
+  return emitCancelable('command', canceled, view);
 }
