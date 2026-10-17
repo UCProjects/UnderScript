@@ -1,22 +1,48 @@
 import { expect } from 'chai';
-import { noticeEvent, parseNotice } from '../../src/structures/chat/notice';
+import { eventOf, parseNotice } from '../../src/structures/chat/notice';
 
 const serverMessage = (...args) => JSON.stringify({ args: JSON.stringify(args) });
 const upper = (message) => JSON.parse(JSON.parse(message).args).join(' ').toUpperCase();
 
-describe('noticeEvent', () => {
+describe('eventOf', () => {
+  const read = (action, ...args) => parseNotice({ action, message: serverMessage(...args) });
+
   it('sorts the server frames into notices and rejections', () => {
-    expect(noticeEvent('getInfoMessage')).to.equal('notice');
-    expect(noticeEvent('getMessageAuto')).to.equal('notice');
-    expect(noticeEvent('getMessageBroadcast')).to.equal('notice');
-    expect(noticeEvent('getMessageError')).to.equal('rejected');
-    expect(noticeEvent('getMessageDenied')).to.equal('rejected');
+    expect(eventOf(read('getInfoMessage', 'chat-user-offline'))).to.equal('notice');
+    expect(eventOf(read('getMessageAuto', 'chat-legendary-notification'))).to.equal('notice');
+    expect(eventOf(read('getMessageError', 'chat-link'))).to.equal('rejected');
+    expect(eventOf(read('getMessageDenied', 'chat-link'))).to.equal('rejected');
+    expect(eventOf(parseNotice({ action: 'getMessageBroadcast', message: 'Hello' }))).to.equal('notice');
   });
 
-  it('ignores everything else', () => {
-    expect(noticeEvent('getMessage')).to.equal(undefined);
-    expect(noticeEvent('ping')).to.equal(undefined);
-    expect(noticeEvent(undefined)).to.equal(undefined);
+  it('counts the lines that refuse a message, which the server sends as info', () => {
+    [
+      'chat-spam-protection',
+      'chat-restricted',
+      'chat-banned',
+      'chat-link',
+      'chat-permission',
+      'chat-bad-usage',
+      'chat-power',
+      'chat-not-connected',
+    ].forEach((key) => {
+      expect(eventOf(read('getInfoMessage', key, 3)), key).to.equal('rejected');
+    });
+  });
+
+  it('leaves other info lines as notices', () => {
+    ['chat-user-timed-out', 'chat-self-timed-out', 'chat-no-longer-banned', 'chat-not-allowed'].forEach((key) => {
+      expect(eventOf(read('getInfoMessage', key, 3)), key).to.equal('notice');
+    });
+  });
+
+  it('does not count an announcement or a broadcast, whatever it says', () => {
+    expect(eventOf(read('getMessageAuto', 'chat-spam-protection'))).to.equal('notice');
+    expect(eventOf(parseNotice({ action: 'getMessageBroadcast', message: 'chat-spam-protection' }))).to.equal('notice');
+  });
+
+  it('is not fooled by a missing key', () => {
+    expect(eventOf(parseNotice({ action: 'getInfoMessage', message: 'plain text' }))).to.equal('notice');
   });
 });
 

@@ -50,10 +50,10 @@ deleted({ *userId* })
 : A moderator removed all of a user's public messages. `message.deleted` is already `true` on the messages you have from them.
 
 notice(*notice*)
-: A system line from the server: info, an announcement, or a broadcast
+: A system line from the server: info, an announcement, or a broadcast. The info lines that refuse a message, such as the spam protection one, are reported by `rejected` instead.
 
 rejected(*notice*)
-: The server refused or failed something you tried. Nothing is sent for every refusal, some are dropped silently.
+: The server refused or failed something you tried. That includes the refusals the server words as a plain line, such as "Spam protection: You can't send any messages before 3 seconds", whose `kind` stays `info`. Not every refusal is announced, some are dropped silently.
 
 send({ *channel*, *text*, *result* })
 : The player pressed Enter in a chat window. Cancel it to send nothing, or assign `text` to change what is sent. Fires before `command`, and not for `chat.send`. `result` is a [promise](#send-result) that says what became of the message.

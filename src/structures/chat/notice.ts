@@ -1,13 +1,24 @@
 type Frame = Record<string, unknown>;
 type Translate = (message: string) => unknown;
 
-const KINDS: Record<string, { event: 'notice' | 'rejected'; kind: UnderScriptChatNotice['kind'] }> = {
-  getInfoMessage: { event: 'notice', kind: 'info' },
-  getMessageAuto: { event: 'notice', kind: 'auto' },
-  getMessageBroadcast: { event: 'notice', kind: 'broadcast' },
-  getMessageError: { event: 'rejected', kind: 'error' },
-  getMessageDenied: { event: 'rejected', kind: 'denied' },
+const KINDS: Record<string, UnderScriptChatNotice['kind']> = {
+  getInfoMessage: 'info',
+  getMessageAuto: 'auto',
+  getMessageBroadcast: 'broadcast',
+  getMessageError: 'error',
+  getMessageDenied: 'denied',
 };
+
+const REFUSALS = new Set([
+  'chat-spam-protection',
+  'chat-restricted',
+  'chat-banned',
+  'chat-link',
+  'chat-permission',
+  'chat-bad-usage',
+  'chat-power',
+  'chat-not-connected',
+]);
 
 function isRecord(value: unknown): value is Frame {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -35,23 +46,24 @@ function readArgs(message: unknown): unknown[] {
   }
 }
 
-export function noticeEvent(action: unknown): 'notice' | 'rejected' | undefined {
-  return typeof action === 'string' ? KINDS[action]?.event : undefined;
+export function eventOf(notice: UnderScriptChatNotice): 'notice' | 'rejected' {
+  if (notice.kind === 'error' || notice.kind === 'denied') return 'rejected';
+  return notice.kind === 'info' && notice.key !== undefined && REFUSALS.has(notice.key) ? 'rejected' : 'notice';
 }
 
 export function parseNotice(frame: unknown, translate?: Translate): UnderScriptChatNotice | undefined {
   if (!isRecord(frame) || typeof frame.action !== 'string') return undefined;
-  const info = KINDS[frame.action];
-  if (!info) return undefined;
+  const kind = KINDS[frame.action];
+  if (!kind) return undefined;
   const { message } = frame;
-  const broadcast = info.kind === 'broadcast';
+  const broadcast = kind === 'broadcast';
   const [first, ...args] = broadcast ? [] : readArgs(message);
   const key = typeof first === 'string' ? first : undefined;
   const text = broadcast && typeof message === 'string' ?
     message :
     translateSafely(translate, message) ?? key ?? '';
   return {
-    kind: info.kind,
+    kind,
     key,
     args,
     text,
