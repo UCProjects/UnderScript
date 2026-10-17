@@ -2,7 +2,7 @@ type UnderScriptChatChannel = {
   readonly type: 'public' | 'private';
   readonly id: string;
   readonly room: string;
-  /** The game's name key for a public room, such as `chat-roleplay`, and `undefined` for a private chat */
+  /** The game's name key for a public room, such as `chat-roleplay`, and `undefined` for a private chat or a public room the game has no name for */
   readonly name?: string;
   /** Whether this chat's window is open right now */
   readonly open: boolean;
@@ -64,10 +64,17 @@ type UnderScriptChatNotice = {
   readonly raw: Readonly<Record<string, unknown>>;
 };
 
+type UnderScriptChatSendResult =
+  | { readonly status: 'sent'; readonly message: UnderScriptChatMessage }
+  | { readonly status: 'rejected'; readonly notice: UnderScriptChatNotice }
+  | { readonly status: 'unconfirmed' }
+  | { readonly status: 'canceled' };
+
 type UnderScriptChatOutgoing = {
   readonly channel: UnderScriptChatChannel;
   /** What the player typed. Assign a string to change what is sent */
   text: string;
+  readonly result: Promise<UnderScriptChatSendResult>;
 };
 
 type UnderScriptChatCommand = {
@@ -122,7 +129,7 @@ type UnderScriptChat = UnderScriptChatState & {
   once<K extends keyof UnderScriptChatEvents>(event: K, listener: (this: UnderScriptEventMeta, ...args: UnderScriptChatEvents[K]) => unknown): UnderScriptChat;
   off<K extends keyof UnderScriptChatEvents>(event: K, listener: (...args: UnderScriptChatEvents[K]) => unknown): UnderScriptChat;
   reconnect(): void;
-  send(channel: UnderScriptChatChannel | string, text: string): boolean;
+  send(channel: UnderScriptChatChannel | string, text: string): Promise<UnderScriptChatSendResult>;
 };
 
 interface UnderScriptAPI {

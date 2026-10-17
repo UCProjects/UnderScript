@@ -2,6 +2,7 @@ import eventEmitter from 'src/utils/eventEmitter';
 import * as api from 'src/utils/4.api';
 import { openChannels } from './channel';
 import { channelFromRoom } from './message';
+import { arm, createPending } from './pending';
 
 type Hooks = {
   connected(): boolean;
@@ -39,10 +40,14 @@ const chat: UnderScriptChat = {
     hooks?.reconnect();
   },
   send(channel, text) {
-    if (!hooks || typeof text !== 'string' || !text) return false;
     const target = typeof channel === 'string' ? channelFromRoom(channel) : channel;
-    if (!target) return false;
-    return hooks.send(target, text);
+    if (!hooks || typeof text !== 'string' || !text || !target) {
+      return Promise.resolve({ status: 'canceled' });
+    }
+    const pending = createPending();
+    arm(target, pending);
+    hooks.send(target, text);
+    return pending.promise;
   },
 };
 

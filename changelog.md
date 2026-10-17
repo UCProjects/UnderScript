@@ -37,6 +37,7 @@
     - `message` fires for each public or private message, and `history` fires when a chat window is first filled in, with `{ channel, messages }`.
     - `notice` fires for the server's system lines (info, announcements and broadcasts) and `rejected` for the errors it sends back, both as `{ kind, key, args, text, raw }`, with `text` already translated.
     - `send` fires when the player presses Enter in a chat window, as `{ channel, text }`. Set `this.canceled = true` to send nothing, or assign `text` to change what is sent. It does not fire for `chat.send`.
+    - `send` also has a `result` promise that says what became of the message: `sent` with the `message` that came back, `rejected` with the server's `notice`, `unconfirmed` when nothing came back within five seconds or the connection dropped, or `canceled`. `chat.send` returns the same kind of promise. Replies are matched by order, since the chat has no message ids to match them with.
     - `command` fires for a `/command`, as `{ channel, command, text, output }`. Set `this.canceled = true` to stop it, or assign `output` to send that instead.
     - `deleted` fires with `{ userId }` when a moderator removes all of a user's public messages.
     - `chat.channels` (also on `underscript.chat`) lists the chat windows that are open right now, and `focus` and `blur` fire with the channel when the player clicks into or leaves a chat's text box.

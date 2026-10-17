@@ -224,3 +224,24 @@ commands.register({ command: 'bad', setting: true });
 commands.register({ command: 'bad2' }).nope;
 // @ts-expect-error commands is read only
 commands.register = () => ({ remove: () => true });
+
+const { chat } = plain;
+chat.on('send', (outgoing) => {
+  outgoing.channel.room satisfies string;
+  outgoing.text = 'changed';
+  outgoing.result.then((result) => {
+    result.status satisfies 'sent' | 'rejected' | 'unconfirmed' | 'canceled';
+    if (result.status === 'sent') result.message.text satisfies string;
+    if (result.status === 'rejected') result.notice.key satisfies string | undefined;
+  });
+});
+// @ts-expect-error the result is read only
+chat.on('send', (outgoing) => { outgoing.result = Promise.resolve({ status: 'canceled' }); });
+// @ts-expect-error only a sent message has the message that came back
+chat.on('send', (outgoing) => outgoing.result.then((result) => result.message));
+// @ts-expect-error there is no such status
+chat.on('send', (outgoing) => outgoing.result.then((result) => result.status === 'dropped'));
+chat.send('chat-public-1', 'hi') satisfies Promise<UnderScriptChatSendResult>;
+chat.send('chat-public-1', 'hi').then((result) => result.status satisfies 'sent' | 'rejected' | 'unconfirmed' | 'canceled');
+// @ts-expect-error send gives a result now, not a boolean
+chat.send('chat-public-1', 'hi') satisfies boolean;

@@ -32,7 +32,7 @@ reconnect()
 : Connect to chat again, if it is not connected
 
 send(*channel*, *text*)
-: Send a message. `channel` is a channel object or a room such as `chat-public-1`. Returns `false` when nothing could be sent. It does not fire `send`.
+: Send a message. `channel` is a channel object or a room such as `chat-public-1`. Returns a [send result](#send-result) promise. It does not fire `send`.
 
 ## Events
 Listeners get an [event object]({{ site.baseurl }}{% link _api/eventemitter.md %}#event-object) as `this`. Set `this.canceled = true` to cancel an event. It only does something when the event is cancelable (`this.cancelable`), which is the case for `preMessage`, `send` and `command`. Use a regular `function`, because an arrow function has no `this`.
@@ -55,8 +55,8 @@ notice(*notice*)
 rejected(*notice*)
 : The server refused or failed something you tried. Nothing is sent for every refusal, some are dropped silently.
 
-send({ *channel*, *text* })
-: The player pressed Enter in a chat window. Cancel it to send nothing, or assign `text` to change what is sent. Fires before `command`, and not for `chat.send`.
+send({ *channel*, *text*, *result* })
+: The player pressed Enter in a chat window. Cancel it to send nothing, or assign `text` to change what is sent. Fires before `command`, and not for `chat.send`. `result` is a [promise](#send-result) that says what became of the message.
 
 command({ *channel*, *command*, *text*, *output* })
 : The player sent a `/command`. Cancel it to stop it, or assign `output` to send that instead.
@@ -98,7 +98,7 @@ type, id, room
 : `public` or `private`, its id, and its room such as `chat-public-1`
 
 name
-: The game's key for a public room, such as `chat-roleplay`, and `undefined` for a private chat
+: The game's key for a public room, such as `chat-roleplay`, and `undefined` for a private chat or a public room the game has no name for
 
 open
 : Whether its window is open right now
@@ -115,6 +115,23 @@ text
 
 type, userId
 : For `auto`: what happened, such as `legendary-drop`, and the user it is about
+
+### Send result
+The `result` of a `send` event, and the promise `chat.send` returns, always settle and never reject. They settle with an object that has a `status`:
+
+sent
+: The message went out and came back from the server. The object also has the `message`, as the chat shows it.
+
+rejected
+: The server refused it, for example because the player is sending too fast or is muted. The object also has the `notice` the server sent, with its `key`, `args` and translated `text`.
+
+unconfirmed
+: Nothing came back within five seconds, or the connection dropped first, or the message was still waiting to go out after thirty seconds, for example while chat reconnects. The server may have dropped it without saying so, or it may still arrive. Some commands the server handles itself never come back as a message.
+
+canceled
+: A listener or the game canceled it, the game never sent it, or `chat.send` had nothing it could send.
+
+There is no id to match a reply to a message, so the answer is matched by order: a message you sent comes back in the same room, and a refusal answers the oldest message still waiting. If one of your messages is dropped silently, the next reply can be matched to it by mistake.
 
 ## Examples
 {% highlight javascript %}
@@ -143,4 +160,11 @@ chat.on('command', function roll({ command, channel }) {
 });
 
 chat.on('deleted', ({ userId }) => plugin.logger.info('Messages removed for', userId));
+
+// Find out what happened to what the player sent
+chat.on('send', ({ text, result }) => {
+  result.then((outcome) => {
+    if (outcome.status === 'rejected') plugin.logger.warn(`Not sent (${text}): ${outcome.notice.text}`);
+  });
+});
 {% endhighlight %}
