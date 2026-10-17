@@ -221,7 +221,7 @@ function sendWrapper(type) {
     const channel = channelFromRoom(`chat-${type}-${args[1]}`);
     const pending = channel && claim(channel);
     const send = () => {
-      if (channel) submitted(channel, pending);
+      if (channel) submitted(channel, pending, args[0]);
       this.super(...args);
     };
     if (global('socketChat').readyState !== WebSocket.OPEN) {

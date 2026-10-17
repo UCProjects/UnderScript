@@ -12,13 +12,13 @@ import {
 
 const flush = () => new Promise((resolve) => { setImmediate(resolve); });
 const channel = (id, type = 'public') => ({ type, id: `${id}`, room: `chat-${type}-${id}` });
-const message = (where, authorId = 7) => ({ id: 1, channel: where, author: { id: authorId }, text: 'hi' });
+const message = (where, authorId = 7, text = 'hi') => ({ id: 1, channel: where, author: { id: authorId }, text });
 const notice = { kind: 'error', key: 'chat-spam-protection', args: [3], text: 'Slow down' };
 
 describe('pending chat sends', () => {
   let clock;
 
-  const track = (where) => {
+  const track = (where, text) => {
     const pending = createPending();
     const seen = { status: undefined, result: undefined };
     pending.promise.then((result) => {
@@ -26,7 +26,7 @@ describe('pending chat sends', () => {
       seen.result = result;
     });
     arm(where, pending);
-    submitted(where, claim(where));
+    submitted(where, claim(where), text);
     return seen;
   };
 
@@ -169,6 +169,118 @@ describe('pending chat sends', () => {
     await flush();
     expect(first.status).to.equal('unconfirmed');
     expect(second.status).to.equal('unconfirmed');
+  });
+
+  describe('matching by text', () => {
+    it('settles the send with the same text before an older one', async () => {
+      const room = channel(1);
+      const first = track(room, 'a');
+      const second = track(room, 'b');
+      echoed(message(room, 7, 'b'), 7);
+      await flush();
+      expect(second.status).to.equal('sent');
+      expect(first.status).to.equal(undefined);
+      clock.tick(5000);
+      await flush();
+      expect(first.status).to.equal('unconfirmed');
+    });
+
+    it('settles the oldest send when none has the text that came back, since the server changes some text', async () => {
+      const room = channel(1);
+      const first = track(room, ':hi:');
+      const second = track(room, 'plain');
+      echoed(message(room, 7, '<img src="hi.png">'), 7);
+      await flush();
+      expect(first.status).to.equal('sent');
+      expect(second.status).to.equal(undefined);
+    });
+
+    it('settles the oldest of the sends that have the same text', async () => {
+      const room = channel(1);
+      const first = track(room, 'same');
+      const second = track(room, 'same');
+      echoed(message(room, 7, 'same'), 7);
+      await flush();
+      expect(first.status).to.equal('sent');
+      expect(second.status).to.equal(undefined);
+    });
+
+    it('does not use a send to another room', async () => {
+      const first = track(channel(1), 'a');
+      const second = track(channel(2), 'a');
+      echoed(message(channel(2), 7, 'a'), 7);
+      await flush();
+      expect(first.status).to.equal(undefined);
+      expect(second.status).to.equal('sent');
+    });
+  });
+
+  describe('a message that comes back after the wait', () => {
+    it('is not given to a later send', async () => {
+      const room = channel(1);
+      const first = track(room, 'one');
+      clock.tick(5000);
+      const second = track(room, 'two');
+      echoed(message(room, 7, 'one'), 7);
+      await flush();
+      expect(first.status).to.equal('unconfirmed');
+      expect(second.status).to.equal(undefined);
+      echoed(message(room, 7, 'two'), 7);
+      await flush();
+      expect(second.status).to.equal('sent');
+    });
+
+    it('is only recognized once', async () => {
+      const room = channel(1);
+      track(room, 'one');
+      clock.tick(5000);
+      const second = track(room, 'two');
+      echoed(message(room, 7, 'one'), 7);
+      echoed(message(room, 7, 'one'), 7);
+      await flush();
+      expect(second.status).to.equal('sent');
+    });
+
+    it('does not take the place of a new send with the same text', async () => {
+      const room = channel(1);
+      track(room, 'test');
+      clock.tick(5000);
+      const second = track(room, 'test');
+      echoed(message(room, 7, 'test'), 7);
+      await flush();
+      expect(second.status).to.equal('sent');
+    });
+
+    it('is only recognized in the room it was sent to', async () => {
+      track(channel(1), 'one');
+      clock.tick(5000);
+      const second = track(channel(2), 'two');
+      echoed(message(channel(2), 7, 'one'), 7);
+      await flush();
+      expect(second.status).to.equal('sent');
+    });
+
+    it('is only recognized for a minute', async () => {
+      const room = channel(1);
+      track(room, 'one');
+      clock.tick(5000);
+      clock.tick(60001);
+      const second = track(room, 'two');
+      echoed(message(room, 7, 'one'), 7);
+      await flush();
+      expect(second.status).to.equal('sent');
+    });
+
+    it('is forgotten when the connection drops', async () => {
+      const room = channel(1);
+      track(room, 'one');
+      clock.tick(5000);
+      forgetAll();
+      const second = track(room, 'two');
+      echoed(message(room, 7, 'one'), 7);
+      await flush();
+      expect(second.status).to.equal('sent');
+    });
   });
 
   describe('a send that was armed', () => {
