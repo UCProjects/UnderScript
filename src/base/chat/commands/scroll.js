@@ -1,12 +1,16 @@
 import { global } from 'src/utils/global';
 import { debug } from 'src/utils/debug';
-import { registerWithSetting } from 'src/utils/chatCommands';
+import plugin from 'src/utils/underscript';
+import { commandSetting } from 'src/utils/chatCommands';
 
-registerWithSetting({
+const setting = commandSetting('scroll');
+
+plugin.commands.register({
   command: 'scroll',
-  handler(data) {
+  enabled: () => !setting.value(),
+  handler(command) {
     debug('Scroll command');
     this.canceled = true;
-    global('scroll')($(`#${data.room}`), true);
+    global('scroll')($(`#${command.channel.room}`), true);
   },
 });

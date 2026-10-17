@@ -1,9 +1,11 @@
+type UnderScriptCommandText = string | { toString(): string };
+
 type UnderScriptCommandHandler = (this: UnderScriptEventMeta, command: UnderScriptChatCommand) => unknown;
 
 type UnderScriptCommandOptions = {
   command: string;
-  description?: string;
-  usage?: string;
+  description?: UnderScriptCommandText;
+  usage?: UnderScriptCommandText;
   icon?: string;
   enabled?(): boolean;
   handler?: UnderScriptCommandHandler;

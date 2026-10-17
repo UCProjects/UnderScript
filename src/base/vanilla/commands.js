@@ -1,11 +1,10 @@
 import { isPriority, self } from 'src/utils/user';
-import { register } from 'src/utils/chatCommands';
+import plugin from 'src/utils/undercards';
 import Translation from 'src/structures/constants/translation';
 
 function moderation(command, priority, usage) {
-  register({
+  plugin.commands.register({
     command,
-    owner: 'Undercards',
     usage: usage && Translation.Command(`${command}.usage`),
     enabled: () => isPriority(self(), priority),
   });

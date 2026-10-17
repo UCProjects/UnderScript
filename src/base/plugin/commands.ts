@@ -17,8 +17,9 @@ wrap(() => {
       plugin.logger.error(`Command error (/${command}):\n`, error);
     }
 
-    function checkString(value: unknown, label: string) {
-      if (value !== undefined && typeof value !== 'string') throw new Error(`Command ${label} must be a string`);
+    function checkText(value: unknown, label: string) {
+      if (value === undefined || typeof value === 'string' || (typeof value === 'object' && value !== null)) return;
+      throw new Error(`Command ${label} must be a string`);
     }
 
     function checkFunction(value: unknown, label: string) {
@@ -33,8 +34,8 @@ wrap(() => {
           throw new Error('Command names can only contain letters, numbers, - and _');
         }
         if (names.has(command)) throw new Error(`Command "${command}" is already registered`);
-        checkString(description, 'description');
-        checkString(usage, 'usage');
+        checkText(description, 'description');
+        checkText(usage, 'usage');
         checkFunction(enabled, 'enabled');
         checkFunction(handler, 'handler');
 
