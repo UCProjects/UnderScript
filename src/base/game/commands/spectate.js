@@ -2,23 +2,25 @@ import eventManager from 'src/utils/eventManager';
 import { global } from 'src/utils/global';
 import onPage from 'src/utils/onPage';
 import { infoToast } from 'src/utils/2.toasts';
-import { registerWithSetting } from 'src/utils/chatCommands';
+import plugin from 'src/utils/underscript';
+import { commandSetting } from 'src/utils/chatCommands';
 import Translation from 'src/structures/constants/translation';
 
 let toast;
 
-registerWithSetting({
+const setting = commandSetting('spectate', { note: Translation.Command('spectate.note') });
+
+plugin.commands.register({
   command: 'spectate',
   usage: Translation.Command('spectate.usage'),
-  note: Translation.Command('spectate.note'),
-  enabled: () => (onPage('Game') || onPage('Spectate')) && global('finish', { throws: false }) === false,
-  handler(data) {
+  enabled: () => !setting.value() && (onPage('Game') || onPage('Spectate')) && global('finish', { throws: false }) === false,
+  handler(command) {
     if (typeof gameId === 'undefined' || global('finish')) {
       this.canceled = true;
       return;
     }
     if (toast) toast.close();
-    data.output = `${$('#yourUsername').text()} vs ${$('#enemyUsername').text()}: ${location.origin}/Spectate?gameId=${global('gameId')}&playerId=${global('userId')}${data.text ? ` - ${data.text}` : ''}`;
+    command.output = `${$('#yourUsername').text()} vs ${$('#enemyUsername').text()}: ${location.origin}/Spectate?gameId=${global('gameId')}&playerId=${global('userId')}${command.text ? ` - ${command.text}` : ''}`;
   },
 });
 

@@ -97,7 +97,16 @@ chatCommands.register({
 });
 chatCommands.register({ command: 'quiet', enabled: () => false });
 chatCommands.register({ command: 'removable' }).remove() satisfies boolean;
-chatCommands.registerWithSetting({ command: 'toggle', usage: '<name>', note: 'text', page: 'Chat', handler() {} }).key satisfies string;
+chatCommands.commandSetting('toggle', { note: 'text', page: 'Chat' }).key satisfies string;
+chatCommands.commandSetting('plain').key satisfies string;
+// @ts-expect-error a command setting needs the command
+chatCommands.commandSetting();
+// @ts-expect-error the note is text
+chatCommands.commandSetting('bad', { note: 5 });
+// @ts-expect-error the page is a settings page
+chatCommands.commandSetting('bad', { page: 5 });
+// @ts-expect-error only the note, the page and the category are options
+chatCommands.commandSetting('bad', { key: 'other' });
 // @ts-expect-error a setting is not an option of register
 chatCommands.register({ command: 'bad', setting: false });
 chatCommands.list()[0].available() satisfies boolean;

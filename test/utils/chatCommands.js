@@ -3,7 +3,7 @@ import { expect } from 'chai';
 describe('chat commands', () => {
   let list;
   let register;
-  let registerWithSetting;
+  let commandSetting;
   let eventManager;
 
   const find = (command) => list().find((entry) => entry.command === command);
@@ -12,7 +12,7 @@ describe('chat commands', () => {
     ['Element', 'HTMLElement', 'Node', 'navigator', 'MutationObserver', 'getComputedStyle'].forEach((name) => {
       globalThis[name] ??= window[name];
     });
-    ({ list, register, registerWithSetting } = await import('../../src/utils/chatCommands'));
+    ({ list, register, commandSetting } = await import('../../src/utils/chatCommands'));
     eventManager = (await import('../../src/utils/eventManager')).default;
   });
 
@@ -197,37 +197,32 @@ describe('chat commands', () => {
     });
   });
 
-  describe('with a setting', () => {
-    it('creates a setting that switches the command off', () => {
-      const setting = registerWithSetting({ command: 'withsetting', handler() {} });
-      expect(setting.key).to.equal('underscript.command.withsetting');
-      expect(find('withsetting')).to.not.equal(undefined);
+  describe('command settings', () => {
+    it('are named after the command', () => {
+      const setting = commandSetting('settingnamed');
+      expect(setting.key).to.equal('underscript.command.settingnamed');
+      expect(setting.value()).to.equal(false);
+    });
+
+    it('can be switched on and off', () => {
+      const setting = commandSetting('settingswitch');
       setting.set(true);
-      expect(find('withsetting')).to.equal(undefined);
+      expect(setting.value()).to.equal(true);
       setting.set(false);
-      expect(find('withsetting')).to.not.equal(undefined);
+      expect(setting.value()).to.equal(false);
     });
 
-    it('does not run the handler while the setting switches it off', () => {
-      let ran = 0;
-      const setting = registerWithSetting({ command: 'withsettingrun', handler() { ran += 1; } });
-      send('withsettingrun');
+    it('cannot be made twice for the same command', () => {
+      commandSetting('settingtwice');
+      expect(() => commandSetting('settingtwice')).to.throw('already registered');
+    });
+
+    it('switch a command off when its enabled function uses them', () => {
+      const setting = commandSetting('settingused');
+      register({ command: 'settingused', enabled: () => !setting.value() });
+      expect(find('settingused')).to.not.equal(undefined);
       setting.set(true);
-      send('withsettingrun');
-      expect(ran).to.equal(1);
-    });
-
-    it('still honors enabled', () => {
-      let enabled = false;
-      registerWithSetting({ command: 'withsettingenabled', enabled: () => enabled, handler() {} });
-      expect(find('withsettingenabled')).to.equal(undefined);
-      enabled = true;
-      expect(find('withsettingenabled')).to.not.equal(undefined);
-    });
-
-    it('checks the command before it creates the setting', () => {
-      expect(() => registerWithSetting({ command: '', owner: 'Someone' })).to.throw('Command name must be provided');
-      expect(() => registerWithSetting({ command: 'withsettingbad', icon: 5 })).to.throw('Command icon must be an image address');
+      expect(find('settingused')).to.equal(undefined);
     });
   });
 });

@@ -103,7 +103,7 @@ describe('plugin commands', () => {
       const { plugin } = setup();
       expect(() => plugin.commands.register({ command: 'plugtype', description: 5 }))
         .to.throw('Command description must be a string');
-      expect(() => plugin.commands.register({ command: 'plugtype', usage: {} }))
+      expect(() => plugin.commands.register({ command: 'plugtype', usage: 5 }))
         .to.throw('Command usage must be a string');
       expect(() => plugin.commands.register({ command: 'plugtype', enabled: true }))
         .to.throw('Command enabled must be a function');
@@ -111,6 +111,14 @@ describe('plugin commands', () => {
         .to.throw('Command handler must be a function');
       expect(() => plugin.commands.register({ command: 'plugtype', icon: '' }))
         .to.throw('Command icon must be an image address');
+    });
+
+    it('takes text that is made when it is shown, such as a translation', () => {
+      const { name, plugin } = setup();
+      const text = { toString: () => 'Made later' };
+      plugin.commands.register({ command: 'plugtext', description: text, usage: text });
+      expect(`${find('plugtext', name).description}`).to.equal('Made later');
+      expect(`${find('plugtext', name).usage}`).to.equal('Made later');
     });
 
     it('does not keep a command that failed to register', () => {

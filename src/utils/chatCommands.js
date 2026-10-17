@@ -7,35 +7,22 @@ import * as settings from './settings/index';
  * @property {string} command
  * @property {string} [owner]
  * @property {string} [icon]
- * @property {string | Translation} [description]
- * @property {string} [usage]
+ * @property {UnderScriptCommandText} [description]
+ * @property {UnderScriptCommandText} [usage]
  * @property {() => boolean} [enabled]
  * @property {(this: UnderScriptEventMeta, data: { command: string; text: string; [key: string]: any }) => unknown} [handler]
- */
-
-/**
- * @typedef {ChatCommand & {
- *   note?: string | Translation | (() => string | Translation | undefined);
- *   page?: string;
- * @property {string} namespace
- *   category?: Translation;
- * }} ChatCommandWithSetting
  */
 
 /**
  * @typedef {object} ChatCommandInfo
  * @property {string} command
  * @property {string} owner
+ * @property {string} namespace
  * @property {string} qualified
  * @property {string} [icon]
- * @property {string | Translation} description
- * @property {string} [usage]
+ * @property {UnderScriptCommandText} description
+ * @property {UnderScriptCommandText} [usage]
  * @property {() => boolean} available
- */
-
-/**
- * @typedef {object} ChatCommandHandle
- * @property {() => boolean} remove
  */
 
 const DEFAULT_OWNER = 'UnderScript';
@@ -55,7 +42,7 @@ const commands = [];
 
 /**
  * @param {ChatCommand} command
- * @returns {ChatCommandHandle}
+ * @returns {UnderScriptCommandHandle}
  */
 export function register({
   command,
@@ -70,7 +57,6 @@ export function register({
 
   const namespace = namespaceOf(owner);
   const qualified = `${namespace}:${command}`;
-    namespace,
 
   function typedAs(data) {
     return data.command === command || data.command === qualified;
@@ -84,6 +70,7 @@ export function register({
     command,
     owner,
     icon,
+    namespace,
     qualified,
     description,
     usage,
@@ -114,31 +101,22 @@ export function register({
 }
 
 /**
- * @param {ChatCommandWithSetting} command
+ * @param {string} command
+ * @param {Pick<import('./settings/index').SettingOptions, 'note' | 'page' | 'category'>} [options]
  * @returns {ReturnType<typeof settings.register>}
  */
-export function registerWithSetting({
-  note,
+export function commandSetting(command, {
+  note = () => `/${command}`,
   page = 'Chat',
   category = Translation.CATEGORY_CHAT_COMMAND,
-  ...command
-}) {
-  validate(command);
-
-  const setting = settings.register({
-    name: Translation.DISABLE_COMMAND_SETTING.withArgs(command.command),
-    key: `underscript.command.${command.command}`,
-    note: note ?? (() => `/${command.command}${command.usage ? ` ${command.usage}` : ''}`),
+} = {}) {
+  return settings.register({
+    name: Translation.DISABLE_COMMAND_SETTING.withArgs(command),
+    key: `underscript.command.${command}`,
+    note,
     page,
     category,
   });
-  const { enabled = () => true } = command;
-  register({
-    ...command,
-    enabled: () => !setting.value() && enabled() !== false,
-  });
-
-  return setting;
 }
 
 /** @returns {ChatCommandInfo[]} */
