@@ -15,6 +15,13 @@ import { channelFromData, channelFromRoom, parseChatMessage } from 'src/structur
 import { noticeEvent, parseNotice } from 'src/structures/chat/notice';
 import parseDeletion, { recordDeletion } from 'src/structures/chat/deletion';
 import { emitSend } from 'src/structures/chat/outgoing';
+import {
+  claim,
+  echoed,
+  forgetAll,
+  refused,
+  submitted,
+} from 'src/structures/chat/pending';
 import Translation from 'src/structures/constants/translation';
 import {
   canReconnect,
@@ -33,6 +40,7 @@ const guestMode = new VarStore(false);
 const historyIds = new Set();
 
 function handleClose(event) {
+  forgetAll();
   console.debug('Disconnected', event);
   flaps.closed(Date.now());
   if (isSessionReplaced(event.reason)) emitChat('replaced');
@@ -74,6 +82,14 @@ function emitDeleted(data) {
   emitChat('deleted', deletion);
 }
 
+function settleSends(data) {
+  const message = parsedMessage(data);
+  if (message) echoed(message, global('selfId', { throws: false }));
+  if (noticeEvent(data.action) !== 'rejected') return;
+  const notice = parseNotice(data, translateFromServer);
+  if (notice) refused(notice);
+}
+
 function preMessageCanceled(data, canceled) {
   const message = parsedMessage(data);
   if (!message) return canceled;
@@ -107,12 +123,16 @@ function bind(socketChat) {
 
     eventManager.emit('preChatMessage', data);
     const raw = eventManager.cancelable.emit(`preChat:${action}`, data);
-    if (preMessageCanceled(data, raw.canceled)) return;
+    if (preMessageCanceled(data, raw.canceled)) {
+      settleSends(data);
+      return;
+    }
     oHandler(event);
     eventManager.emit('ChatMessage', data);
     eventManager.emit(`Chat:${action}`, data);
     emitMessage(data);
     emitNotice(data);
+    settleSends(data);
     emitDeleted(data);
 
     if (action === 'getSelfInfos') {
@@ -196,14 +216,22 @@ function manualReconnect() {
   reconnect(true);
 }
 
-function sendMessageWrapper(...args) {
-  if (global('socketChat').readyState !== WebSocket.OPEN) {
-    updateIfActive(); // TODO: Have a way to detect activity other than manually resetting it
-    reconnect();
-    eventManager.once('Chat:Reconnected', () => this.super(...args));
-  } else {
-    this.super(...args);
-  }
+function sendWrapper(type) {
+  return function wrapper(...args) {
+    const channel = channelFromRoom(`chat-${type}-${args[1]}`);
+    const pending = channel && claim(channel);
+    const send = () => {
+      if (channel) submitted(channel, pending);
+      this.super(...args);
+    };
+    if (global('socketChat').readyState !== WebSocket.OPEN) {
+      updateIfActive(); // TODO: Have a way to detect activity other than manually resetting it
+      reconnect();
+      eventManager.once('Chat:Reconnected', send);
+    } else {
+      send();
+    }
+  };
 }
 
 eventManager.on(':preload', () => {
@@ -224,8 +252,8 @@ eventManager.on(':preload', () => {
     });
 
     // Attempt to reconnect when sending messages
-    globalSet('sendMessage', sendMessageWrapper);
-    globalSet('sendPrivateMessage', sendMessageWrapper);
+    globalSet('sendMessage', sendWrapper('public'));
+    globalSet('sendPrivateMessage', sendWrapper('private'));
     // Attempt to reconnect when coming back to this window
     document.addEventListener('visibilitychange', () => reconnect());
     if (isApp) {
@@ -273,8 +301,10 @@ eventManager.on(':preload', () => {
         messages,
         input: this,
       };
-      const canceled = emitSend(room, this);
-      if (eventManager.emit({ cancelable: true, canceled }, 'Chat:send', data).canceled) {
+      const outgoing = emitSend(room, this);
+      const canceled = eventManager.emit({ cancelable: true, canceled: outgoing.canceled }, 'Chat:send', data).canceled;
+      outgoing.finish(canceled);
+      if (canceled) {
         debug('Canceled send');
         $(this).val('');
         e.preventDefault();

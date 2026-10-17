@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import chat, { attach, emit } from '../../src/structures/chat/chat';
+import { claim, echoed, forgetAll, refused, submitted } from '../../src/structures/chat/pending';
 
 function hooks(overrides = {}) {
   const calls = { reconnect: 0, sent: [] };
@@ -8,7 +9,11 @@ function hooks(overrides = {}) {
     api: {
       connected: () => true,
       reconnect: () => { calls.reconnect += 1; },
-      send: (channel, text) => { calls.sent.push([channel, text]); return true; },
+      send: (channel, text) => {
+        calls.sent.push([channel, text]);
+        submitted(channel, claim(channel));
+        return true;
+      },
       ...overrides,
     },
   };
@@ -23,6 +28,7 @@ describe('chat', () => {
 
   afterEach(() => {
     removers.splice(0).forEach((remove) => remove());
+    forgetAll();
     emit('connected');
   });
 
@@ -92,19 +98,62 @@ describe('chat', () => {
     const { api, calls } = hooks();
     attach(api);
     const channel = { type: 'public', id: '1', room: 'chat-public-1' };
-    expect(chat.send(channel, 'hi')).to.equal(true);
-    expect(chat.send('chat-private-9', 'psst')).to.equal(true);
+    chat.send(channel, 'hi');
+    chat.send('chat-private-9', 'psst');
     expect(calls.sent).to.deep.equal([
       [channel, 'hi'],
       [{ type: 'private', id: '9', room: 'chat-private-9' }, 'psst'],
     ]);
   });
 
-  it('refuses what it cannot send', () => {
+  it('refuses what it cannot send, and says so in the result', async () => {
     const { api, calls } = hooks();
     attach(api);
-    expect(chat.send('nowhere', 'hi')).to.equal(false);
-    expect(chat.send('chat-public-1', '')).to.equal(false);
+    expect(await chat.send('nowhere', 'hi')).to.deep.equal({ status: 'canceled' });
+    expect(await chat.send('chat-public-1', '')).to.deep.equal({ status: 'canceled' });
+    expect(await chat.send('chat-public-1', 5)).to.deep.equal({ status: 'canceled' });
     expect(calls.sent).to.deep.equal([]);
+  });
+
+  describe('send result', () => {
+    const channel = { type: 'public', id: '1', room: 'chat-public-1' };
+
+    it('is a promise', () => {
+      attach(hooks().api);
+      expect(chat.send(channel, 'hi')).to.be.instanceOf(Promise);
+    });
+
+    it('settles as sent when the message comes back', async () => {
+      attach(hooks().api);
+      const result = chat.send(channel, 'hi');
+      const echo = { id: 1, channel, author: { id: 7 }, text: 'hi' };
+      echoed(echo, 7);
+      expect(await result).to.deep.equal({ status: 'sent', message: echo });
+    });
+
+    it('settles as rejected when the server refuses it', async () => {
+      attach(hooks().api);
+      const result = chat.send(channel, 'hi');
+      const notice = { kind: 'error', key: 'chat-spam-protection', args: [3], text: 'Slow down' };
+      refused(notice);
+      expect(await result).to.deep.equal({ status: 'rejected', notice });
+    });
+
+    it('settles as canceled when the game does not send it', async () => {
+      attach(hooks({ send: () => false }).api);
+      expect(await chat.send(channel, 'hi')).to.deep.equal({ status: 'canceled' });
+    });
+
+    it('belongs to its own message when two are sent in a row', async () => {
+      attach(hooks().api);
+      const first = chat.send(channel, 'one');
+      const second = chat.send(channel, 'two');
+      echoed({ id: 1, channel, author: { id: 7 }, text: 'one' }, 7);
+      expect((await first).status).to.equal('sent');
+      let secondStatus;
+      second.then((result) => { secondStatus = result.status; });
+      await new Promise((resolve) => { setImmediate(resolve); });
+      expect(secondStatus).to.equal(undefined);
+    });
   });
 });

@@ -1,16 +1,32 @@
 import { emitCancelable } from './chat';
 import { channelFromRoom } from './message';
+import { arm, createPending } from './pending';
 
 type TextInput = { value: string };
 type CommandData = { command: string; text: string; output: string | undefined };
 
-export function emitSend(room: unknown, input: TextInput): boolean {
+type Sending = {
+  readonly canceled: boolean;
+  finish(canceled: boolean): void;
+};
+
+export function emitSend(room: unknown, input: TextInput): Sending {
   const channel = channelFromRoom(room);
-  if (!channel || !input.value.trim()) return false;
-  const outgoing: UnderScriptChatOutgoing = { channel, text: input.value };
+  if (!channel || !input.value.trim()) return { canceled: false, finish: () => {} };
+  const pending = createPending();
+  const outgoing: UnderScriptChatOutgoing = { channel, text: input.value, result: pending.promise };
   const canceled = emitCancelable('send', false, outgoing);
   if (!canceled && typeof outgoing.text === 'string') input.value = outgoing.text;
-  return canceled;
+  return {
+    canceled,
+    finish(final) {
+      if (final) {
+        pending.settle({ status: 'canceled' });
+      } else {
+        arm(channel, pending);
+      }
+    },
+  };
 }
 
 export function commandView(
