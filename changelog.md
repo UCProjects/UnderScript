@@ -20,7 +20,8 @@
 1. Added a Leaderboard+ link to the Leaderboards menu in the footer
 1. The Card Editor link is back in the footer, in the Community menu next to the Wiki
 1. Chat command suggestions now show where each command comes from, on the right of the suggestion<extended>
-    - When two scripts have a command with the same name, picking it completes to `owner:command`, and typing `/owner:command` runs only that one. The owner is the script's name, with dashes instead of spaces.</extended>
+    - When two scripts have a command with the same name, picking it completes to `owner:command`, and typing `/owner:command` runs only that one. The owner is the script's name, with dashes instead of spaces.
+    - Typing the start of a script's name, such as `/under`, also suggests that script's commands, after the commands whose own names match.</extended>
 ### Fixes
 1. Fixed links to a player or page on the leaderboard (`?user=` and `?page=`) opening the friendship leaderboard instead of the ranked one
 ### Plugins

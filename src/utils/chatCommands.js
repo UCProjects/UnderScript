@@ -17,6 +17,7 @@ import * as settings from './settings/index';
  * @typedef {ChatCommand & {
  *   note?: string | Translation | (() => string | Translation | undefined);
  *   page?: string;
+ * @property {string} namespace
  *   category?: Translation;
  * }} ChatCommandWithSetting
  */
@@ -67,7 +68,9 @@ export function register({
 }) {
   validate({ command, owner, icon });
 
-  const qualified = `${namespaceOf(owner)}:${command}`;
+  const namespace = namespaceOf(owner);
+  const qualified = `${namespace}:${command}`;
+    namespace,
 
   function typedAs(data) {
     return data.command === command || data.command === qualified;

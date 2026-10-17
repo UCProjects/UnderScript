@@ -21,6 +21,10 @@ function tied(entries, entry) {
   return entries.filter(({ command }) => command.toLowerCase() === name).length > 1;
 }
 
+function owned(entry) {
+  return { value: entry.qualified, completion: entry.qualified, entry };
+}
+
 register({
   name: 'commands',
   prefix: '/',
@@ -35,14 +39,17 @@ register({
       return [{ hint: true, entry }];
     }
     const query = text.toLowerCase();
-    const qualify = query.includes(':');
-    return entries
-      .filter(({ command, qualified }) => (qualify ? qualified : command).toLowerCase().startsWith(query))
-      .map((entry) => ({
-        value: qualify ? entry.qualified : entry.command,
-        completion: qualify || tied(entries, entry) ? entry.qualified : entry.command,
-        entry,
-      }));
+    const starts = (value) => value.toLowerCase().startsWith(query);
+    if (query.includes(':')) {
+      return entries.filter(({ qualified }) => starts(qualified)).map(owned);
+    }
+    const named = entries.filter(({ command }) => starts(command)).map((entry) => ({
+      value: entry.command,
+      completion: tied(entries, entry) ? entry.qualified : entry.command,
+      entry,
+    }));
+    const byOwner = entries.filter(({ command, namespace }) => !starts(command) && starts(namespace)).map(owned);
+    return [...named, ...byOwner];
   },
   insert: ({ completion }) => `${completion} `,
   render(item, text) {
