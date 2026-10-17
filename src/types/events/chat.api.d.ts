@@ -6,6 +6,7 @@ type UnderScriptChatChannel = {
   readonly name?: string;
   /** Whether this chat's window is open right now */
   readonly open: boolean;
+  send(text: string): Promise<UnderScriptChatSendResult>;
 };
 
 type UnderScriptChatGroup = {
@@ -129,7 +130,8 @@ type UnderScriptChat = UnderScriptChatState & {
   once<K extends keyof UnderScriptChatEvents>(event: K, listener: (this: UnderScriptEventMeta, ...args: UnderScriptChatEvents[K]) => unknown): UnderScriptChat;
   off<K extends keyof UnderScriptChatEvents>(event: K, listener: (...args: UnderScriptChatEvents[K]) => unknown): UnderScriptChat;
   reconnect(): void;
-  send(channel: UnderScriptChatChannel | string, text: string): Promise<UnderScriptChatSendResult>;
+  channel(name: string | number): UnderScriptChatChannel | undefined;
+  send(channel: UnderScriptChatChannel | string | number, text: string): Promise<UnderScriptChatSendResult>;
 };
 
 interface UnderScriptAPI {

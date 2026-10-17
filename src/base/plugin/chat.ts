@@ -60,6 +60,7 @@ wrap(() => {
         return obj;
       },
       reconnect: () => chat.reconnect(),
+      channel: (target) => chat.channel(target),
       send: (channel, text) => chat.send(channel, text),
     };
 

@@ -1,5 +1,4 @@
-import { emitCancelable } from './chat';
-import { channelFromRoom } from './message';
+import { channelFromRoom, emitCancelable } from './chat';
 import { arm, createPending } from './pending';
 
 type TextInput = { value: string };

@@ -79,7 +79,7 @@ plugin.commands.register({
   command: 'hello',
   handler(command) {
     this.canceled = true;
-    plugin.chat.send(command.channel, 'Hello!');
+    command.channel.send('Hello!');
   },
 });
 

@@ -1,15 +1,14 @@
-import ChatChannel from './channel';
+import { channelFromRoom, getChannel } from './chat';
 import { deletedSince, stamp } from './deletion';
 
 const STAFF_PRIORITY = 6;
 const MOD_PRIORITY = 4;
-const ROOM_PATTERN = /^chat-(public|private)-(.+)$/;
 
 type Raw = Record<string, unknown>;
 
 type MessageFields = Pick<
-UnderScriptChatMessage,
-'id' | 'channel' | 'author' | 'text' | 'emote' | 'rainbow' | 'deleted' | 'timestamp' | 'raw'
+  UnderScriptChatMessage,
+  'id' | 'channel' | 'author' | 'text' | 'emote' | 'rainbow' | 'deleted' | 'timestamp' | 'raw'
 >;
 
 const originals = new WeakMap<Element, string>();
@@ -127,23 +126,15 @@ function parseUser(value: unknown): UnderScriptChatUser | undefined {
   };
 }
 
-export function channelFromRoom(room: unknown): UnderScriptChatChannel | undefined {
-  if (typeof room !== 'string') return undefined;
-  const match = ROOM_PATTERN.exec(room);
-  if (!match) return undefined;
-  const [, type, id] = match;
-  return new ChatChannel(type as 'public' | 'private', id);
-}
-
 export function channelFromData(data: unknown): UnderScriptChatChannel | undefined {
   if (!isRecord(data)) return undefined;
   if (typeof data.room === 'string') return channelFromRoom(data.room);
   const { action, idRoom, idFriend } = data;
   if (action === 'getMessage' && idRoom !== undefined) {
-    return new ChatChannel('public', `${idRoom}`);
+    return getChannel('public', `${idRoom}`);
   }
   if (action === 'getPrivateMessage' && idFriend !== undefined) {
-    return new ChatChannel('private', `${idFriend}`);
+    return getChannel('private', `${idFriend}`);
   }
   return undefined;
 }

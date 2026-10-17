@@ -1,6 +1,5 @@
 import eventManager from 'src/utils/eventManager';
-import { emit as emitChat } from 'src/structures/chat/chat';
-import { channelFromRoom } from 'src/structures/chat/message';
+import { channelFromRoom, emit as emitChat } from 'src/structures/chat/chat';
 
 // TODO: Is this used?
 let focused = false;

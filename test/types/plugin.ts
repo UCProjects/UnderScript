@@ -245,3 +245,16 @@ chat.send('chat-public-1', 'hi') satisfies Promise<UnderScriptChatSendResult>;
 chat.send('chat-public-1', 'hi').then((result) => result.status satisfies 'sent' | 'rejected' | 'unconfirmed' | 'canceled');
 // @ts-expect-error send gives a result now, not a boolean
 chat.send('chat-public-1', 'hi') satisfies boolean;
+chat.channel('roleplay') satisfies UnderScriptChatChannel | undefined;
+chat.channel(5)?.send('hi') satisfies Promise<UnderScriptChatSendResult> | undefined;
+chat.on('message', (message) => message.channel.send('hi') satisfies Promise<UnderScriptChatSendResult>);
+chat.on('command', (command) => command.channel.send('hi').then((result) => result.status));
+chat.send(5, 'hi') satisfies Promise<UnderScriptChatSendResult>;
+// @ts-expect-error a channel needs a name
+chat.channel();
+// @ts-expect-error a message is text
+chat.channel(5)?.send(5);
+// @ts-expect-error a name is text or a number
+chat.channel(true);
+// @ts-expect-error a channel is not a name, there is nothing to look up
+chat.channel(chat.channel(5)!);

@@ -1,7 +1,7 @@
 import eventEmitter from 'src/utils/eventEmitter';
 import * as api from 'src/utils/4.api';
-import { openChannels } from './channel';
-import { channelFromRoom } from './message';
+import ChatChannel, { openRefs, refFrom, refFromRoom } from './channel';
+import type { ChannelRef, ChannelType } from './channel';
 import { arm, createPending } from './pending';
 
 type Hooks = {
@@ -11,6 +11,7 @@ type Hooks = {
 };
 
 const events = eventEmitter<UnderScriptChatEvents>();
+const channels = new Map<string, ChatChannel>();
 let hooks: Hooks | undefined;
 let replaced = false;
 
@@ -22,7 +23,7 @@ const chat: UnderScriptChat = {
     return replaced;
   },
   get channels() {
-    return openChannels();
+    return openRefs().map((ref) => getChannel(ref.type, ref.id));
   },
   on(event, listener) {
     events.on(event, listener);
@@ -39,8 +40,11 @@ const chat: UnderScriptChat = {
   reconnect() {
     hooks?.reconnect();
   },
+  channel(name) {
+    return findChannel(name);
+  },
   send(channel, text) {
-    const target = typeof channel === 'string' ? channelFromRoom(channel) : channel;
+    const target = findChannel(channel);
     if (!hooks || typeof text !== 'string' || !text || !target) {
       return Promise.resolve({ status: 'canceled' });
     }
@@ -50,6 +54,28 @@ const chat: UnderScriptChat = {
     return pending.promise;
   },
 };
+
+export function getChannel(type: ChannelType, id: string): ChatChannel {
+  const room = `chat-${type}-${id}`;
+  let channel = channels.get(room);
+  if (!channel) {
+    channel = new ChatChannel(chat, type, id);
+    channels.set(room, channel);
+  }
+  return channel;
+}
+
+function channelOf(ref: ChannelRef | undefined): ChatChannel | undefined {
+  return ref && getChannel(ref.type, ref.id);
+}
+
+export function channelFromRoom(room: unknown): ChatChannel | undefined {
+  return channelOf(refFromRoom(room));
+}
+
+export function findChannel(name: unknown): ChatChannel | undefined {
+  return channelOf(refFrom(name));
+}
 
 export function attach(next: Hooks): void {
   hooks = next;

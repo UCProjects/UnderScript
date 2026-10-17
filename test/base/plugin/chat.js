@@ -90,6 +90,14 @@ describe('plugin chat', () => {
     }
   });
 
+  it('finds a channel', () => {
+    const { chat } = setup();
+    const channel = chat.channel('chat-public-3');
+    expect(channel.room).to.equal('chat-public-3');
+    expect(chat.channel(3)).to.equal(channel);
+    expect(channel.send).to.be.a('function');
+  });
+
   it('shares its state with the global object, which has no actions', () => {
     const { chat } = setup();
     attach({ connected: () => true, reconnect: () => {}, send: () => true });
