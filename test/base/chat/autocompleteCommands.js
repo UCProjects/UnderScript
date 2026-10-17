@@ -23,6 +23,10 @@ describe('command suggestions', () => {
     register({ command: 'suggestusage', owner: 'Undercards', usage: '<name>' });
     register({ command: 'suggesttied', owner: 'Alpha', description: 'First' });
     register({ command: 'suggesttied', owner: 'Beta', description: 'Second' });
+    register({ command: 'zzowned', owner: 'Zed Corp' });
+    register({ command: 'zzsecond', owner: 'Zed Corp' });
+    register({ command: 'zedcmd', owner: 'Other' });
+    register({ command: 'dupcmd', owner: 'Dupper' });
   });
 
   beforeEach(() => {
@@ -119,6 +123,52 @@ describe('command suggestions', () => {
       const [entry] = suggest('/Undercards:suggestusage ');
       expect(entry.classList.contains('autobox-hint')).to.equal(true);
       expect(entry.textContent).to.contain('<name>');
+    });
+  });
+
+  describe('when the query matches an owner', () => {
+    it('lists the commands of that owner', () => {
+      const [entry, ...rest] = suggest('/zed-c');
+      expect(rest).to.have.length(1);
+      expect(entry.querySelector('.autobox-owner').textContent).to.equal('Zed Corp');
+      expect(entry.textContent).to.contain('Zed-Corp:zzowned');
+      expect(entry.querySelector('strong').textContent).to.equal('Zed-C');
+    });
+
+    it('matches the owner in any case', () => {
+      expect(suggest('/ZED-C')).to.have.length(2);
+    });
+
+    it('completes to the owner and the command', () => {
+      const [entry] = suggest('/zed-c');
+      entry.click();
+      expect(input.value).to.equal('/Zed-Corp:zzowned ');
+    });
+
+    it('lists the commands that match by name before the ones that match by owner', () => {
+      const entries = suggest('/zed');
+      expect(entries).to.have.length(3);
+      expect(entries[0].textContent).to.contain('zedcmd');
+      expect(entries[0].textContent).to.not.contain(':');
+      expect(entries[1].textContent).to.contain('Zed-Corp:zzowned');
+      expect(entries[2].textContent).to.contain('Zed-Corp:zzsecond');
+    });
+
+    it('completes a command that matched by name to the plain command', () => {
+      const [entry] = suggest('/zed');
+      entry.click();
+      expect(input.value).to.equal('/zedcmd ');
+    });
+
+    it('does not list a command twice when its name and its owner both match', () => {
+      const entries = suggest('/dup');
+      expect(entries).to.have.length(1);
+      expect(entries[0].textContent).to.contain('dupcmd');
+      expect(entries[0].textContent).to.not.contain('Dupper:dupcmd');
+    });
+
+    it('lists nothing for a start that matches neither a command nor an owner', () => {
+      expect(suggest('/nobodyhasthis')).to.have.length(0);
     });
   });
 });
