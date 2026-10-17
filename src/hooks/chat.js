@@ -12,7 +12,7 @@ import chat, {
   emitCancelable as emitChatCancelable,
 } from 'src/structures/chat/chat';
 import { channelFromData, channelFromRoom, parseChatMessage } from 'src/structures/chat/message';
-import { noticeEvent, parseNotice } from 'src/structures/chat/notice';
+import { eventOf, parseNotice } from 'src/structures/chat/notice';
 import parseDeletion, { recordDeletion } from 'src/structures/chat/deletion';
 import { emitSend } from 'src/structures/chat/outgoing';
 import {
@@ -68,11 +68,19 @@ function translateFromServer(message) {
   return global('translateFromServerJson', { throws: false })?.(message);
 }
 
+const notices = new WeakMap();
+
+function readNotice(data) {
+  if (!notices.has(data)) {
+    const notice = parseNotice(data, translateFromServer);
+    notices.set(data, notice && { notice, event: eventOf(notice) });
+  }
+  return notices.get(data);
+}
+
 function emitNotice(data) {
-  const event = noticeEvent(data.action);
-  if (!event) return;
-  const notice = parseNotice(data, translateFromServer);
-  if (notice) emitChat(event, notice);
+  const read = readNotice(data);
+  if (read) emitChat(read.event, read.notice);
 }
 
 function emitDeleted(data) {
@@ -85,9 +93,8 @@ function emitDeleted(data) {
 function settleSends(data) {
   const message = parsedMessage(data);
   if (message) echoed(message, global('selfId', { throws: false }));
-  if (noticeEvent(data.action) !== 'rejected') return;
-  const notice = parseNotice(data, translateFromServer);
-  if (notice) refused(notice);
+  const read = readNotice(data);
+  if (read?.event === 'rejected') refused(read.notice);
 }
 
 function preMessageCanceled(data, canceled) {
