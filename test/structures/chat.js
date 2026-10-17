@@ -11,7 +11,7 @@ function hooks(overrides = {}) {
       reconnect: () => { calls.reconnect += 1; },
       send: (channel, text) => {
         calls.sent.push([channel, text]);
-        submitted(channel, claim(channel));
+        submitted(channel, claim(channel), text);
         return true;
       },
       ...overrides,

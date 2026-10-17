@@ -131,7 +131,7 @@ unconfirmed
 canceled
 : A listener or the game canceled it, the game never sent it, or `chat.send` had nothing it could send.
 
-There is no id to match a reply to a message, so the answer is matched by order: a message you sent comes back in the same room, and a refusal answers the oldest message still waiting. If one of your messages is dropped silently, the next reply can be matched to it by mistake.
+There is no id to match a reply to a message. A message that comes back from you in the same room settles the waiting send with the same text, or the oldest waiting send in that room when none matches, since the server changes some text, such as turning emote codes into images. A refusal settles the oldest send still waiting. A message that comes back after its send was reported `unconfirmed` is recognized by its text for a minute, so it isn't taken for a later send. When two sends have the same text, or a message was dropped silently, a reply can still be matched to the wrong send.
 
 ## Examples
 {% highlight javascript %}

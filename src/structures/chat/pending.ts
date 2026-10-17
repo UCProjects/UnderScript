@@ -1,5 +1,6 @@
 const TIMEOUT = 5000;
 const CLAIM_TIMEOUT = 30000;
+const LATE_WINDOW = 60000;
 
 type Settle = (result: UnderScriptChatSendResult) => void;
 
@@ -14,10 +15,18 @@ type Armed = {
 };
 
 type Entry = Armed & {
+  readonly text: string;
   timer: ReturnType<typeof setTimeout>;
 };
 
+type Late = {
+  readonly channel: UnderScriptChatChannel;
+  readonly text: string;
+  readonly until: number;
+};
+
 const queue: Entry[] = [];
+const late: Late[] = [];
 const unsubmitted = new Map<Pending, ReturnType<typeof setTimeout>>();
 let armed: Armed | undefined;
 
@@ -30,6 +39,21 @@ function finish(entry: Entry, result: UnderScriptChatSendResult): void {
   const index = queue.indexOf(entry);
   if (index !== -1) queue.splice(index, 1);
   entry.pending.settle(result);
+}
+
+function expire(entry: Entry): void {
+  late.push({ channel: entry.channel, text: entry.text, until: Date.now() + LATE_WINDOW });
+  finish(entry, { status: 'unconfirmed' });
+}
+
+function takeLate(channel: UnderScriptChatChannel, text: string): boolean {
+  const now = Date.now();
+  const current = late.filter(({ until }) => until >= now);
+  late.splice(0, late.length, ...current);
+  const index = late.findIndex((entry) => sameChannel(entry.channel, channel) && entry.text === text);
+  if (index === -1) return false;
+  late.splice(index, 1);
+  return true;
 }
 
 export function createPending(): Pending {
@@ -70,21 +94,29 @@ export function claim(channel: UnderScriptChatChannel): Pending {
   return pending;
 }
 
-export function submitted(channel: UnderScriptChatChannel, pending: Pending): void {
+export function submitted(channel: UnderScriptChatChannel, pending: Pending, text = ''): void {
   clearTimeout(unsubmitted.get(pending));
   unsubmitted.delete(pending);
   const entry: Entry = {
     channel,
     pending,
-    timer: setTimeout(() => finish(entry, { status: 'unconfirmed' }), TIMEOUT),
+    text,
+    timer: setTimeout(() => expire(entry), TIMEOUT),
   };
   queue.push(entry);
 }
 
 export function echoed(message: UnderScriptChatMessage, selfId: unknown): void {
   if (`${message.author.id}` !== `${selfId}`) return;
-  const entry = queue.find(({ channel }) => sameChannel(channel, message.channel));
-  if (entry) finish(entry, { status: 'sent', message });
+  const here = ({ channel }: Armed) => sameChannel(channel, message.channel);
+  const same = queue.find((waiting) => here(waiting) && waiting.text === message.text);
+  if (same) {
+    finish(same, { status: 'sent', message });
+    return;
+  }
+  if (takeLate(message.channel, message.text)) return;
+  const oldest = queue.find(here);
+  if (oldest) finish(oldest, { status: 'sent', message });
 }
 
 export function refused(notice: UnderScriptChatNotice): void {
@@ -93,5 +125,6 @@ export function refused(notice: UnderScriptChatNotice): void {
 }
 
 export function forgetAll(): void {
+  late.length = 0;
   [...queue].forEach((entry) => finish(entry, { status: 'unconfirmed' }));
 }
