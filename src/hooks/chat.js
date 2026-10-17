@@ -8,10 +8,11 @@ import { attach } from 'src/utils/autocomplete';
 import { toast as Toast } from 'src/utils/2.toasts';
 import chat, {
   attach as attachChat,
+  channelFromRoom,
   emit as emitChat,
   emitCancelable as emitChatCancelable,
 } from 'src/structures/chat/chat';
-import { channelFromData, channelFromRoom, parseChatMessage } from 'src/structures/chat/message';
+import { channelFromData, parseChatMessage } from 'src/structures/chat/message';
 import { eventOf, parseNotice } from 'src/structures/chat/notice';
 import parseDeletion, { recordDeletion } from 'src/structures/chat/deletion';
 import { emitSend } from 'src/structures/chat/outgoing';

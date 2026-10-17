@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { recordDeletion } from '../../src/structures/chat/deletion';
-import { channelFromData, channelFromRoom, parseChatMessage } from '../../src/structures/chat/message';
+import { channelFromRoom } from '../../src/structures/chat/chat';
+import { channelFromData, parseChatMessage } from '../../src/structures/chat/message';
 
 const user = (extra = {}) => ({
   id: 7,

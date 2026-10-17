@@ -31,8 +31,11 @@ off(*event*, *listener*)
 reconnect()
 : Connect to chat again, if it is not connected
 
+channel(*name*)
+: Find a [channel](#channel), or `undefined` if there isn't one. `name` can be a room such as `chat-public-5`, the game's name for a public room such as `chat-roleplay` or just `roleplay`, or a public room's id such as `5`. You get the same channel object every time, so you can keep it.
+
 send(*channel*, *text*)
-: Send a message. `channel` is a channel object or a room such as `chat-public-1`. Returns a [send result](#send-result) promise. It does not fire `send`.
+: Send a message. `channel` is a channel, or anything `chat.channel` takes. Returns a [send result](#send-result) promise. It does not fire `send`. You can send to a room whether or not its window is open.
 
 ## Events
 Listeners get an [event object]({{ site.baseurl }}{% link _api/eventemitter.md %}#event-object) as `this`. Set `this.canceled = true` to cancel an event. It only does something when the event is cancelable (`this.cancelable`), which is the case for `preMessage`, `send` and `command`. Use a regular `function`, because an arrow function has no `this`.
@@ -103,6 +106,9 @@ name
 open
 : Whether its window is open right now
 
+send(*text*)
+: Send a message to this channel. Returns a [send result](#send-result) promise, the same as `chat.send`.
+
 ### Notice
 kind
 : `info` (a gray line), `auto` (a yellow announcement), `broadcast`, `error` (a red line) or `denied` (an error dialog)
@@ -156,10 +162,14 @@ chat.on('send', (outgoing) => {
 chat.on('command', function roll({ command, channel }) {
   if (command !== 'roll') return;
   this.canceled = true;
-  chat.send(channel, `Rolled a ${Math.ceil(Math.random() * 6)}`);
+  channel.send(`Rolled a ${Math.ceil(Math.random() * 6)}`);
 });
 
 chat.on('deleted', ({ userId }) => plugin.logger.info('Messages removed for', userId));
+
+// Keep a channel to use later
+const support = chat.channel('support');
+support?.send('Hello!').then(({ status }) => plugin.logger.info(`Hello was ${status}`));
 
 // Find out what happened to what the player sent
 chat.on('send', ({ text, result }) => {

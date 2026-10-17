@@ -156,4 +156,77 @@ describe('chat', () => {
       expect(secondStatus).to.equal(undefined);
     });
   });
+
+  describe('channel', () => {
+    const named = ['chat-discussion', 'chat-strategy', 'chat-beginner', 'chat-tournament', 'chat-roleplay'];
+
+    afterEach(() => {
+      delete globalThis.chatNames;
+    });
+
+    it('finds a channel by room, key, short key and id', () => {
+      globalThis.chatNames = named;
+      const channel = chat.channel('chat-public-5');
+      expect(channel.room).to.equal('chat-public-5');
+      expect(chat.channel('chat-roleplay')).to.equal(channel);
+      expect(chat.channel('roleplay')).to.equal(channel);
+      expect(chat.channel(5)).to.equal(channel);
+      expect(chat.channel('5')).to.equal(channel);
+    });
+
+    it('is the same channel every time', () => {
+      const channel = chat.channel('chat-private-9');
+      expect(chat.channel('chat-private-9')).to.equal(channel);
+    });
+
+    it('is nothing for a room that cannot exist', () => {
+      expect(chat.channel('nowhere')).to.equal(undefined);
+      expect(chat.channel('')).to.equal(undefined);
+      expect(chat.channel(-1)).to.equal(undefined);
+      expect(chat.channel()).to.equal(undefined);
+    });
+
+    it('sends text to its own room and gives the result', async () => {
+      const { api, calls } = hooks();
+      attach(api);
+      const channel = chat.channel('chat-public-1');
+      const result = channel.send('hi');
+      expect(calls.sent).to.have.length(1);
+      expect(calls.sent[0][0]).to.equal(channel);
+      expect(calls.sent[0][1]).to.equal('hi');
+      const echo = { id: 1, channel, author: { id: 7 }, text: 'hi' };
+      echoed(echo, 7);
+      expect(await result).to.deep.equal({ status: 'sent', message: echo });
+    });
+
+    it('can be stored and used later', async () => {
+      const { api, calls } = hooks();
+      attach(api);
+      const stored = chat.channel('chat-private-9');
+      stored.send('one');
+      stored.send('two');
+      expect(calls.sent.map(([channel, text]) => [channel.room, text])).to.deep.equal([
+        ['chat-private-9', 'one'],
+        ['chat-private-9', 'two'],
+      ]);
+    });
+
+    it('can be sent to by name, short name and id', () => {
+      globalThis.chatNames = named;
+      const { api, calls } = hooks();
+      attach(api);
+      chat.send('chat-roleplay', 'a');
+      chat.send('roleplay', 'b');
+      chat.send(5, 'c');
+      chat.send('5', 'd');
+      expect(calls.sent.map(([channel]) => channel.room)).to.deep.equal(Array(4).fill('chat-public-5'));
+    });
+
+    it('is not sent to when the name is not a room', async () => {
+      const { api, calls } = hooks();
+      attach(api);
+      expect(await chat.send('roleplay', 'a')).to.deep.equal({ status: 'canceled' });
+      expect(calls.sent).to.deep.equal([]);
+    });
+  });
 });
