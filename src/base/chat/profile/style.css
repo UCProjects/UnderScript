@@ -1,0 +1,145 @@
+#underscript-profile {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  padding: 0;
+  border: 2px solid #fff;
+  border-radius: 6px;
+  background: #000;
+  color: #fff;
+  overflow: hidden;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.us-profile-card {
+  width: 300px;
+}
+
+.us-profile-header {
+  display: flex;
+  min-height: 64px;
+}
+
+.us-profile-avatar {
+  flex: none;
+}
+
+.us-profile-banner {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  padding: 3px 6px;
+  background-color: #111;
+  background-size: cover;
+  background-position: center;
+}
+
+.us-profile-text {
+  min-width: 0;
+}
+
+.us-profile-name,
+.us-profile-level {
+  text-shadow: -1px -1px 0 #000, 1px 1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000;
+}
+
+.us-profile-name {
+  font-size: 1.3em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.us-profile-group {
+  height: 1em;
+  margin-right: 4px;
+  vertical-align: text-bottom;
+}
+
+.us-profile-level {
+  color: #4da3ff;
+  font-size: 1.1em;
+}
+
+.us-profile-division {
+  position: relative;
+}
+
+.us-profile-division img {
+  display: block;
+  max-height: 56px;
+}
+
+.us-profile-bar {
+  display: block;
+  width: 100%;
+  height: 6px;
+  margin-top: 2px;
+}
+
+.us-profile-elo {
+  position: absolute;
+  right: 0;
+  bottom: 2px;
+  left: 0;
+  font-size: 0.9em;
+  line-height: 1;
+  text-align: center;
+  text-shadow: -1px -1px 0 #000, 1px 1px 0 #000, -1px 1px 0 #000, 1px -1px 0 #000;
+}
+
+.us-profile-buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.us-profile-button {
+  border-top: 1px solid #333;
+
+  > a,
+  > button {
+    display: block;
+    width: 100%;
+    padding: 4px 8px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      background: #036;
+      color: #f2f2f2;
+    }
+  }
+
+  select {
+    margin: 0 4px;
+    color: #000;
+  }
+}
+
+.us-profile-icon {
+  display: inline-block;
+  width: 1.4em;
+  margin-right: 4px;
+  text-align: center;
+  top: 0;
+}
+
+.us-profile-mute {
+  display: flex;
+  align-items: center;
+
+  > button {
+    flex: 1;
+  }
+}

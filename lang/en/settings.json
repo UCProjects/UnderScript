@@ -47,6 +47,10 @@
     "notifications": "Notifications"
   },
   "chat.history": "Disable keeping chat history between page loads",
+  "chat.leftclick": {
+    "~": "Open the profile card on click",
+    "note": "Clicking a user in chat opens the card instead of the game's profile. Ctrl+click opens the game's profile."
+  },
   "chat.rightclick": "Disable Chat Context (right click)",
   "command": "Disable $1 command",
   "craft": {

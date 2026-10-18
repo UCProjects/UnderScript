@@ -18,6 +18,10 @@
 1. Chat history now survives page loads: the last 50 public messages of each room come back after a quiet spell instead of vanishing after five minutes<extended>
     - The game drops stored history older than five minutes when a page loads, so a short break between pages emptied your chat. UnderScript now keeps its own copy and puts it back before the game reads it. There is a setting to turn it off.</extended>
 1. The Friendship page now has the dimmed filter icons too, and hides the filter checkboxes when the setting for that is on Always
+1. Right clicking a user in chat now opens a profile card with their avatar, level and division, and their Elo over the division icon for Master and above, above the same options as before, and a Spectate option for users who are in a game<extended>
+    - Message and Mute show only for moderators, and Ignore and Mute are hidden, instead of greyed out, for yourself and for moderators.
+    - Holding Ctrl while right clicking still shows the browser menu, and the Disable Chat Context setting still turns the card off.
+    - A new Chat setting opens the card when you click a user in chat, instead of the game's profile, which is still one option away in the card (or Ctrl+click).</extended>
 1. Added a Leaderboard+ link to the Leaderboards menu in the footer
 1. The Card Editor link is back in the footer, in the Community menu next to the Wiki
 1. Chat command suggestions now show where each command comes from, on the right of the suggestion<extended>
