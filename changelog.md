@@ -22,6 +22,7 @@
 1. Chat command suggestions now show where each command comes from, on the right of the suggestion<extended>
     - When two scripts have a command with the same name, picking it completes to `owner:command`, and typing `/owner:command` runs only that one. The owner is the script's name, with dashes instead of spaces.
     - Typing the start of a script's name, such as `/under`, also suggests that script's commands, after the commands whose own names match.</extended>
+1. The chat menu no longer blocks ignoring or muting staff who are not moderators, only moderators and yourself
 ### Fixes
 1. Fixed links to a player or page on the leaderboard (`?user=` and `?page=`) opening the friendship leaderboard instead of the ranked one
 ### Plugins
@@ -32,11 +33,13 @@
     - If two plugins have a command with the same name, picking one completes to `/plugin-name:command`, and typing that runs only that plugin's command.
     - Errors in your handler or `enabled` are logged under your plugin's name. No setting is made for your commands, so use `plugin.settings()` and `enabled` if players should be able to switch one off.</extended>
 1. New `plugin.chat` for chat: `chat.on('message' | 'history' | 'connected' | 'disconnected' | 'reconnected' | 'replaced', ...)`, `chat.connected`, `chat.replaced`, `chat.reconnect()` and `chat.send(channel, text)`. `underscript.chat` exposes just the read-only `connected`, `replaced` and `channels`<extended>
-    - Messages arrive already parsed: `message.text`, `message.author` (`name`, `avatar`, `division`, `groups`, `isMod`, `isStaff`), `message.channel`, `emote`, `rainbow` and `deleted`, with the original data on `message.raw`. The existing `Chat:*` events and their raw data are unchanged.
+    - Messages arrive already parsed: `message.text`, `message.author` (`name`, `avatar`, `division`, `groups`, `isMod`), `message.channel`, `emote`, `rainbow` and `deleted`, with the original data on `message.raw`. The existing `Chat:*` events and their raw data are unchanged.
     - `message.channel` has `type`, `id`, `room`, `name` (the room's key, such as `chat-roleplay`) and `open` (whether its window is open right now).
     - `message` fires for each public or private message, and `history` fires when a chat window is first filled in, with `{ channel, messages }`.
     - `notice` fires for the server's system lines (info, announcements and broadcasts) and `rejected` for the errors it sends back, and for the refusals it words as plain lines such as the spam protection one, both as `{ kind, key, args, text, raw }`, with `text` already translated.
     - `send` fires when the player presses Enter in a chat window, as `{ channel, text }`. Set `this.canceled = true` to send nothing, or assign `text` to change what is sent. It does not fire for `chat.send`.
+    - A message's `author` is one live user per player: the same object every time, updated by each new message from them. `message.raw.user` keeps what that message arrived with.
+    - `chat.friends` lists your friends as users. `chat.self` is your own user, known as soon as chat connects, and `chat.user(who)` finds a user by id or name. Users also carry `isFriend`, `isOnline` (friends only) and `gameId`, which follow your friends list.
     - `chat.channel(name)` finds a channel by its room (`chat-public-5`), the game's name for it (`chat-roleplay` or `roleplay`) or a public room's id (`5`), and `channel.send(text)` sends to it, so a plugin can keep a channel and use it later. You get the same channel object every time, and a message's `channel` can send too: `message.channel.send('hi')`. `chat.send` takes the same names.
     - `send` also has a `result` promise that says what became of the message: `sent` with the `message` that came back, `rejected` with the server's `notice`, `unconfirmed` when nothing came back within five seconds or the connection dropped, or `canceled`. `chat.send` returns the same kind of promise. Replies are matched by the message's text when it comes back unchanged, and by order otherwise, since the chat has no message ids to match them with.
     - `command` fires for a `/command`, as `{ channel, command, text, output }`. Set `this.canceled = true` to stop it, or assign `output` to send that instead.

@@ -45,6 +45,12 @@ wrap(() => {
       get channels() {
         return chat.channels;
       },
+      get self() {
+        return chat.self;
+      },
+      get friends() {
+        return chat.friends;
+      },
       on(event, fn) {
         if (typeof fn !== 'function') throw new Error('Must pass a function');
         chat.on(event, wrapper(fn, event));
@@ -61,6 +67,7 @@ wrap(() => {
       },
       reconnect: () => chat.reconnect(),
       channel: (target) => chat.channel(target),
+      user: (who) => chat.user(who),
       send: (channel, text) => chat.send(channel, text),
     };
 

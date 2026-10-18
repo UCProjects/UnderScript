@@ -21,6 +21,12 @@ replaced: `boolean`
 channels: `Channel[]`
 : The chat windows that are open right now
 
+self: `User`
+: You, as a [user](#message). `undefined` until chat has connected
+
+friends: `User[]`
+: Your friends, as [users](#message). It follows your friends list, which refreshes every few seconds, and is empty until chat has connected
+
 ## Methods
 on(*event*, *listener*), once(*event*, *listener*)
 : Listen to a chat event. Returns `plugin.chat`.
@@ -33,6 +39,9 @@ reconnect()
 
 channel(*name*)
 : Find a [channel](#channel), or `undefined` if there isn't one. `name` can be a room such as `chat-public-5`, the game's name for a public room such as `chat-roleplay` or just `roleplay`, or a public room's id such as `5`. You get the same channel object every time, so you can keep it.
+
+user(*who*)
+: Find a [user](#message) chat has seen, by id or by name, or `undefined`. Chat only knows users who have spoken since the page loaded and your friends. You get the same user object every time, so you can keep it.
 
 send(*channel*, *text*)
 : Send a message. `channel` is a channel, or anything `chat.channel` takes. Returns a [send result](#send-result) promise. It does not fire `send`. You can send to a room whether or not its window is open.
@@ -79,7 +88,7 @@ channel
 : Where it was sent
 
 author
-: Who sent it: `id`, `name`, `avatar`, `shinyAvatar`, `division`, `mainGroup`, `groups`, `isStaff` and `isMod`. The author's own `raw` has the original data.
+: Who sent it: `id`, `name`, `avatar`, `shinyAvatar`, `division`, `mainGroup`, `groups`, `isMod`, `isFriend`, `isOnline` and `gameId`. You get the same user object every time for the same player, and it stays current: a new message from them updates their name, avatar, division and groups, so keep it and read it later. This also means an older message's `author` shows the newest data, and `message.raw.user` is what that message arrived with. History does not overwrite newer data. The user's own `raw` has the latest data the game sent. `isFriend` says whether they are on your friends list and `isOnline` whether that friend is online, or for you whether chat is connected (`undefined` for anyone else). `gameId` is the game they are in, or `undefined`: it comes from their latest message, and for friends from the friends list, which refreshes every few seconds.
 
 deleted
 : Whether a moderator removed it. This stays current: it turns `true` on a message you already have when its author's messages are removed.

@@ -24,8 +24,10 @@ type UnderScriptChatUser = {
   readonly division: string;
   readonly mainGroup?: UnderScriptChatGroup;
   readonly groups: readonly UnderScriptChatGroup[];
-  readonly isStaff: boolean;
   readonly isMod: boolean;
+  readonly isFriend: boolean;
+  readonly isOnline?: boolean;
+  readonly gameId?: number;
   readonly raw: Readonly<Record<string, unknown>>;
 };
 
@@ -123,6 +125,8 @@ type UnderScriptChatState = {
   readonly replaced: boolean;
   /** The chat windows that are open right now */
   readonly channels: readonly UnderScriptChatChannel[];
+  readonly self?: UnderScriptChatUser;
+  readonly friends: readonly UnderScriptChatUser[];
 };
 
 type UnderScriptChat = UnderScriptChatState & {
@@ -131,6 +135,7 @@ type UnderScriptChat = UnderScriptChatState & {
   off<K extends keyof UnderScriptChatEvents>(event: K, listener: (...args: UnderScriptChatEvents[K]) => unknown): UnderScriptChat;
   reconnect(): void;
   channel(name: string | number): UnderScriptChatChannel | undefined;
+  user(who: string | number): UnderScriptChatUser | undefined;
   send(channel: UnderScriptChatChannel | string | number, text: string): Promise<UnderScriptChatSendResult>;
 };
 

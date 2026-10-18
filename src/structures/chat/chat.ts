@@ -1,8 +1,10 @@
 import eventEmitter from 'src/utils/eventEmitter';
 import * as api from 'src/utils/4.api';
+import { global } from 'src/utils/global';
 import ChatChannel, { openRefs, refFrom, refFromRoom } from './channel';
 import type { ChannelRef, ChannelType } from './channel';
 import { arm, createPending } from './pending';
+import { findUser, findUserByName, friendUsers } from './user';
 
 type Hooks = {
   connected(): boolean;
@@ -21,6 +23,12 @@ const chat: UnderScriptChat = {
   },
   get replaced() {
     return replaced;
+  },
+  get self() {
+    return findUser(global('selfId', { throws: false }));
+  },
+  get friends() {
+    return friendUsers();
   },
   get channels() {
     return openRefs().map((ref) => getChannel(ref.type, ref.id));
@@ -42,6 +50,10 @@ const chat: UnderScriptChat = {
   },
   channel(name) {
     return findChannel(name);
+  },
+  user(who) {
+    if (typeof who === 'string') return findUserByName(who) ?? findUser(who);
+    return findUser(who);
   },
   send(channel, text) {
     const target = findChannel(channel);
@@ -107,6 +119,12 @@ api.register('chat', Object.freeze({
   },
   get channels() {
     return chat.channels;
+  },
+  get self() {
+    return chat.self;
+  },
+  get friends() {
+    return chat.friends;
   },
 }) satisfies UnderScriptChatState);
 

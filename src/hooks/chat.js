@@ -13,6 +13,7 @@ import chat, {
   emitCancelable as emitChatCancelable,
 } from 'src/structures/chat/chat';
 import { channelFromData, parseChatMessage } from 'src/structures/chat/message';
+import { setSelfOnline, syncFriends, syncSelf } from 'src/structures/chat/user';
 import { eventOf, parseNotice } from 'src/structures/chat/notice';
 import parseDeletion, { recordDeletion } from 'src/structures/chat/deletion';
 import { emitSend } from 'src/structures/chat/outgoing';
@@ -42,6 +43,7 @@ const historyIds = new Set();
 
 function handleClose(event) {
   forgetAll();
+  setSelfOnline(false);
   console.debug('Disconnected', event);
   flaps.closed(Date.now());
   if (isSessionReplaced(event.reason)) emitChat('replaced');
@@ -129,6 +131,11 @@ function bind(socketChat) {
       data.open = Array.isArray(global('privateChats')[data.idRoom]);
     }
 
+    if (action === 'getSelfInfos') {
+      syncSelf(data.me);
+      syncFriends(data.friends);
+    }
+
     eventManager.emit('preChatMessage', data);
     const raw = eventManager.cancelable.emit(`preChat:${action}`, data);
     if (preMessageCanceled(data, raw.canceled)) {
@@ -175,6 +182,8 @@ export default function reconnect(force = false) {
     const { action } = data;
     switch (action) {
       case 'getSelfInfos': { // We're only connected if we get self info
+        syncSelf(data.me);
+        syncFriends(data.friends);
         // Reconnected
         flaps.connected(Date.now());
         socket.onmessage = global('onMessageChat');
