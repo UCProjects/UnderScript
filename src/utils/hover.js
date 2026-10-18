@@ -37,11 +37,12 @@ export function hide() {
   }
 }
 /**
+ * @param {string | Element | JQuery} container
  * @param {string | JQuery | Element | Translation} data
  * @param {string | null} [border]
  * @returns {(event: { type: string }) => void}
  */
-export function show(data, border = null) {
+export function showIn(container, data, border = null) {
   return function hoverAction(event) {
     hide();
     if (event.type === 'mouseleave' || event.type === 'blur') return;
@@ -66,9 +67,17 @@ export function show(data, border = null) {
       'overflow-y': 'hidden',
       'pointer-events': 'none',
     });
-    $('body').append(e);
+    $(container).append(e);
     update();
   };
+}
+/**
+ * @param {string | JQuery | Element | Translation} data
+ * @param {string | null} [border]
+ * @returns {(event: { type: string }) => void}
+ */
+export function show(data, border = null) {
+  return showIn('body', data, border);
 }
 function getFooter(type) {
   switch (type) {
