@@ -36,12 +36,12 @@ describe('plugin decks', () => {
       store('KINDNESS', 0, { cards: [{ id: 5 }], artifacts: [2] });
       store('BRAVERY', 3, { cards: [], artifacts: [] });
       const { decks } = setup();
-      expect(decks.saved().map(({ soul, index }) => [soul, index])).to.deep.equal([['BRAVERY', 3], ['KINDNESS', 0]]);
-      expect(decks.saved('KINDNESS').length).to.equal(1);
-      expect(decks.get('KINDNESS', 0).cards).to.deep.equal([{ id: 5, shiny: false }]);
-      expect(decks.get('KINDNESS', 1)).to.equal(undefined);
-      expect(decks.get('KINDNESS', -1)).to.equal(undefined);
-      expect(decks.get('', 0)).to.equal(undefined);
+      expect(decks.storage.list().map(({ soul, index }) => [soul, index])).to.deep.equal([['BRAVERY', 3], ['KINDNESS', 0]]);
+      expect(decks.storage.list('KINDNESS').length).to.equal(1);
+      expect(decks.storage.get('KINDNESS', 0).cards).to.deep.equal([{ id: 5, shiny: false }]);
+      expect(decks.storage.get('KINDNESS', 1)).to.equal(undefined);
+      expect(decks.storage.get('KINDNESS', -1)).to.equal(undefined);
+      expect(decks.storage.get('', 0)).to.equal(undefined);
     });
 
     it('takes a soul constant as well as its text', async () => {
@@ -49,20 +49,20 @@ describe('plugin decks', () => {
       store('KINDNESS', 0, { cards: [{ id: 6 }], artifacts: [] });
       const { decks } = setup();
       const { soul } = globalThis.underscript;
-      expect(decks.saved(soul.BRAVERY).map((deck) => deck.soul)).to.deep.equal(['BRAVERY']);
-      expect(decks.get(soul.BRAVERY, 0)).to.equal(decks.get('BRAVERY', 0));
-      expect(decks.get(soul.KINDNESS, 0).cards[0].id).to.equal(6);
+      expect(decks.storage.list(soul.BRAVERY).map((deck) => deck.soul)).to.deep.equal(['BRAVERY']);
+      expect(decks.storage.get(soul.BRAVERY, 0)).to.equal(decks.storage.get('BRAVERY', 0));
+      expect(decks.storage.get(soul.KINDNESS, 0).cards[0].id).to.equal(6);
     });
 
     it('gives the same object for the same deck', () => {
       store('KINDNESS', 0, { cards: [], artifacts: [] });
       const { decks } = setup();
-      expect(decks.get('KINDNESS', 0)).to.equal(decks.saved()[0]);
+      expect(decks.storage.get('KINDNESS', 0)).to.equal(decks.storage.list()[0]);
     });
 
     it('edits the name and description', () => {
       store('KINDNESS', 0, { cards: [], artifacts: [] });
-      const deck = setup().decks.get('KINDNESS', 0);
+      const deck = setup().decks.storage.get('KINDNESS', 0);
       deck.name = 'Rush';
       deck.description = 'Quick';
       expect(deck.name).to.equal('Rush');
@@ -71,7 +71,7 @@ describe('plugin decks', () => {
 
     it('stops reading once the deck is erased', () => {
       store('KINDNESS', 0, { cards: [{ id: 5 }], artifacts: [] });
-      const deck = setup().decks.get('KINDNESS', 0);
+      const deck = setup().decks.storage.get('KINDNESS', 0);
       localStorage.removeItem('underscript.deck.7.KINDNESS.0');
       expect(deck.exists).to.equal(false);
       expect(deck.cards).to.deep.equal([]);
@@ -83,8 +83,8 @@ describe('plugin decks', () => {
       store('KINDNESS', 0, { cards: [], artifacts: [] });
       const first = setup();
       const second = setup();
-      const one = first.decks.get('KINDNESS', 0).meta;
-      const two = second.decks.get('KINDNESS', 0).meta;
+      const one = first.decks.storage.get('KINDNESS', 0).meta;
+      const two = second.decks.storage.get('KINDNESS', 0).meta;
       one.set('skin', 'frog');
       two.set('skin', 'toad');
       expect(one.get('skin')).to.equal('frog');
@@ -97,8 +97,8 @@ describe('plugin decks', () => {
       store('KINDNESS', 0, { cards: [], artifacts: [] });
       const first = setup();
       const second = setup();
-      const one = first.decks.get('KINDNESS', 0).meta;
-      const two = second.decks.get('KINDNESS', 0).meta;
+      const one = first.decks.storage.get('KINDNESS', 0).meta;
+      const two = second.decks.storage.get('KINDNESS', 0).meta;
       one.set('k', 1);
       two.set('k', 2);
       one.remove('k');
@@ -109,8 +109,8 @@ describe('plugin decks', () => {
     it('is shared with the same deck seen by a later plugin object', () => {
       store('KINDNESS', 0, { cards: [], artifacts: [] });
       const { decks } = setup();
-      decks.get('KINDNESS', 0).meta.set('k', 1);
-      expect(decks.saved()[0].meta.get('k')).to.equal(1);
+      decks.storage.get('KINDNESS', 0).meta.set('k', 1);
+      expect(decks.storage.list()[0].meta.get('k')).to.equal(1);
     });
   });
 
@@ -146,23 +146,23 @@ describe('plugin decks', () => {
 
     it('loads a saved deck into the current one', async () => {
       store('KINDNESS', 0, { cards: [{ id: 1 }, { id: 2 }], artifacts: [] });
-      const edits = await setup().decks.get('KINDNESS', 0).load();
+      const edits = await setup().decks.storage.get('KINDNESS', 0).load();
       expect(edits).to.deep.equal([{ soul: 'KINDNESS', action: 'addCard', id: 2, shiny: false }]);
     });
 
     it('saves the current deck and hands back the saved deck', async () => {
       const { decks } = setup();
-      const saved = await decks.save('KINDNESS', 3);
+      const saved = await decks.storage.save('KINDNESS', 3);
       expect(saved.cards).to.deep.equal([{ id: 1, shiny: false }]);
-      expect(decks.get('KINDNESS', 3)).to.equal(saved);
+      expect(decks.storage.get('KINDNESS', 3)).to.equal(saved);
     });
 
     it('exports a saved deck with every plugin\'s meta', () => {
       store('KINDNESS', 0, { cards: [{ id: 1 }], artifacts: [2] });
       const first = setup();
       const second = setup();
-      first.decks.get('KINDNESS', 0).meta.set('k', 1);
-      const data = JSON.parse(atob(second.decks.get('KINDNESS', 0).export()));
+      first.decks.storage.get('KINDNESS', 0).meta.set('k', 1);
+      const data = JSON.parse(atob(second.decks.storage.get('KINDNESS', 0).export()));
       expect(data).to.deep.equal({
         soul: 'KINDNESS',
         cardIds: [1],
@@ -174,11 +174,11 @@ describe('plugin decks', () => {
     it('imports a deck code into a slot', () => {
       const { decks } = setup();
       const code = btoa(JSON.stringify({ soul: 'BRAVERY', cardIds: [1, 2], artifactIds: [3], name: 'Shared' }));
-      const saved = decks.import(code, { slot: 2 });
-      expect(saved).to.equal(decks.get('BRAVERY', 2));
+      const saved = decks.storage.import(code, { slot: 2 });
+      expect(saved).to.equal(decks.storage.get('BRAVERY', 2));
       expect(saved.cards).to.deep.equal([{ id: 1, shiny: false }, { id: 2, shiny: false }]);
       expect(saved.name).to.equal('Shared');
-      expect(() => decks.import('nope')).to.throw('Invalid deck code');
+      expect(() => decks.storage.import('nope')).to.throw('Invalid deck code');
     });
 
     it('warns when an imported deck lands past the storage buttons', () => {
@@ -188,9 +188,9 @@ describe('plugin decks', () => {
       const warnings = [];
       console.warn = (...args) => warnings.push(args); // eslint-disable-line no-console
       try {
-        decks.import(code, { slot: 2 });
+        decks.storage.import(code, { slot: 2 });
         expect(warnings.length).to.equal(0);
-        const far = decks.import(code, { slot: 40 });
+        const far = decks.storage.import(code, { slot: 40 });
         expect(far.index).to.equal(40);
         expect(warnings.length).to.equal(1);
         expect(warnings[0].some((arg) => `${arg}`.includes('slot 40'))).to.equal(true);
@@ -201,7 +201,7 @@ describe('plugin decks', () => {
 
     it('removes a saved deck with its meta', () => {
       store('KINDNESS', 0, { cards: [{ id: 1 }], artifacts: [] });
-      const deck = setup().decks.get('KINDNESS', 0);
+      const deck = setup().decks.storage.get('KINDNESS', 0);
       deck.meta.set('k', 1);
       deck.remove();
       expect(deck.exists).to.equal(false);

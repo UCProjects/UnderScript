@@ -31,23 +31,26 @@ clear(*soul*)
 load(*soul*, { *cards*, *artifacts* })
 : Change the deck for a soul to exactly this: `cards` is `{ id, shiny }` for each card and `artifacts` is artifact ids. It only sends the changes needed. Returns a promise of the list of changes it made, which is empty when the deck already matched. A deck holds at most 25 cards and 2 artifacts, and anything over that rejects before anything is changed.
 
-save(*soul*, *slot*)
-: Save the deck the player has for a soul into a slot of UnderScript's deck storage, replacing what was there. A saved deck keeps its name, description and meta. Returns a promise of the [saved deck](#saved-deck). Rejects if the deck is empty.
-
-import(*code*, { *slot*, *meta* })
-: Save a deck code into UnderScript's deck storage and return the [saved deck](#saved-deck). It reads the game's deck code and the extra fields `export` adds: the name, the description, the meta and, if present, `cardShiny`. The soul comes from the code. `slot` is the slot to save into, replacing whatever it held, including its name, description and meta. Without `slot` it takes the first empty slot for that soul. That can be past the slots the storage buttons show, which depends on a setting. UnderScript's own storage buttons would not show that deck, so the player may not be able to see it, and a warning is written to your plugin's [logger]({{ site.baseurl }}{% link _api/plugin/logger.md %}). It does the same for a `slot` past them. A plugin that shows saved decks itself does not have that limit. Pass `meta: false` to leave the code's meta out. Throws `Invalid deck code` for a code the game's own import would refuse. The player's collection is not checked, so the deck can hold cards they do not own. Note that a code can come from anyone, so treat the meta it brings in as untrusted.
-
-saved(*soul*)
-: The decks saved in UnderScript's deck storage, as [saved decks](#saved-deck), ordered by soul and slot. Pass a soul such as `KINDNESS` to list just that soul. Only slots that hold a deck are listed.
-
-get(*soul*, *slot*)
-: One saved deck, or `undefined` if that slot has no deck. `slot` counts from `0`.
-
 on(*event*, *listener*), once(*event*, *listener*)
 : Listen to a decks event. Returns `plugin.decks`.
 
 off(*event*, *listener*)
 : Stop listening
+
+## Storage
+The decks the player saved with UnderScript's deck storage buttons on the Decks page. They live in the browser, and each is a [saved deck](#saved-deck). `plugin.decks.storage` has these methods:
+
+storage.list(*soul*)
+: The decks saved in UnderScript's deck storage, as [saved decks](#saved-deck), ordered by soul and slot. Pass a soul such as `KINDNESS` to list just that soul. Only slots that hold a deck are listed.
+
+storage.get(*soul*, *slot*)
+: One saved deck, or `undefined` if that slot has no deck. `slot` counts from `0`.
+
+storage.save(*soul*, *slot*)
+: Save the deck the player has for a soul into a slot of UnderScript's deck storage, replacing what was there. A saved deck keeps its name, description and meta. Returns a promise of the [saved deck](#saved-deck). Rejects if the deck is empty.
+
+storage.import(*code*, { *slot*, *meta* })
+: Save a deck code into UnderScript's deck storage and return the [saved deck](#saved-deck). It reads the game's deck code and the extra fields `export` adds: the name, the description, the meta and, if present, `cardShiny`. The soul comes from the code. `slot` is the slot to save into, replacing whatever it held, including its name, description and meta. Without `slot` it takes the first empty slot for that soul. That can be past the slots the storage buttons show, which depends on a setting. UnderScript's own storage buttons would not show that deck, so the player may not be able to see it, and a warning is written to your plugin's [logger]({{ site.baseurl }}{% link _api/plugin/logger.md %}). It does the same for a `slot` past them. A plugin that shows saved decks itself does not have that limit. Pass `meta: false` to leave the code's meta out. Throws `Invalid deck code` for a code the game's own import would refuse. The player's collection is not checked, so the deck can hold cards they do not own. Note that a code can come from anyone, so treat the meta it brings in as untrusted.
 
 ## Saved deck
 soul, index
@@ -99,22 +102,22 @@ const plugin = underscript.plugin('My great plugin');
 const { decks } = plugin;
 
 // Remember a note on each saved deck
-decks.saved().forEach((deck) => {
+decks.storage.list().forEach((deck) => {
   if (!deck.meta.get('seen')) deck.meta.set('seen', Date.now());
 });
 
 // Find the decks that hold a certain card
-decks.saved().filter(({ cards }) => cards.some(({ id }) => id === 175));
+decks.storage.list().filter(({ cards }) => cards.some(({ id }) => id === 175));
 
 decks.current().then(({ KINDNESS }) => plugin.logger.info(`${KINDNESS.cards.length} cards`));
 
 decks.on('changed', ({ soul }) => plugin.logger.info(`Deck changed for ${soul}`));
 
 // Put a saved deck in play
-decks.get('KINDNESS', 0)?.load().catch((error) => plugin.logger.warn(error.message));
+decks.storage.get('KINDNESS', 0)?.load().catch((error) => plugin.logger.warn(error.message));
 
 // Save a deck code someone shared
-const saved = decks.import(code);
+const saved = decks.storage.import(code);
 plugin.logger.info(`Saved in slot ${saved.index + 1}`);
 
 // Build a deck
