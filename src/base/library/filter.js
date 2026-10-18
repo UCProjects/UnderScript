@@ -13,6 +13,7 @@ import styles from './filter.css';
 
 export const crafting = onPage('Crafting');
 export const decks = onPage('Decks');
+export const friendship = onPage('Friendship');
 /** @type {Array<Priority | UnderScriptFilter>} */
 export const filters = [
   /**
@@ -70,8 +71,12 @@ const shiny = settings.register({
 
 style.add(styles);
 
-function applyLook(refresh = decks || crafting) {
+function markFilters() {
   $('input[onchange^="applyFilters();"]').parent().parent().toggleClass('filter', !setting.value());
+}
+
+function applyLook(refresh = decks || crafting) {
+  markFilters();
   if (crafting && !setting.value()) {
     $('input[rarity]:checked').prop('checked', false);
   }
@@ -106,6 +111,8 @@ function applyLook(refresh = decks || crafting) {
     global('showPage')(0);
   }
 }
+
+eventManager.on(':preload:Friendship', markFilters);
 
 eventManager.on(':preload:Decks :preload:Crafting', () => {
   // Update filter visuals

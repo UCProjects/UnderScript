@@ -2,7 +2,7 @@ import eventManager from 'src/utils/eventManager';
 import * as settings from 'src/utils/settings/index';
 import style from 'src/utils/style';
 import Translation from 'src/structures/constants/translation';
-import { crafting, decks } from './filter';
+import { crafting, decks, friendship } from './filter';
 import { getTranslationArray } from '../underscript/translation';
 
 const setting = settings.register({
@@ -24,7 +24,7 @@ const styles = style.add();
 
 function apply() {
   switch (setting.value()) {
-    case 'Always': return decks || crafting;
+    case 'Always': return decks || crafting || friendship;
     case 'Deck': return decks;
     case 'Crafting': return crafting;
     case 'Never':
@@ -44,4 +44,4 @@ function refresh() {
   }
 }
 
-eventManager.on(':preload:Decks :preload:Crafting', refresh);
+eventManager.on(':preload:Decks :preload:Crafting :preload:Friendship', refresh);

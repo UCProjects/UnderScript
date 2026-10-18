@@ -17,6 +17,7 @@
     - Plugins can listen for it with `plugin.chat.on('replaced', ...)`.</extended>
 1. Chat history now survives page loads: the last 50 public messages of each room come back after a quiet spell instead of vanishing after five minutes<extended>
     - The game drops stored history older than five minutes when a page loads, so a short break between pages emptied your chat. UnderScript now keeps its own copy and puts it back before the game reads it. There is a setting to turn it off.</extended>
+1. The Friendship page now has the dimmed filter icons too, and hides the filter checkboxes when the setting for that is on Always
 1. Added a Leaderboard+ link to the Leaderboards menu in the footer
 1. The Card Editor link is back in the footer, in the Community menu next to the Wiki
 1. Chat command suggestions now show where each command comes from, on the right of the suggestion<extended>
