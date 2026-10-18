@@ -29,7 +29,7 @@ type UnderScriptCraftEvents = {
   crafted: [crafted: UnderScriptCraftResult];
   disenchanted: [disenchanted: UnderScriptCraftResult];
   smartDisenchanted: [run: UnderScriptSmartDisenchant];
-  autoed: [auto: UnderScriptAutoDisenchant];
+  autoDisenchanted: [auto: UnderScriptAutoDisenchant];
   rejected: [rejection: UnderScriptCraftRejection];
 };
 
@@ -43,7 +43,7 @@ type UnderScriptCraftPlugin = Pick<UnderScriptCraft, 'dust'> & {
   off<K extends keyof UnderScriptCraftEvents>(event: K, listener: (...args: UnderScriptCraftEvents[K]) => unknown): UnderScriptCraftPlugin;
   craft(id: number | string, options?: UnderScriptCraftOptions): Promise<UnderScriptCraftResult>;
   disenchant(id: number | string, options?: UnderScriptCraftOptions): Promise<UnderScriptCraftResult>;
-  auto(): Promise<UnderScriptAutoDisenchant>;
+  autoDisenchant(): Promise<UnderScriptAutoDisenchant>;
 };
 
 interface UnderScriptPlugin {

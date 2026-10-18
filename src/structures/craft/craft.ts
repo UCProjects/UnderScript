@@ -55,7 +55,7 @@ function announce<A extends UnderScriptCraftAction>(
     const auto = parseAuto(response);
     if (auto) {
       rememberDust(auto.dust);
-      events.emit('autoed', auto);
+      events.emit('autoDisenchanted', auto);
     }
     return auto as Results[A] | undefined;
   }
@@ -121,7 +121,7 @@ const craft: UnderScriptCraftPlugin = {
   async disenchant(id, options) {
     return run(toBody('disenchant', id, options));
   },
-  async auto() {
+  async autoDisenchant() {
     return run({ action: 'auto' });
   },
 };

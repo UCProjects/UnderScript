@@ -5,7 +5,7 @@ import craft, { attach, report, reportSmartDisenchant } from '../../src/structur
 const flush = () => new Promise((resolve) => { setImmediate(resolve); });
 const dog = (extra = {}) => ({ status: 'success', dust: 40, card: JSON.stringify({ id: 5, name: 'Dog' }), ...extra });
 const named = (id, name) => dog({ card: JSON.stringify({ id, name }) });
-const EVENTS = ['crafted', 'disenchanted', 'smartDisenchanted', 'autoed', 'rejected'];
+const EVENTS = ['crafted', 'disenchanted', 'smartDisenchanted', 'autoDisenchanted', 'rejected'];
 
 describe('craft object', () => {
   let requests;
@@ -100,9 +100,9 @@ describe('craft object', () => {
     });
   });
 
-  describe('auto()', () => {
+  describe('autoDisenchant()', () => {
     it('reports the cards that changed', async () => {
-      const pending = craft.auto();
+      const pending = craft.autoDisenchant();
       await flush();
       expect(body(requests[0])).to.deep.equal({ action: 'auto' });
       await answer(requests[0], {
@@ -110,7 +110,7 @@ describe('craft object', () => {
       });
       const result = await pending;
       expect(result).to.deep.equal({ dust: 90, cards: [{ id: 1, shiny: false, owned: 3 }] });
-      expect(seen).to.deep.equal([['autoed', result]]);
+      expect(seen).to.deep.equal([['autoDisenchanted', result]]);
     });
   });
 
@@ -240,7 +240,7 @@ describe('craft object', () => {
       await answer(requests[0], { data: dog({ dust: 150 }) });
       await disenchant;
       expect(craft.dust).to.equal(150);
-      const auto = craft.auto();
+      const auto = craft.autoDisenchant();
       await flush();
       await answer(requests[1], {
         data: { status: 'success', dust: 175, cardsId: '[]', cardsShiny: '[]', cardsQuantity: '[]' },

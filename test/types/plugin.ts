@@ -154,7 +154,7 @@ craft.craft('5', { shiny: true }).then(({ id, name, dust, shiny }) => {
   shiny satisfies boolean;
 });
 craft.disenchant(5, { shiny: false }) satisfies Promise<UnderScriptCraftResult>;
-craft.auto().then(({ cards, dust }) => {
+craft.autoDisenchant().then(({ cards, dust }) => {
   cards[0].owned satisfies number;
   cards[0].shiny satisfies boolean;
   dust satisfies number;
@@ -171,7 +171,7 @@ craft.on('crafted', function listener(card) {
   dust satisfies number;
   gained satisfies number;
   stopped satisfies boolean;
-}).on('autoed', ({ cards }) => cards[0].owned satisfies number)
+}).on('autoDisenchanted', ({ cards }) => cards[0].owned satisfies number)
   .on('disenchanted', (card) => card.shiny satisfies boolean)
   .off('crafted', (card: UnderScriptCraftResult) => card);
 // @ts-expect-error a card id is required
@@ -179,7 +179,7 @@ craft.craft();
 // @ts-expect-error shiny is a boolean
 craft.craft(5, { shiny: 'yes' });
 // @ts-expect-error auto takes nothing
-craft.auto(5);
+craft.autoDisenchant(5);
 // @ts-expect-error there is no such event
 craft.on('crafteed', () => {});
 // @ts-expect-error the listener gets the crafted card, not a string
@@ -187,7 +187,7 @@ craft.on('crafted', (card: string) => card);
 // @ts-expect-error a smart disenchant run has no owned count
 craft.on('smartDisenchanted', ({ cards }) => cards[0].owned);
 // @ts-expect-error auto cards have no quantity
-craft.on('autoed', ({ cards }) => cards[0].quantity);
+craft.on('autoDisenchanted', ({ cards }) => cards[0].quantity);
 // @ts-expect-error craft is read only
 craft.craft = () => Promise.reject();
 craft.dust satisfies number | undefined;
