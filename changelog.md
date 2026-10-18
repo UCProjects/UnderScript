@@ -30,7 +30,8 @@
     - `decks.current()` gives the player's deck for each soul from any page, as `{ soul, cards, artifacts }`. On the Decks page it reads the page, anywhere else it asks the server.
     - `decks.saved()` lists the decks saved in UnderScript's deck storage as objects with `soul`, `index`, `cards`, `artifacts`, `name` and `description`. `name` and `description` can be assigned.
     - `deck.meta` keeps a plugin's own data on a saved deck: `get`, `set` and `remove` for your own keys, and `all()` and `of(plugin)` to read other plugins'. It is stored apart from the decks, so it cannot disturb scripts that read the saved decks, and it is deleted when the player erases the deck.
-    - `changed` fires on the Decks page when the player's deck changes and the server accepts it.</extended>
+    - `decks.addCard`, `removeCard`, `addArtifact`, `clearArtifacts` and `clear` change the deck for a soul from any page, `decks.load(soul, { cards, artifacts })` sets it to exactly what you give it, and `decks.save(soul, slot)` saves it to a deck storage slot. A saved deck has `load()` and `remove()`. They run one at a time, reject with the server's message when it refuses, and keep the Decks page up to date.
+    - `changed` fires when the player's deck changes and the server accepts it, whether it came from the Decks page or from these methods.</extended>
 1. The plugin names `UnderScript` and `Undercards` are now reserved, in any letter case, so a plugin can't pass for UnderScript itself
 1. New `plugin.commands.register({ command, description, usage, icon, enabled, handler })` for adding chat commands<extended>
     - Commands are listed in the chat suggestions under your plugin's name, with the icon in front. `register` returns a handle, and its `remove()` takes the command away again.

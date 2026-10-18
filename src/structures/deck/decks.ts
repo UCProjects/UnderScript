@@ -4,9 +4,12 @@ import { global } from 'src/utils/global';
 import onPage from 'src/utils/onPage';
 import { getSaved, listSaved } from './saved';
 import type { SavedDeck } from './saved';
+import * as writes from './write';
+import type { DeckEdit, DeckTarget } from './write';
 
 type Raw = Record<string, unknown>;
 type Id = number | string;
+type CardOptions = { shiny?: boolean };
 
 export type CurrentDeck = {
   readonly soul: string;
@@ -17,6 +20,8 @@ export type CurrentDeck = {
 export type DeckChange = {
   readonly soul: string | undefined;
   readonly action: string;
+  readonly id?: Id;
+  readonly shiny?: boolean;
 };
 
 export type DecksEvents = {
@@ -85,6 +90,23 @@ async function current(): Promise<Record<string, CurrentDeck>> {
   return fromConfig(data);
 }
 
+writes.attach({ announce: (edit) => events.emit('changed', edit) });
+
+async function currentFor(soul: string): Promise<CurrentDeck | undefined> {
+  return (await current())[soul];
+}
+
+async function save(soul: string, slot: number): Promise<SavedDeck> {
+  if (typeof soul !== 'string' || !soul) throw new Error('A soul is required');
+  if (!Number.isInteger(slot) || slot < 0) throw new Error('A slot is required');
+  const deck = await currentFor(soul);
+  if (!deck) throw new Error(`Unknown soul: ${soul}`);
+  if (!deck.cards.length && !deck.artifacts.length) throw new Error('Nothing to save');
+  const saved = getSaved(soul, slot);
+  saved.write(deck.cards, deck.artifacts);
+  return saved;
+}
+
 const decks = {
   on: events.on,
   once: events.once,
@@ -96,6 +118,13 @@ const decks = {
     return deck.exists ? deck : undefined;
   },
   current,
+  save,
+  addCard: (soul: string, id: Id, options?: CardOptions): Promise<DeckEdit> => writes.addCard(soul, id, options),
+  removeCard: (soul: string, id: Id, options?: CardOptions): Promise<DeckEdit> => writes.removeCard(soul, id, options),
+  addArtifact: (soul: string, id: Id): Promise<DeckEdit> => writes.addArtifact(soul, id),
+  clear: (soul: string): Promise<DeckEdit> => writes.clear(soul),
+  clearArtifacts: (soul: string): Promise<DeckEdit> => writes.clearArtifacts(soul),
+  load: (soul: string, target: DeckTarget): Promise<DeckEdit[]> => writes.load(soul, target, () => currentFor(soul)),
 };
 
 export function emit<K extends keyof DecksEvents>(event: K, ...args: DecksEvents[K]): void {

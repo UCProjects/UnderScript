@@ -77,6 +77,8 @@ wrap(() => {
             deck.description = value;
           },
           meta,
+          load: () => decks.load(deck.soul, { cards: deck.cards, artifacts: deck.artifacts }),
+          remove: () => deck.erase(),
         });
         views.set(deck, existing);
       }
@@ -104,6 +106,13 @@ wrap(() => {
         return deck && view(deck);
       },
       current: () => decks.current(),
+      save: async (soul, slot) => view(await decks.save(soul, slot)),
+      addCard: (soul, id, options) => decks.addCard(soul, id, options),
+      removeCard: (soul, id, options) => decks.removeCard(soul, id, options),
+      addArtifact: (soul, id) => decks.addArtifact(soul, id),
+      clear: (soul) => decks.clear(soul),
+      clearArtifacts: (soul) => decks.clearArtifacts(soul),
+      load: (soul, deck) => decks.load(soul, deck),
     };
 
     return Object.freeze(obj);

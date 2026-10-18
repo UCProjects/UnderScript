@@ -20,11 +20,24 @@ onPage('Decks', function deckPage() {
         eventManager.singleton.emit('Deck:Loaded', data);
         return;
       }
-      const { action, soul } = JSON.parse(options.data);
+      const {
+        action,
+        soul,
+        idCard,
+        idArtifact,
+        isShiny,
+      } = JSON.parse(options.data);
       const obj = Object.freeze({ action, data, options, xhr });
       eventManager.emit('Deck:postChange', obj);
       eventManager.emit(`Deck:${action}`, obj);
-      if (data?.status !== 'error') emitDecks('changed', { soul, action });
+      if (data?.status !== 'error') {
+        emitDecks('changed', {
+          soul,
+          action,
+          id: idCard ?? idArtifact,
+          shiny: idCard === undefined ? undefined : isShiny === true,
+        });
+      }
     });
     // Soul change
     globalSet('updateSoul', function updateSoul() {
