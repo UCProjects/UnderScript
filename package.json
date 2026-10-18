@@ -24,7 +24,7 @@
     "css": "stylelint \"src/**/*.{css,js}\"",
     "test": "mocha",
     "version": "node scripts/validate.cjs",
-    "plugins": "node scripts/plugins.js",
+    "plugins": "node --import ./scripts/register.js scripts/plugins.js",
     "bundle": "node scripts/lang.js",
     "lang": "node scripts/lang-template.js",
     "types": "tsc",

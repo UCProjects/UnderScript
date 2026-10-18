@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import fs from 'node:fs/promises';
 import axios from 'axios';
-import { check, resolve, validate } from '../../scripts/plugins';
+import { check, markdown, resolve, validate } from '../../scripts/plugins';
 
 const entry = (extra = {}) => ({
   name: 'Example',
@@ -36,6 +36,29 @@ async function failure(promise) {
 }
 
 describe('plugins.json', () => {
+  describe('markdown', () => {
+    it('says the registry is valid', () => {
+      expect(markdown([])).to.include(':white_check_mark:').and.to.include('install link');
+      expect(markdown([], { network: false })).to.not.include('install link');
+    });
+
+    it('lists every problem under the marker', () => {
+      const text = markdown([
+        { index: 0, name: 'Alpha', message: 'author is required' },
+        { index: 1, message: 'name is required' },
+      ]);
+      expect(text).to.include('<!-- plugin-registry-check -->');
+      expect(text).to.include('Found 2 problems');
+      expect(text).to.include('- **"Alpha"**: author is required');
+      expect(text).to.include('- **entry 2**: name is required');
+    });
+
+    it('does not mention anyone', () => {
+      const text = markdown([{ name: '@someone', message: 'see @other\nnow' }]);
+      expect(text.replaceAll(`@${String.fromCharCode(0x200b)}`, '')).to.not.include('@');
+    });
+  });
+
   it('is valid', async () => {
     const text = await fs.readFile('plugins.json', 'utf8');
     expect(await check(text, { network: false })).to.deep.equal([]);
