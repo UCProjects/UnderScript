@@ -28,6 +28,7 @@ type UnderScriptSavedDeck = {
   readonly meta: UnderScriptDeckMeta;
   load(): Promise<UnderScriptDeckChange[]>;
   remove(): void;
+  export(options?: UnderScriptDeckExportOptions): string;
 };
 
 type UnderScriptDeckChange = {
@@ -42,6 +43,15 @@ type UnderScriptDeckTarget = {
   readonly artifacts?: ReadonlyArray<number | string>;
 };
 
+type UnderScriptDeckImportOptions = {
+  slot?: number;
+  meta?: boolean;
+};
+
+type UnderScriptDeckExportOptions = {
+  shiny?: boolean;
+};
+
 type UnderScriptDeckCardOptions = {
   shiny?: boolean;
 };
@@ -54,16 +64,17 @@ type UnderScriptDecksPlugin = {
   on<K extends keyof UnderScriptDecksEvents>(event: K, listener: (this: UnderScriptEventMeta, ...args: UnderScriptDecksEvents[K]) => unknown): UnderScriptDecksPlugin;
   once<K extends keyof UnderScriptDecksEvents>(event: K, listener: (this: UnderScriptEventMeta, ...args: UnderScriptDecksEvents[K]) => unknown): UnderScriptDecksPlugin;
   off<K extends keyof UnderScriptDecksEvents>(event: K, listener: (...args: UnderScriptDecksEvents[K]) => unknown): UnderScriptDecksPlugin;
-  saved(soul?: string): UnderScriptSavedDeck[];
-  get(soul: string, index: number): UnderScriptSavedDeck | undefined;
+  import(code: string, options?: UnderScriptDeckImportOptions): UnderScriptSavedDeck;
+  saved(soul?: UnderScriptSoul | string): UnderScriptSavedDeck[];
+  get(soul: UnderScriptSoul | string, index: number): UnderScriptSavedDeck | undefined;
   current(): Promise<Record<string, UnderScriptCurrentDeck>>;
-  save(soul: string, slot: number): Promise<UnderScriptSavedDeck>;
-  addCard(soul: string, id: number | string, options?: UnderScriptDeckCardOptions): Promise<UnderScriptDeckChange>;
-  removeCard(soul: string, id: number | string, options?: UnderScriptDeckCardOptions): Promise<UnderScriptDeckChange>;
-  addArtifact(soul: string, id: number | string): Promise<UnderScriptDeckChange>;
-  clear(soul: string): Promise<UnderScriptDeckChange>;
-  clearArtifacts(soul: string): Promise<UnderScriptDeckChange>;
-  load(soul: string, deck: UnderScriptDeckTarget): Promise<UnderScriptDeckChange[]>;
+  save(soul: UnderScriptSoul | string, slot: number): Promise<UnderScriptSavedDeck>;
+  addCard(soul: UnderScriptSoul | string, id: number | string, options?: UnderScriptDeckCardOptions): Promise<UnderScriptDeckChange>;
+  removeCard(soul: UnderScriptSoul | string, id: number | string, options?: UnderScriptDeckCardOptions): Promise<UnderScriptDeckChange>;
+  addArtifact(soul: UnderScriptSoul | string, id: number | string): Promise<UnderScriptDeckChange>;
+  clear(soul: UnderScriptSoul | string): Promise<UnderScriptDeckChange>;
+  clearArtifacts(soul: UnderScriptSoul | string): Promise<UnderScriptDeckChange>;
+  load(soul: UnderScriptSoul | string, deck: UnderScriptDeckTarget): Promise<UnderScriptDeckChange[]>;
 };
 
 interface UnderScriptPlugin {

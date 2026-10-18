@@ -146,6 +146,70 @@ describe('saved decks', () => {
     });
   });
 
+  describe('export', () => {
+    const decode = (code) => JSON.parse(atob(code));
+
+    it('gives the game\'s deck code, which a plain import can read', () => {
+      store('KINDNESS', 0, { cards: [{ id: 5 }, { id: 5 }, { id: 9, shiny: true }], artifacts: [2, 4] });
+      expect(decode(getSaved('KINDNESS', 0).export())).to.deep.equal({
+        soul: 'KINDNESS',
+        cardIds: [5, 5, 9],
+        artifactIds: [2, 4],
+      });
+    });
+
+    it('adds the name, the description and the meta of every plugin', () => {
+      store('KINDNESS', 0, { cards: [{ id: 5 }], artifacts: [] });
+      const deck = getSaved('KINDNESS', 0);
+      deck.name = 'Rush';
+      deck.description = 'Quick';
+      deck.setMeta('A', 'skin', 'frog');
+      deck.setMeta('B', 'tags', ['x']);
+      expect(decode(deck.export())).to.deep.equal({
+        soul: 'KINDNESS',
+        cardIds: [5],
+        artifactIds: [],
+        name: 'Rush',
+        description: 'Quick',
+        meta: { A: { skin: 'frog' }, B: { tags: ['x'] } },
+      });
+    });
+
+    it('lists which cards are shiny only when asked', () => {
+      store('KINDNESS', 0, { cards: [{ id: 5 }, { id: 9, shiny: true }], artifacts: [] });
+      const deck = getSaved('KINDNESS', 0);
+      expect(decode(deck.export())).to.not.have.property('cardShiny');
+      expect(decode(deck.export({ shiny: false }))).to.not.have.property('cardShiny');
+      const data = decode(deck.export({ shiny: true }));
+      expect(data.cardShiny).to.deep.equal([false, true]);
+      expect(data.cardShiny.length).to.equal(data.cardIds.length);
+      expect(Object.keys(data).slice(0, 4)).to.deep.equal(['soul', 'cardIds', 'artifactIds', 'cardShiny']);
+    });
+
+    it('keeps the game\'s fields first', () => {
+      store('KINDNESS', 0, { cards: [{ id: 5 }], artifacts: [] });
+      const deck = getSaved('KINDNESS', 0);
+      deck.name = 'Rush';
+      expect(Object.keys(decode(deck.export())).slice(0, 3)).to.deep.equal(['soul', 'cardIds', 'artifactIds']);
+    });
+
+    it('survives text outside plain ASCII', () => {
+      store('KINDNESS', 0, { cards: [{ id: 5 }], artifacts: [] });
+      const deck = getSaved('KINDNESS', 0);
+      deck.name = 'Déck 名前 🐸';
+      deck.setMeta('A', 'note', 'çà et là');
+      const code = deck.export();
+      expect(/^[A-Za-z0-9+/=]+$/.test(code)).to.equal(true);
+      const data = decode(code);
+      expect(data.name).to.equal('Déck 名前 🐸');
+      expect(data.meta.A.note).to.equal('çà et là');
+    });
+
+    it('throws for a deck that is not saved', () => {
+      expect(() => getSaved('KINDNESS', 9).export()).to.throw('Not a saved deck');
+    });
+  });
+
   describe('erase', () => {
     it('removes the deck, its name, its description and all meta, and nothing else', () => {
       store('KINDNESS', 0, { cards: [], artifacts: [] });

@@ -2,6 +2,11 @@ import wrap from 'src/utils/2.pokemon';
 import { registerModule } from 'src/utils/plugin';
 import decks from 'src/structures/deck/decks';
 import type { SavedDeck } from 'src/structures/deck/saved';
+import Soul from 'src/structures/constants/soul';
+
+function soulName(soul: UnderScriptSoul | string): string {
+  return soul instanceof Soul ? `${soul}` : soul as string;
+}
 
 type DecksEvent = keyof UnderScriptDecksEvents;
 
@@ -79,6 +84,7 @@ wrap(() => {
           meta,
           load: () => decks.load(deck.soul, { cards: deck.cards, artifacts: deck.artifacts }),
           remove: () => deck.erase(),
+          export: (options) => deck.export(options),
         });
         views.set(deck, existing);
       }
@@ -100,19 +106,28 @@ wrap(() => {
         decks.off(event, fn);
         return obj;
       },
-      saved: (soul) => decks.saved(soul).map(view),
+      saved: (soul) => decks.saved(soul === undefined ? undefined : soulName(soul)).map(view),
       get: (soul, index) => {
-        const deck = decks.get(soul, index);
+        const deck = decks.get(soulName(soul), index);
         return deck && view(deck);
       },
       current: () => decks.current(),
-      save: async (soul, slot) => view(await decks.save(soul, slot)),
-      addCard: (soul, id, options) => decks.addCard(soul, id, options),
-      removeCard: (soul, id, options) => decks.removeCard(soul, id, options),
-      addArtifact: (soul, id) => decks.addArtifact(soul, id),
-      clear: (soul) => decks.clear(soul),
-      clearArtifacts: (soul) => decks.clearArtifacts(soul),
-      load: (soul, deck) => decks.load(soul, deck),
+      import: (code, options) => {
+        const saved = decks.import(code, options);
+        if (saved.index >= decks.visibleSlots()) {
+          plugin.logger.warn(
+            `Imported ${saved.soul} deck into slot ${saved.index}, which UnderScript's storage buttons do not show`,
+          );
+        }
+        return view(saved);
+      },
+      save: async (soul, slot) => view(await decks.save(soulName(soul), slot)),
+      addCard: (soul, id, options) => decks.addCard(soulName(soul), id, options),
+      removeCard: (soul, id, options) => decks.removeCard(soulName(soul), id, options),
+      addArtifact: (soul, id) => decks.addArtifact(soulName(soul), id),
+      clear: (soul) => decks.clear(soulName(soul)),
+      clearArtifacts: (soul) => decks.clearArtifacts(soulName(soul)),
+      load: (soul, deck) => decks.load(soulName(soul), deck),
     };
 
     return Object.freeze(obj);
