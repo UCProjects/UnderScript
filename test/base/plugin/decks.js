@@ -44,6 +44,16 @@ describe('plugin decks', () => {
       expect(decks.get('', 0)).to.equal(undefined);
     });
 
+    it('takes a soul constant as well as its text', async () => {
+      store('BRAVERY', 0, { cards: [{ id: 5 }], artifacts: [] });
+      store('KINDNESS', 0, { cards: [{ id: 6 }], artifacts: [] });
+      const { decks } = setup();
+      const { soul } = globalThis.underscript;
+      expect(decks.saved(soul.BRAVERY).map((deck) => deck.soul)).to.deep.equal(['BRAVERY']);
+      expect(decks.get(soul.BRAVERY, 0)).to.equal(decks.get('BRAVERY', 0));
+      expect(decks.get(soul.KINDNESS, 0).cards[0].id).to.equal(6);
+    });
+
     it('gives the same object for the same deck', () => {
       store('KINDNESS', 0, { cards: [], artifacts: [] });
       const { decks } = setup();
@@ -145,6 +155,48 @@ describe('plugin decks', () => {
       const saved = await decks.save('KINDNESS', 3);
       expect(saved.cards).to.deep.equal([{ id: 1, shiny: false }]);
       expect(decks.get('KINDNESS', 3)).to.equal(saved);
+    });
+
+    it('exports a saved deck with every plugin\'s meta', () => {
+      store('KINDNESS', 0, { cards: [{ id: 1 }], artifacts: [2] });
+      const first = setup();
+      const second = setup();
+      first.decks.get('KINDNESS', 0).meta.set('k', 1);
+      const data = JSON.parse(atob(second.decks.get('KINDNESS', 0).export()));
+      expect(data).to.deep.equal({
+        soul: 'KINDNESS',
+        cardIds: [1],
+        artifactIds: [2],
+        meta: { [first.name]: { k: 1 } },
+      });
+    });
+
+    it('imports a deck code into a slot', () => {
+      const { decks } = setup();
+      const code = btoa(JSON.stringify({ soul: 'BRAVERY', cardIds: [1, 2], artifactIds: [3], name: 'Shared' }));
+      const saved = decks.import(code, { slot: 2 });
+      expect(saved).to.equal(decks.get('BRAVERY', 2));
+      expect(saved.cards).to.deep.equal([{ id: 1, shiny: false }, { id: 2, shiny: false }]);
+      expect(saved.name).to.equal('Shared');
+      expect(() => decks.import('nope')).to.throw('Invalid deck code');
+    });
+
+    it('warns when an imported deck lands past the storage buttons', () => {
+      const { decks } = setup();
+      const code = btoa(JSON.stringify({ soul: 'BRAVERY', cardIds: [1] }));
+      const original = console.warn; // eslint-disable-line no-console
+      const warnings = [];
+      console.warn = (...args) => warnings.push(args); // eslint-disable-line no-console
+      try {
+        decks.import(code, { slot: 2 });
+        expect(warnings.length).to.equal(0);
+        const far = decks.import(code, { slot: 40 });
+        expect(far.index).to.equal(40);
+        expect(warnings.length).to.equal(1);
+        expect(warnings[0].some((arg) => `${arg}`.includes('slot 40'))).to.equal(true);
+      } finally {
+        console.warn = original; // eslint-disable-line no-console
+      }
     });
 
     it('removes a saved deck with its meta', () => {

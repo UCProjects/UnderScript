@@ -57,6 +57,64 @@ function writeText(key: string | undefined, value: string | undefined): void {
   }
 }
 
+function asciiJson(value: unknown): string {
+  return JSON.stringify(value).replace(
+    /[\u0080-\uffff]/g,
+    (char) => `\\u${char.charCodeAt(0).toString(16).padStart(4, '0')}`,
+  );
+}
+
+export type ImportedDeck = {
+  readonly soul: string;
+  readonly cards: ReadonlyArray<SavedCard>;
+  readonly artifacts: ReadonlyArray<Id>;
+  readonly name?: string;
+  readonly description?: string;
+  readonly meta: Record<string, PluginMeta>;
+};
+
+const MAX_CARDS = 25;
+const MAX_ARTIFACTS = 2;
+
+function wholeIds(value: unknown): number[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  return value.every((id) => Number.isInteger(id)) ? (value as number[]) : undefined;
+}
+
+function textOf(value: unknown): string | undefined {
+  return typeof value === 'string' && value ? value : undefined;
+}
+
+export function parseDeckCode(code: unknown): ImportedDeck {
+  let data: unknown;
+  try {
+    data = typeof code === 'string' ? JSON.parse(atob(code.trim())) : undefined;
+  } catch {
+    data = undefined;
+  }
+  if (!isRecord(data)) throw new Error('Invalid deck code');
+  const soul = textOf(data.classe) ?? textOf(data.soul);
+  const ids = wholeIds(data.cardIds);
+  const artifacts = wholeIds(data.artifactIds ?? []);
+  if (!soul || !ids || !artifacts) throw new Error('Invalid deck code');
+  if (!ids.length || ids.length > MAX_CARDS || artifacts.length > MAX_ARTIFACTS) throw new Error('Invalid deck code');
+  const shiny = Array.isArray(data.cardShiny) && data.cardShiny.length === ids.length ? data.cardShiny : [];
+  const meta: Record<string, PluginMeta> = {};
+  if (isRecord(data.meta)) {
+    Object.entries(data.meta).forEach(([plugin, value]) => {
+      if (isRecord(value)) meta[plugin] = value;
+    });
+  }
+  return {
+    soul,
+    cards: ids.map((id, index) => ({ id, shiny: shiny[index] === true })),
+    artifacts,
+    name: textOf(data.name),
+    description: textOf(data.description),
+    meta,
+  };
+}
+
 export class SavedDeck {
   readonly soul: string;
   readonly index: number;
@@ -168,6 +226,22 @@ export class SavedDeck {
     }
   }
 
+  export(options?: { shiny?: boolean }): string {
+    if (!this.exists) throw new Error('Not a saved deck');
+    const meta = this.allMeta();
+    const cards = this.cards;
+    const body: Raw = {
+      soul: this.soul,
+      cardIds: cards.map(({ id }) => id),
+      artifactIds: this.artifacts,
+    };
+    if (options?.shiny === true) body.cardShiny = cards.map(({ shiny }) => shiny);
+    if (this.name !== undefined) body.name = this.name;
+    if (this.description !== undefined) body.description = this.description;
+    if (Object.keys(meta).length) body.meta = meta;
+    return btoa(asciiJson(body));
+  }
+
   write(cards: ReadonlyArray<SavedCard>, artifacts: ReadonlyArray<Id>): void {
     const key = this.#deckKey;
     if (key === undefined) throw new Error('Not logged in');
@@ -175,6 +249,20 @@ export class SavedDeck {
       cards: cards.map(({ id, shiny }) => (shiny ? { id, shiny: true } : { id })),
       artifacts: [...artifacts],
     }));
+  }
+
+  restore(deck: ImportedDeck, { meta = true }: { meta?: boolean } = {}): void {
+    const base = this.#metaKey;
+    if (base === undefined) throw new Error('Not logged in');
+    this.erase();
+    this.write(deck.cards, deck.artifacts);
+    this.name = deck.name;
+    this.description = deck.description;
+    if (meta) {
+      Object.entries(deck.meta).forEach(([plugin, value]) => {
+        localStorage.setItem(`${base}.${PLUGIN_SEGMENT}${plugin}`, JSON.stringify(value));
+      });
+    }
   }
 
   erase(): void {

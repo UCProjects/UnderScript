@@ -12,6 +12,7 @@ import { translateText } from 'src/utils/translate';
 import { getTranslationArray } from 'src/base/underscript/translation';
 import Translation from 'src/structures/constants/translation';
 import { getSaved } from 'src/structures/deck/saved';
+import { attachSlots } from 'src/structures/deck/decks';
 import isCtrl from 'src/utils/isCtrl';
 
 const setting = settings.register({
@@ -31,6 +32,8 @@ const rows = settings.register({
   extraPrefix: 'underscript.deck.',
   page: 'Library',
 });
+
+attachSlots(() => Math.max(Number(rows.value()), 1) * 5);
 
 onPage('Decks', function deckStorage() {
   if (setting.value()) return;

@@ -2,7 +2,7 @@ import axios from 'axios';
 import eventEmitter from 'src/utils/eventEmitter';
 import { global } from 'src/utils/global';
 import onPage from 'src/utils/onPage';
-import { getSaved, listSaved } from './saved';
+import { getSaved, listSaved, parseDeckCode } from './saved';
 import type { SavedDeck } from './saved';
 import * as writes from './write';
 import type { DeckEdit, DeckTarget } from './write';
@@ -90,6 +90,31 @@ async function current(): Promise<Record<string, CurrentDeck>> {
   return fromConfig(data);
 }
 
+const DEFAULT_SLOTS = 5;
+let slotCount = (): number => DEFAULT_SLOTS;
+
+export function attachSlots(count: () => number): void {
+  slotCount = count;
+}
+
+function freeSlot(soul: string): number {
+  const used = new Set(listSaved(soul).map(({ index }) => index));
+  let slot = 0;
+  while (used.has(slot)) slot += 1;
+  return slot;
+}
+
+function importCode(code: string, options?: { slot?: number; meta?: boolean }): SavedDeck {
+  const deck = parseDeckCode(code);
+  const requested = options?.slot;
+  if (requested !== undefined && (!Number.isInteger(requested) || requested < 0)) {
+    throw new Error('A slot is required');
+  }
+  const saved = getSaved(deck.soul, requested ?? freeSlot(deck.soul));
+  saved.restore(deck, { meta: options?.meta });
+  return saved;
+}
+
 writes.attach({ announce: (edit) => events.emit('changed', edit) });
 
 async function currentFor(soul: string): Promise<CurrentDeck | undefined> {
@@ -119,6 +144,8 @@ const decks = {
   },
   current,
   save,
+  import: importCode,
+  visibleSlots: (): number => slotCount(),
   addCard: (soul: string, id: Id, options?: CardOptions): Promise<DeckEdit> => writes.addCard(soul, id, options),
   removeCard: (soul: string, id: Id, options?: CardOptions): Promise<DeckEdit> => writes.removeCard(soul, id, options),
   addArtifact: (soul: string, id: Id): Promise<DeckEdit> => writes.addArtifact(soul, id),
