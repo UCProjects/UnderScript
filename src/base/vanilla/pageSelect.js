@@ -22,7 +22,7 @@ select.onchange = () => {
 
 function init() {
   const maxPage = global('getMaxPage')();
-  if (maxPage - 1 === select.length) return;
+  if (maxPage + 1 === select.length) return;
   const local = $(select).empty();
   for (let i = 0; i <= maxPage; i++) {
     local.append(`<option value="${i}">${i + 1}</option>`);
