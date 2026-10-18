@@ -22,7 +22,7 @@ craft(*id*, { *shiny* })
 disenchant(*id*, { *shiny* })
 : Disenchant one copy of a card. Returns a promise with the same shape as `craft`.
 
-auto()
+autoDisenchant()
 : Run the auto disenchant, which removes the extra copies above the limit. Returns a promise of `{ cards, dust }`, where `cards` is `{ id, shiny, owned }` for each card that changed, and `owned` is how many you have afterwards.
 
 on(*event*, *listener*), once(*event*, *listener*)
@@ -43,8 +43,8 @@ disenchanted({ *id*, *name*, *dust*, *shiny* })
 smartDisenchanted({ *cards*, *dust*, *gained*, *stopped* })
 : Smart Disenchant finished, or was stopped, after disenchanting at least one card. `cards` is `{ id, shiny, quantity }` for every card it disenchanted, `dust` is what you have afterwards, `gained` is the dust it added, and `stopped` is whether the player stopped it. It fires once at the end and not for each card.
 
-autoed({ *cards*, *dust* })
-: The auto disenchant ran, from the page or `craft.auto()`
+autoDisenchanted({ *cards*, *dust* })
+: The auto disenchant ran, from the page or `craft.autoDisenchant()`
 
 rejected({ *action*, *message*, *status* })
 : The server refused or failed a craft, disenchant or auto. `action` is `craft`, `disenchant` or `auto`, `message` is translated, and `status` is the server's, such as `errorMaintenance`.

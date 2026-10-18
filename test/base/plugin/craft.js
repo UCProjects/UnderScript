@@ -82,6 +82,6 @@ describe('plugin craft', () => {
     const { craft } = setup();
     expect(craft.craft).to.be.a('function');
     expect(craft.disenchant).to.be.a('function');
-    expect(craft.auto).to.be.a('function');
+    expect(craft.autoDisenchant).to.be.a('function');
   });
 });

@@ -55,7 +55,7 @@ wrap(() => {
       },
       craft: (id, options) => craft.craft(id, options),
       disenchant: (id, options) => craft.disenchant(id, options),
-      auto: () => craft.auto(),
+      autoDisenchant: () => craft.autoDisenchant(),
     };
 
     return Object.freeze(obj);
