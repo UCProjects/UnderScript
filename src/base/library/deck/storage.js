@@ -11,12 +11,14 @@ import { cardName } from 'src/utils/cardHelper';
 import { translateText } from 'src/utils/translate';
 import { getTranslationArray } from 'src/base/underscript/translation';
 import Translation from 'src/structures/constants/translation';
+import { getSaved } from 'src/structures/deck/saved';
 import isCtrl from 'src/utils/isCtrl';
 
 const setting = settings.register({
   name: Translation.Setting('storage.disable'),
   key: 'underscript.storage.disable',
   refresh: () => onPage('Decks'),
+  extraPrefix: 'underscript.deckmeta.',
   page: 'Library',
 });
 
@@ -223,8 +225,7 @@ onPage('Decks', function deckStorage() {
             return;
           }
           if (ctrlKey) { // ERASE
-            localStorage.removeItem(nameKey);
-            localStorage.removeItem(deckKey);
+            getSaved(soul, i).erase();
             refreshHover(); // Update
           } else if (e.shiftKey) { // Re-save
             saveButton();

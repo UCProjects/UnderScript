@@ -26,6 +26,11 @@
 ### Fixes
 1. Fixed links to a player or page on the leaderboard (`?user=` and `?page=`) opening the friendship leaderboard instead of the ranked one
 ### Plugins
+1. New `plugin.decks` for decks: `decks.current()`, `decks.saved(soul)`, `decks.get(soul, slot)` and `decks.on('changed', ...)`<extended>
+    - `decks.current()` gives the player's deck for each soul from any page, as `{ soul, cards, artifacts }`. On the Decks page it reads the page, anywhere else it asks the server.
+    - `decks.saved()` lists the decks saved in UnderScript's deck storage as objects with `soul`, `index`, `cards`, `artifacts`, `name` and `description`. `name` and `description` can be assigned.
+    - `deck.meta` keeps a plugin's own data on a saved deck: `get`, `set` and `remove` for your own keys, and `all()` and `of(plugin)` to read other plugins'. It is stored apart from the decks, so it cannot disturb scripts that read the saved decks, and it is deleted when the player erases the deck.
+    - `changed` fires on the Decks page when the player's deck changes and the server accepts it.</extended>
 1. The plugin names `UnderScript` and `Undercards` are now reserved, in any letter case, so a plugin can't pass for UnderScript itself
 1. New `plugin.commands.register({ command, description, usage, icon, enabled, handler })` for adding chat commands<extended>
     - Commands are listed in the chat suggestions under your plugin's name, with the icon in front. `register` returns a handle, and its `remove()` takes the command away again.
