@@ -17,6 +17,17 @@ describe('Constant', () => {
   const Color = constants({ RED: ['red', 'r'], BLUE: ['blue'] });
   const Shape = constants({ SQUARE: ['square'] });
 
+  describe('serializing', () => {
+    it('turns into its text in JSON', () => {
+      expect(JSON.stringify({ color: Color.RED })).to.equal('{"color":"red"}');
+      expect(JSON.stringify([Color.BLUE])).to.equal('["blue"]');
+    });
+
+    it('finds the same constant again from its JSON', () => {
+      expect(Color.find(JSON.parse(JSON.stringify(Color.RED)))).to.equal(Color.RED);
+    });
+  });
+
   describe('find', () => {
     it('finds a constant by its name', () => {
       expect(Color.find('red')).to.equal(Color.RED);
