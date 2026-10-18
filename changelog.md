@@ -26,6 +26,7 @@
 ### Fixes
 1. Fixed links to a player or page on the leaderboard (`?user=` and `?page=`) opening the friendship leaderboard instead of the ranked one
 ### Plugins
+1. New `underscript.soul` with the souls (`KINDNESS`, `DETERMINATION`, `PATIENCE`, `BRAVERY`, `JUSTICE`, `PERSEVERANCE`, `INTEGRITY` and `MONSTER`, which players can't play, see `soul.playable`), and `underscript.constants.getSoul` and `isSoul`
 1. New `plugin.decks` for decks: `decks.current()`, `decks.saved(soul)`, `decks.get(soul, slot)` and `decks.on('changed', ...)`<extended>
     - `decks.current()` gives the player's deck for each soul from any page, as `{ soul, cards, artifacts }`. On the Decks page it reads the page, anywhere else it asks the server.
     - `decks.saved()` lists the decks saved in UnderScript's deck storage as objects with `soul`, `index`, `cards`, `artifacts`, `name` and `description`. `name` and `description` can be assigned.

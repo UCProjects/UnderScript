@@ -3,6 +3,7 @@ import Constant from 'src/structures/constants/constant';
 import Item from 'src/structures/constants/item';
 import Priority from 'src/structures/constants/priority';
 import Rarity from 'src/structures/constants/rarity';
+import Soul from 'src/structures/constants/soul';
 
 function constants(values) {
   class Test extends Constant {}
@@ -125,5 +126,39 @@ describe('Rarity', () => {
   it('does not find other constants', () => {
     expect(Rarity.find(Priority.HIGH)).to.equal(undefined);
     expect(Rarity.find('gold')).to.equal(undefined);
+  });
+});
+
+describe('Soul', () => {
+  it('names every soul by the text the game uses', () => {
+    ['KINDNESS', 'DETERMINATION', 'PATIENCE', 'BRAVERY', 'JUSTICE', 'PERSEVERANCE', 'INTEGRITY', 'MONSTER'].forEach((name) => {
+      expect(`${Soul[name]}`).to.equal(name);
+      expect(Soul.find(name)).to.equal(Soul[name]);
+      expect(Soul[name].equals(name)).to.equal(true);
+    });
+  });
+
+  it('says which souls a player can play', () => {
+    expect(Soul.MONSTER.playable).to.equal(false);
+    ['KINDNESS', 'DETERMINATION', 'PATIENCE', 'BRAVERY', 'JUSTICE', 'PERSEVERANCE', 'INTEGRITY'].forEach((name) => {
+      expect(Soul[name].playable, name).to.equal(true);
+    });
+  });
+
+  it('does not let a soul change whether it is playable', () => {
+    Soul.lock();
+    expect(() => { Soul.MONSTER.playable = true; }).to.throw(TypeError);
+    expect(Soul.MONSTER.playable).to.equal(false);
+  });
+
+  it('does not find a rarity as a soul', () => {
+    expect(Soul.find(Rarity.COMMON)).to.equal(undefined);
+    expect(Rarity.find(Soul.BRAVERY)).to.equal(undefined);
+  });
+
+  it('shares the text DETERMINATION with the rarity of that name', () => {
+    expect(Soul.find('DETERMINATION')).to.equal(Soul.DETERMINATION);
+    expect(Rarity.find('DETERMINATION')).to.equal(Rarity.DETERMINATION);
+    expect(Soul.find(Rarity.DETERMINATION)).to.equal(Soul.DETERMINATION);
   });
 });

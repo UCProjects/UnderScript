@@ -117,6 +117,10 @@ underscript.constants.isPriority('first') satisfies boolean;
 underscript.rarity.DETERMINATION satisfies UnderScriptRarityConstant;
 underscript.constants.getRarity('DT') satisfies UnderScriptRarityConstant | undefined;
 underscript.constants.isRarity('TOKEN') satisfies boolean;
+underscript.soul.MONSTER satisfies UnderScriptSoul;
+underscript.soul.MONSTER.playable satisfies boolean;
+underscript.constants.getSoul('KINDNESS') satisfies UnderScriptSoul | undefined;
+underscript.constants.isSoul('BRAVERY') satisfies boolean;
 // @ts-expect-error item constants are read-only
 underscript.item.GOLD = underscript.item.UCP;
 
