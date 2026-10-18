@@ -73,7 +73,7 @@ eventManager.on('jQuery', () => {
         mention.after(ignore);
       }
       close();
-      const { id, name, staff, mod } = event.data;
+      const { id, name, mod } = event.data;
       const selfId = global('selfId');
       const selfMod = selfId !== id && global('selfMainGroup').priority <= 4;
       if (selfMod || global('isFriend')(id)) {
@@ -97,8 +97,7 @@ eventManager.on('jQuery', () => {
         left: `${left}px`,
       });
       container.show();
-      const disabled = staff || id === selfId;
-      const muteDisabled = mod || id === selfId;
+      const disabled = mod || id === selfId;
       container.on('click.script.chatContext', 'li', (e) => {
         if (!$(e.target).is('li')) {
           return;
@@ -134,25 +133,16 @@ eventManager.on('jQuery', () => {
           }
           updateIgnoreText(id);
         } else if (e.target === mute[0]) {
-          if (muteDisabled) return;
+          if (disabled) return;
           global('timeout')(`${id}`, muteTime.val());
         } else if (e.target === message[0]) {
           global('openPrivateRoom')(id, name);
         }
         close();
       });
-      if (disabled) {
-        ignore.addClass('disabled');
-      } else {
-        ignore.removeClass('disabled');
-      }
-      if (muteDisabled) {
-        mute.addClass('disabled');
-        muteTime.prop('disabled', true);
-      } else {
-        mute.removeClass('disabled');
-        muteTime.prop('disabled', false);
-      }
+      ignore.toggleClass('disabled', disabled);
+      mute.toggleClass('disabled', disabled);
+      muteTime.prop('disabled', disabled);
       updateIgnoreText(id);
       $('html').on('mousedown.chatContext', (e) => {
         if ($(e.target).closest('.chatContext').length === 0) {
@@ -188,7 +178,6 @@ eventManager.on('jQuery', () => {
     }
     info.on('contextmenu.script.chatContext', {
       name: fnUser.name(user),
-      staff: user.mainGroup.priority <= 6,
       mod: user.mainGroup.priority <= 4,
       id: user.id,
     }, context.open);
