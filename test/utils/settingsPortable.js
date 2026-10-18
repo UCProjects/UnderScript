@@ -81,4 +81,35 @@ describe('portable settings', () => {
       expect(() => parse('null', accepts)).to.throw();
     });
   });
+
+  describe('saved decks', () => {
+    const accepts = createFilter([
+      setting('underscript.storage.disable', { extraPrefix: 'underscript.deckmeta.' }),
+      setting('underscript.storage.rows', { extraPrefix: 'underscript.deck.' }),
+    ]);
+    const stored = {
+      'underscript.deck.7.KINDNESS.0': '{"cards":[],"artifacts":[]}',
+      'underscript.deck.7.KINDNESS.0.name': 'Rush',
+      'underscript.deckmeta.7.KINDNESS.0.description': 'Quick',
+      'underscript.deckmeta.7.KINDNESS.0.plugin.My plugin': '{"skin":"frog"}',
+    };
+
+    it('exports the decks together with their description and plugin meta', () => {
+      Object.entries(stored).forEach(([key, value]) => localStorage.setItem(key, value));
+      localStorage.setItem('unrelated', 'x');
+      expect(JSON.parse(serialize(localStorage, accepts))).to.deep.equal(stored);
+    });
+
+    it('imports them back', () => {
+      const { accepted, skipped } = parse(JSON.stringify(stored), accepts);
+      expect(accepted).to.deep.equal(stored);
+      expect(skipped).to.deep.equal([]);
+    });
+
+    it('keeps the two prefixes apart', () => {
+      const decksOnly = createFilter([setting('rows', { extraPrefix: 'underscript.deck.' })]);
+      expect(decksOnly('underscript.deck.7.KINDNESS.0')).to.equal(true);
+      expect(decksOnly('underscript.deckmeta.7.KINDNESS.0.description')).to.equal(false);
+    });
+  });
 });

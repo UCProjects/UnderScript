@@ -1,6 +1,7 @@
 import eventManager from 'src/utils/eventManager';
 import { globalSet } from 'src/utils/global';
 import onPage from 'src/utils/onPage';
+import { emit as emitDecks } from 'src/structures/deck/decks';
 
 onPage('Decks', function deckPage() {
   eventManager.on('jQuery', () => {
@@ -19,10 +20,11 @@ onPage('Decks', function deckPage() {
         eventManager.singleton.emit('Deck:Loaded', data);
         return;
       }
-      const { action } = JSON.parse(options.data);
+      const { action, soul } = JSON.parse(options.data);
       const obj = Object.freeze({ action, data, options, xhr });
       eventManager.emit('Deck:postChange', obj);
       eventManager.emit(`Deck:${action}`, obj);
+      if (data?.status !== 'error') emitDecks('changed', { soul, action });
     });
     // Soul change
     globalSet('updateSoul', function updateSoul() {
