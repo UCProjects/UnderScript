@@ -10,7 +10,7 @@
 1. Added an optional "GitHub token" setting under Updates, for when update checks fail because GitHub's request limit was reached<extended>
     - A token with no permissions is enough. It is only sent to api.github.com, is not included when exporting settings, and a rejected token falls back to checking without one.
     - A toast now points to the setting when the limit is what stopped an update check.</extended>
-1. In the UnderScript App, chat now stays connected: it reconnects after any unexpected disconnect, keeps retrying with a growing delay instead of giving up, and reconnects as soon as the network is back<extended>
+1. In the [UnderScript App](https://discord.gg/9KPj9XcMY9), chat now stays connected: it reconnects after any unexpected disconnect, keeps retrying with a growing delay instead of giving up, and reconnects as soon as the network is back<extended>
     - If the connection keeps dropping within seconds of connecting, it waits a minute between attempts so it does not fight another client for the socket.</extended>
 1. When another session of your account takes over chat, this one no longer reconnects on its own and takes it back, which made two sessions kick each other in a loop<extended>
     - A toast tells you chat was opened elsewhere and has a Reconnect button. Switching back to the tab, or sending a message, still reconnects as before.
