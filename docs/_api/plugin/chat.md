@@ -22,10 +22,10 @@ channels: `Channel[]`
 : The chat windows that are open right now
 
 self: `User`
-: You, as a [user](#message). `undefined` until chat has connected
+: You, as a [user](#user). `undefined` until chat has connected
 
 friends: `User[]`
-: Your friends, as [users](#message). It follows your friends list, which refreshes every few seconds, and is empty until chat has connected
+: Your friends, as [users](#user). It follows your friends list, which refreshes every few seconds, and is empty until chat has connected
 
 ## Methods
 on(*event*, *listener*), once(*event*, *listener*)
@@ -41,7 +41,7 @@ channel(*name*)
 : Find a [channel](#channel), or `undefined` if there isn't one. `name` can be a room such as `chat-public-5`, the game's name for a public room such as `chat-roleplay` or just `roleplay`, or a public room's id such as `5`. You get the same channel object every time, so you can keep it.
 
 user(*who*)
-: Find a [user](#message) chat has seen, by id or by name, or `undefined`. Chat only knows users who have spoken since the page loaded and your friends. You get the same user object every time, so you can keep it.
+: Find a [user](#user) chat has seen, by id or by name, or `undefined`. Chat only knows users who have spoken since the page loaded and your friends. You get the same user object every time, so you can keep it.
 
 send(*channel*, *text*)
 : Send a message. `channel` is a channel, or anything `chat.channel` takes. Returns a [send result](#send-result) promise. It does not fire `send`. You can send to a room whether or not its window is open.
@@ -88,7 +88,7 @@ channel
 : Where it was sent
 
 author
-: Who sent it: `id`, `name`, `avatar`, `shinyAvatar`, `division`, `mainGroup`, `groups`, `isMod`, `isFriend`, `isOnline` and `gameId`. You get the same user object every time for the same player, and it stays current: a new message from them updates their name, avatar, division and groups, so keep it and read it later. This also means an older message's `author` shows the newest data, and `message.raw.user` is what that message arrived with. History does not overwrite newer data. The user's own `raw` has the latest data the game sent. `isFriend` says whether they are on your friends list and `isOnline` whether that friend is online, or for you whether chat is connected (`undefined` for anyone else). `gameId` is the game they are in, or `undefined`: it comes from their latest message, and for friends from the friends list, which refreshes every few seconds.
+: Who sent it, as a [user](#user). The user is always the newest data chat has for that player, so an older message's `author` can differ from how the player looked when they sent it. `message.raw.user` is what that message arrived with.
 
 deleted
 : Whether a moderator removed it. This stays current: it turns `true` on a message you already have when its author's messages are removed.
@@ -104,6 +104,36 @@ display(*text*, { *html* })
 
 restore()
 : Put back what the game rendered. Returns `false` if nothing was changed.
+
+### User
+id, name
+: The player's id and name
+
+avatar, shinyAvatar
+: Their avatar as `{ image, rarity }`, or `undefined` if it is not known, and whether it is shiny
+
+division
+: Their division, such as `GOLD_II`, or an empty string if it is not known
+
+mainGroup, groups
+: Their main group and all of their groups, as `{ id, name, priority, icon }`. A lower `priority` is a higher rank, and `icon` can be `undefined`. `mainGroup` is `undefined` for a player with no group.
+
+isMod
+: Whether their main group is a moderator or higher
+
+isFriend, isOnline
+: Whether they are on your friends list, and whether that friend is online. `isOnline` is `undefined` for anyone who is not a friend, and for you it is whether chat is connected.
+
+gameId
+: The game they are in, or `undefined`. It comes from their latest message, and for friends from the friends list too.
+
+raw
+: The latest data the game sent about them
+
+toString()
+: Their name, so a user can go straight into a string, as in `${message.author}`
+
+You get the same user object every time for the same player, so you can keep one. It stays current: each new message from the player updates their name, avatar, division, groups and game, and your friends list updates `isFriend`, `isOnline` and `gameId` every few seconds. History messages never overwrite newer data. Chat only knows players who have spoken since the page loaded, your friends, and you, which `chat.self` gives.
 
 ### Channel
 type, id, room
