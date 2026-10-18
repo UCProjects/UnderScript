@@ -24,6 +24,7 @@
     - Typing the start of a script's name, such as `/under`, also suggests that script's commands, after the commands whose own names match.</extended>
 1. The chat menu no longer blocks ignoring or muting staff who are not moderators, only moderators and yourself
 ### Fixes
+1. Fixed the page selector being empty when there are exactly two pages, which happened on the Friendship page and any Decks or Crafting filter with two pages of cards
 1. Fixed links to a player or page on the leaderboard (`?user=` and `?page=`) opening the friendship leaderboard instead of the ranked one
 ### Plugins
 1. New `underscript.constants.soul` with the souls (`KINDNESS`, `DETERMINATION`, `PATIENCE`, `BRAVERY`, `JUSTICE`, `PERSEVERANCE`, `INTEGRITY` and `MONSTER`, which players can't play, see `soul.playable`), and `underscript.constants.getSoul` and `isSoul`
