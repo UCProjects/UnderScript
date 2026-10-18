@@ -194,6 +194,14 @@ export function syncFriends(value: unknown): void {
   });
 }
 
+export function syncGames(games: ReadonlyMap<string, number>): void {
+  users.forEach((user, key) => {
+    const gameId = games.get(key);
+    if (gameId !== undefined) present(user, { gameId });
+    else if (!user.isFriend && user.gameId !== undefined) present(user, { gameId: undefined });
+  });
+}
+
 let selfKey: string | undefined;
 
 export function syncSelf(value: unknown): void {
