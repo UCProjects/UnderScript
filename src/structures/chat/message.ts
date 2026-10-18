@@ -1,8 +1,6 @@
 import { channelFromRoom, getChannel } from './chat';
 import { deletedSince, stamp } from './deletion';
-
-const STAFF_PRIORITY = 6;
-const MOD_PRIORITY = 4;
+import { updateUser } from './user';
 
 type Raw = Record<string, unknown>;
 
@@ -91,41 +89,6 @@ function toRecord(value: unknown): Raw | undefined {
   return isRecord(value) ? value : undefined;
 }
 
-function parseGroup(value: unknown): UnderScriptChatGroup | undefined {
-  if (!isRecord(value)) return undefined;
-  const { id, name, priority, icon } = value;
-  if (typeof name !== 'string') return undefined;
-  return {
-    id: typeof id === 'number' || typeof id === 'string' ? id : name,
-    name,
-    priority: typeof priority === 'number' ? priority : Infinity,
-    icon: typeof icon === 'string' ? icon : undefined,
-  };
-}
-
-function parseUser(value: unknown): UnderScriptChatUser | undefined {
-  if (!isRecord(value)) return undefined;
-  const { id, username, avatar, shinyAvatar, division, mainGroup, groups } = value;
-  if ((typeof id !== 'number' && typeof id !== 'string') || typeof username !== 'string') return undefined;
-  const main = parseGroup(mainGroup);
-  const priority = main?.priority ?? Infinity;
-  const avatarInfo = isRecord(avatar) && typeof avatar.image === 'string' ?
-    { image: avatar.image, rarity: typeof avatar.rarity === 'string' ? avatar.rarity : '' } :
-    undefined;
-  return {
-    id,
-    name: username,
-    avatar: avatarInfo,
-    shinyAvatar: shinyAvatar === true,
-    division: typeof division === 'string' ? division : '',
-    mainGroup: main,
-    groups: Array.isArray(groups) ? groups.map(parseGroup).filter((group) => group !== undefined) : [],
-    isStaff: priority <= STAFF_PRIORITY,
-    isMod: priority <= MOD_PRIORITY,
-    raw: value,
-  };
-}
-
 export function channelFromData(data: unknown): UnderScriptChatChannel | undefined {
   if (!isRecord(data)) return undefined;
   if (typeof data.room === 'string') return channelFromRoom(data.room);
@@ -147,7 +110,7 @@ export function parseChatMessage(
   const raw = toRecord(value);
   if (!raw) return undefined;
   const { id, message, me, rainbow, deleted, timestamp } = raw;
-  const author = parseUser(raw.user);
+  const author = updateUser(raw.user, { refresh: receivedAt !== undefined });
   if (!author || typeof message !== 'string') return undefined;
   if (typeof id !== 'number' && typeof id !== 'string') return undefined;
   return new ChatMessage({

@@ -92,18 +92,18 @@ describe('parseChatMessage', () => {
     expect(author.groups.map(({ name }) => name)).to.deep.equal(['Moderator', 'Contributor']);
   });
 
-  it('marks moderators and staff by the main group priority', () => {
-    const at = (priority) => parseChatMessage(raw({ user: user({ mainGroup: { id: 1, name: 'G', priority } }) }), channel).author;
-    expect(at(4)).to.include({ isMod: true, isStaff: true });
-    expect(at(6)).to.include({ isMod: false, isStaff: true });
-    expect(at(10)).to.include({ isMod: false, isStaff: false });
+  it('marks moderators by the main group priority', () => {
+    const at = (priority) => parseChatMessage(raw({ user: user({ id: `rank-${priority}`, mainGroup: { id: 1, name: 'G', priority } }) }), channel).author;
+    expect(at(4).isMod).to.equal(true);
+    expect(at(6).isMod).to.equal(false);
+    expect(at(10).isMod).to.equal(false);
   });
 
   it('treats a user with no group as an ordinary player', () => {
-    const { author } = parseChatMessage(raw({ user: user({ mainGroup: undefined, groups: undefined }) }), channel);
+    const { author } = parseChatMessage(raw({ user: user({ id: 'plain', mainGroup: undefined, groups: undefined }) }), channel);
     expect(author.mainGroup).to.equal(undefined);
     expect(author.groups).to.deep.equal([]);
-    expect(author).to.include({ isMod: false, isStaff: false });
+    expect(author.isMod).to.equal(false);
   });
 
   it('gives nothing for data it cannot read', () => {

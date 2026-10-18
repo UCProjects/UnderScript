@@ -1,10 +1,12 @@
 import eventManager from 'src/utils/eventManager';
 import { global } from 'src/utils/global';
 import sleep from 'src/utils/sleep';
+import { syncFriends } from 'src/structures/chat/user';
 import updateTip from './online';
 
 eventManager.on('preChat:getFriends', function updateFriends(data) {
   this.canceled = true;
+  syncFriends(data.friends);
   const friends = JSON.parse(data.friends).reduce((ret, friend) => {
     ret[friend.id] = friend;
     return ret;
