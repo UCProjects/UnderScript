@@ -28,6 +28,30 @@ describe('underscript constants', () => {
     expect(constants.getRarity('DT')).to.equal(globalThis.underscript.rarity.DETERMINATION);
   });
 
+  it('exposes the souls, including the one nobody can play', () => {
+    const { soul } = globalThis.underscript;
+    expect(Object.keys(soul)).to.deep.equal([
+      'KINDNESS',
+      'DETERMINATION',
+      'PATIENCE',
+      'BRAVERY',
+      'JUSTICE',
+      'PERSEVERANCE',
+      'INTEGRITY',
+      'MONSTER',
+    ]);
+    expect(`${soul.MONSTER}`).to.equal('MONSTER');
+    expect(soul.MONSTER.playable).to.equal(false);
+    expect(soul.BRAVERY.playable).to.equal(true);
+  });
+
+  it('finds a soul by name', () => {
+    expect(constants.isSoul('BRAVERY')).to.equal(true);
+    expect(constants.getSoul('BRAVERY')).to.equal(globalThis.underscript.soul.BRAVERY);
+    expect(constants.isSoul('NOT_A_SOUL')).to.equal(false);
+    expect(constants.getSoul('NOT_A_SOUL')).to.equal(undefined);
+  });
+
   it('knows when something is not a rarity', () => {
     expect(constants.isRarity('NOT_A_RARITY')).to.equal(false);
     expect(constants.getRarity('NOT_A_RARITY')).to.equal(undefined);

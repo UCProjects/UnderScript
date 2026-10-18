@@ -10,6 +10,10 @@ type UnderScriptPriority = UnderScriptConstant;
 
 type UnderScriptRarityConstant = UnderScriptConstant;
 
+type UnderScriptSoul = UnderScriptConstant & {
+  readonly playable: boolean;
+};
+
 type UnderScriptPriorityName =
   | 'first'
   | 'top'
@@ -61,8 +65,20 @@ type UnderScriptRarities = {
   readonly TOKEN: UnderScriptRarityConstant;
 };
 
+type UnderScriptSouls = {
+  readonly KINDNESS: UnderScriptSoul;
+  readonly DETERMINATION: UnderScriptSoul;
+  readonly PATIENCE: UnderScriptSoul;
+  readonly BRAVERY: UnderScriptSoul;
+  readonly JUSTICE: UnderScriptSoul;
+  readonly PERSEVERANCE: UnderScriptSoul;
+  readonly INTEGRITY: UnderScriptSoul;
+  readonly MONSTER: UnderScriptSoul;
+};
+
 interface UnderScriptAPI {
   readonly item: UnderScriptItems;
   readonly priority: UnderScriptPriorities;
   readonly rarity: UnderScriptRarities;
+  readonly soul: UnderScriptSouls;
 }
