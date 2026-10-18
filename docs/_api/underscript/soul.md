@@ -24,5 +24,5 @@ if (soul.MONSTER.equals(deck.soul)) {
   console.log('Not a deck a player made');
 }
 
-underscript.plugin('My great plugin').decks.saved(soul.BRAVERY);
+underscript.plugin('My great plugin').decks.storage.list(soul.BRAVERY);
 {% endhighlight %}

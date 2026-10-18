@@ -60,15 +60,19 @@ type UnderScriptDecksEvents = {
   changed: [change: UnderScriptDeckChange];
 };
 
+type UnderScriptDecksStorage = {
+  list(soul?: UnderScriptSoul | string): UnderScriptSavedDeck[];
+  get(soul: UnderScriptSoul | string, slot: number): UnderScriptSavedDeck | undefined;
+  save(soul: UnderScriptSoul | string, slot: number): Promise<UnderScriptSavedDeck>;
+  import(code: string, options?: UnderScriptDeckImportOptions): UnderScriptSavedDeck;
+};
+
 type UnderScriptDecksPlugin = {
+  readonly storage: Readonly<UnderScriptDecksStorage>;
   on<K extends keyof UnderScriptDecksEvents>(event: K, listener: (this: UnderScriptEventMeta, ...args: UnderScriptDecksEvents[K]) => unknown): UnderScriptDecksPlugin;
   once<K extends keyof UnderScriptDecksEvents>(event: K, listener: (this: UnderScriptEventMeta, ...args: UnderScriptDecksEvents[K]) => unknown): UnderScriptDecksPlugin;
   off<K extends keyof UnderScriptDecksEvents>(event: K, listener: (...args: UnderScriptDecksEvents[K]) => unknown): UnderScriptDecksPlugin;
-  import(code: string, options?: UnderScriptDeckImportOptions): UnderScriptSavedDeck;
-  saved(soul?: UnderScriptSoul | string): UnderScriptSavedDeck[];
-  get(soul: UnderScriptSoul | string, index: number): UnderScriptSavedDeck | undefined;
   current(): Promise<Record<string, UnderScriptCurrentDeck>>;
-  save(soul: UnderScriptSoul | string, slot: number): Promise<UnderScriptSavedDeck>;
   addCard(soul: UnderScriptSoul | string, id: number | string, options?: UnderScriptDeckCardOptions): Promise<UnderScriptDeckChange>;
   removeCard(soul: UnderScriptSoul | string, id: number | string, options?: UnderScriptDeckCardOptions): Promise<UnderScriptDeckChange>;
   addArtifact(soul: UnderScriptSoul | string, id: number | string): Promise<UnderScriptDeckChange>;

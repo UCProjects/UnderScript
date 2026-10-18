@@ -106,22 +106,24 @@ wrap(() => {
         decks.off(event, fn);
         return obj;
       },
-      saved: (soul) => decks.saved(soul === undefined ? undefined : soulName(soul)).map(view),
-      get: (soul, index) => {
-        const deck = decks.get(soulName(soul), index);
-        return deck && view(deck);
-      },
+      storage: Object.freeze({
+        list: (soul) => decks.saved(soul === undefined ? undefined : soulName(soul)).map(view),
+        get: (soul, index) => {
+          const deck = decks.get(soulName(soul), index);
+          return deck && view(deck);
+        },
+        save: async (soul, slot) => view(await decks.save(soulName(soul), slot)),
+        import: (code, options) => {
+          const saved = decks.import(code, options);
+          if (saved.index >= decks.visibleSlots()) {
+            plugin.logger.warn(
+              `Imported ${saved.soul} deck into slot ${saved.index}, which UnderScript's storage buttons do not show`,
+            );
+          }
+          return view(saved);
+        },
+      }),
       current: () => decks.current(),
-      import: (code, options) => {
-        const saved = decks.import(code, options);
-        if (saved.index >= decks.visibleSlots()) {
-          plugin.logger.warn(
-            `Imported ${saved.soul} deck into slot ${saved.index}, which UnderScript's storage buttons do not show`,
-          );
-        }
-        return view(saved);
-      },
-      save: async (soul, slot) => view(await decks.save(soulName(soul), slot)),
       addCard: (soul, id, options) => decks.addCard(soulName(soul), id, options),
       removeCard: (soul, id, options) => decks.removeCard(soulName(soul), id, options),
       addArtifact: (soul, id) => decks.addArtifact(soulName(soul), id),
