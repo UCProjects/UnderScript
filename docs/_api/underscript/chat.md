@@ -19,7 +19,7 @@ channels: `Channel[]`
 : The chat windows that are open right now. See [Channel]({{ site.baseurl }}{% link _api/plugin/chat.md %}#channel).
 
 self: `User`
-: You, as a chat user. `undefined` until chat has connected. See [User]({{ site.baseurl }}{% link _api/plugin/chat.md %}#message).
+: You, as a chat user. `undefined` until chat has connected. See [User]({{ site.baseurl }}{% link _api/plugin/chat.md %}#user).
 
 friends: `User[]`
 : Your friends, as chat users. Empty until chat has connected.
