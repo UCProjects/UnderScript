@@ -103,26 +103,26 @@ plain.quests.update('yes');
 plain.addFilter?.((card, removed, results) => {
   card.name satisfies unknown;
   return removed || results.other === true;
-}, underscript.priority.HIGH);
+}, underscript.constants.priority.HIGH);
 plain.addFilter?.(() => null, 'low');
 // @ts-expect-error unknown priority names are rejected
 plain.addFilter?.(() => true, 'urgent');
 // @ts-expect-error addFilter only exists on the Crafting and Decks pages
 plain.addFilter(() => true);
 
-underscript.item.GOLD satisfies UnderScriptItem;
-underscript.priority.NORMAL.equals('normal') satisfies boolean;
+underscript.constants.item.GOLD satisfies UnderScriptItem;
+underscript.constants.priority.NORMAL.equals('normal') satisfies boolean;
 underscript.constants.getItem('gold') satisfies UnderScriptItem | undefined;
 underscript.constants.isPriority('first') satisfies boolean;
-underscript.rarity.DETERMINATION satisfies UnderScriptRarityConstant;
+underscript.constants.rarity.DETERMINATION satisfies UnderScriptRarityConstant;
 underscript.constants.getRarity('DT') satisfies UnderScriptRarityConstant | undefined;
 underscript.constants.isRarity('TOKEN') satisfies boolean;
-underscript.soul.MONSTER satisfies UnderScriptSoul;
-underscript.soul.MONSTER.playable satisfies boolean;
+underscript.constants.soul.MONSTER satisfies UnderScriptSoul;
+underscript.constants.soul.MONSTER.playable satisfies boolean;
 underscript.constants.getSoul('KINDNESS') satisfies UnderScriptSoul | undefined;
 underscript.constants.isSoul('BRAVERY') satisfies boolean;
 // @ts-expect-error item constants are read-only
-underscript.item.GOLD = underscript.item.UCP;
+underscript.constants.item.GOLD = underscript.constants.item.UCP;
 
 declare const hotkey: UnderScriptHotkey;
 plain.hotkey.register(hotkey);

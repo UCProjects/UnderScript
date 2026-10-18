@@ -10,7 +10,7 @@ The methods that change a deck work whether or not the player is on the Decks pa
 
 The existing `Deck:*` [events]({{ site.baseurl }}{% link _api/events.md %}) are unchanged.
 
-A soul is passed as its text, such as `'BRAVERY'`, or as an [underscript.soul]({{ site.baseurl }}{% link _api/underscript/soul.md %}). The `soul` you get back, on a saved deck or in a change, is always text.
+A soul is passed as its text, such as `'BRAVERY'`, or as an [underscript.constants.soul]({{ site.baseurl }}{% link _api/underscript/soul.md %}). The `soul` you get back, on a saved deck or in a change, is always text.
 
 ## Syntax
 > plugin.decks;

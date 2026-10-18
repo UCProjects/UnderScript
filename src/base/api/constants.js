@@ -6,10 +6,28 @@ import Rarity from 'src/structures/constants/rarity';
 import Soul from 'src/structures/constants/soul';
 
 const constants = api.mod.constants;
+
+Object.entries({ item: Item, priority: Priority, rarity: Rarity, soul: Soul }).forEach(([name, Kind]) => {
+  constants[name] = Object.fromEntries(Object.entries(Kind));
+});
+
+['item', 'priority', 'rarity'].forEach((name) => {
+  let warned = false;
+  api.mod[name] = new Proxy(constants[name], {
+    get(target, key, receiver) {
+      if (!warned) {
+        warned = true;
+        console.warn(`'underscript.${name}' is deprecated, use 'underscript.constants.${name}' instead.`);
+      }
+      return Reflect.get(target, key, receiver);
+    },
+  });
+});
+
 Object.entries(Item).forEach((([key, value]) => {
   Object.defineProperty(constants, key, {
     get() {
-      console.warn(`'underscript.constants.${key}' is deprecated, use 'underscript.item.${key}' instead.`);
+      console.warn(`'underscript.constants.${key}' is deprecated, use 'underscript.constants.item.${key}' instead.`);
       return value;
     },
   });

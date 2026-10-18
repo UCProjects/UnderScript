@@ -1,4 +1,3 @@
-import * as api from 'src/utils/4.api';
 import Constant from './constant';
 
 export default class Item extends Constant {
@@ -22,5 +21,3 @@ export default class Item extends Constant {
   static EMOTE = new Item('Emote', 'emote', 'reward-emote');
   static PROFILE = new Item('Profile Skin', 'Profile', 'profile skin', 'profile', 'reward-profile-skin');
 }
-
-api.mod.item = Object.fromEntries(Object.entries(Item));

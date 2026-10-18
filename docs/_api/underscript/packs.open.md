@@ -13,7 +13,7 @@ count
 : Number of packs to open
 
 type
-: Type of pack to open ('', 'DR', 'UTY', 'Shiny', 'Super', 'Final') or its [item]({{ site.baseurl }}{% link _api/underscript/item.md %}), like `underscript.item.DR_PACK` (default: '')
+: Type of pack to open ('', 'DR', 'UTY', 'Shiny', 'Super', 'Final') or its [item]({{ site.baseurl }}{% link _api/underscript/item.md %}), like `underscript.constants.item.DR_PACK` (default: '')
 
 ## Checking if packs are opening
 > underscript.openingPacks();
@@ -29,7 +29,7 @@ underscript.openPacks(10);
 underscript.openPacks(5, 'DR');
 
 // Same thing, with an item
-underscript.openPacks(5, underscript.item.DR_PACK);
+underscript.openPacks(5, underscript.constants.item.DR_PACK);
 
 // Wait for other packs to finish first
 if (!underscript.openingPacks()) {

@@ -166,7 +166,7 @@ utils.rarity.max('EPIC') satisfies number | undefined;
 utils.rarity.cost('LEGENDARY', true) satisfies number | null;
 utils.rarity.dust('RARE') satisfies number | null;
 utils.rarity.max('DT') satisfies number | undefined;
-utils.rarity.cost(underscript.rarity.LEGENDARY) satisfies number | null;
+utils.rarity.cost(underscript.constants.rarity.LEGENDARY) satisfies number | null;
 // @ts-expect-error not a rarity
 utils.rarity.max('NOT_A_RARITY');
 

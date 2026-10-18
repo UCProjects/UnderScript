@@ -26,7 +26,9 @@
 ### Fixes
 1. Fixed links to a player or page on the leaderboard (`?user=` and `?page=`) opening the friendship leaderboard instead of the ranked one
 ### Plugins
-1. New `underscript.soul` with the souls (`KINDNESS`, `DETERMINATION`, `PATIENCE`, `BRAVERY`, `JUSTICE`, `PERSEVERANCE`, `INTEGRITY` and `MONSTER`, which players can't play, see `soul.playable`), and `underscript.constants.getSoul` and `isSoul`
+1. New `underscript.constants.soul` with the souls (`KINDNESS`, `DETERMINATION`, `PATIENCE`, `BRAVERY`, `JUSTICE`, `PERSEVERANCE`, `INTEGRITY` and `MONSTER`, which players can't play, see `soul.playable`), and `underscript.constants.getSoul` and `isSoul`
+1. `underscript.item`, `priority` and `rarity` moved to `underscript.constants.item`, `priority` and `rarity`, so the named values live together instead of taking top level names. The old names still work, and log a deprecation warning the first time they are used
+1. The constants (`underscript.constants.item`, `priority`, `rarity` and `soul`) now turn into their text when put in JSON, instead of an empty object
 1. New `plugin.decks` for decks: `decks.current()`, `decks.storage.list(soul)`, `decks.storage.get(soul, slot)` and `decks.on('changed', ...)`<extended>
     - `decks.current()` gives the player's deck for each soul from any page, as `{ soul, cards, artifacts }`. On the Decks page it reads the page, anywhere else it asks the server.
     - `decks.storage.list()` lists the decks saved in UnderScript's deck storage as objects with `soul`, `index`, `cards`, `artifacts`, `name` and `description`. `name` and `description` can be assigned.
