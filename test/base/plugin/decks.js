@@ -48,7 +48,7 @@ describe('plugin decks', () => {
       store('BRAVERY', 0, { cards: [{ id: 5 }], artifacts: [] });
       store('KINDNESS', 0, { cards: [{ id: 6 }], artifacts: [] });
       const { decks } = setup();
-      const { soul } = globalThis.underscript;
+      const { soul } = globalThis.underscript.constants;
       expect(decks.storage.list(soul.BRAVERY).map((deck) => deck.soul)).to.deep.equal(['BRAVERY']);
       expect(decks.storage.get(soul.BRAVERY, 0)).to.equal(decks.storage.get('BRAVERY', 0));
       expect(decks.storage.get(soul.KINDNESS, 0).cards[0].id).to.equal(6);

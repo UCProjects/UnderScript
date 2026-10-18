@@ -1,4 +1,3 @@
-import * as api from 'src/utils/4.api';
 import Constant from './constant';
 
 export default class Priority extends Constant {
@@ -14,5 +13,3 @@ export default class Priority extends Constant {
     return this.find(value);
   }
 }
-
-api.mod.priority = Object.fromEntries(Object.entries(Priority));

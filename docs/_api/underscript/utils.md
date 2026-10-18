@@ -57,7 +57,7 @@ LazyStore(*function*)
 : Holds the result of a function, and only runs it the first time you read it with `get()` or `value`. `isLoaded()` says whether the value is in, which for a promise is once it resolves. A promise that rejects is not kept, so the next read tries again. `reset()` forgets the result so the next read runs the function again.
 
 rarity
-: `max(rarity)`, `cost(rarity, shiny)` and `dust(rarity, shiny)` for card rarities. A rarity is its name, like `'EPIC'`, or an [`underscript.rarity`]({{ site.baseurl }}{% link _api/underscript/rarity.md %}).
+: `max(rarity)`, `cost(rarity, shiny)` and `dust(rarity, shiny)` for card rarities. A rarity is its name, like `'EPIC'`, or an [`underscript.constants.rarity`]({{ site.baseurl }}{% link _api/underscript/rarity.md %}).
 
 ## Examples
 {% highlight javascript %}

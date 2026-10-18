@@ -1,4 +1,3 @@
-import * as api from 'src/utils/4.api';
 import Constant from './constant';
 
 export default class Soul extends Constant {
@@ -22,5 +21,3 @@ export default class Soul extends Constant {
   static INTEGRITY = new Soul('INTEGRITY');
   static MONSTER = new Soul('MONSTER', { playable: false });
 }
-
-api.mod.soul = Object.fromEntries(Object.entries(Soul));

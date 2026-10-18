@@ -1,4 +1,3 @@
-import * as api from 'src/utils/4.api';
 import Constant from './constant';
 
 export default class Rarity extends Constant {
@@ -10,5 +9,3 @@ export default class Rarity extends Constant {
   static DETERMINATION = new Rarity('DETERMINATION', 'DT');
   static TOKEN = new Rarity('TOKEN', 'GENERATED');
 }
-
-api.mod.rarity = Object.fromEntries(Object.entries(Rarity));

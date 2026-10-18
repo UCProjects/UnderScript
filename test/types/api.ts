@@ -135,7 +135,7 @@ underscript.streamerMode() satisfies boolean;
 
 underscript.buyPacks?.(5, { type: 'DR', gold: false });
 underscript.openPacks?.(3, 'Shiny');
-underscript.openPacks?.(3, underscript.item.UTY_PACK);
+underscript.openPacks?.(3, underscript.constants.item.UTY_PACK);
 underscript.openingPacks?.() satisfies boolean | undefined;
 // @ts-expect-error buyPacks only exists on the Packs page
 underscript.buyPacks(1);

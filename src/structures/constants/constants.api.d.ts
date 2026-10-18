@@ -77,8 +77,10 @@ type UnderScriptSouls = {
 };
 
 interface UnderScriptAPI {
+  /** @deprecated Use `underscript.constants.item` */
   readonly item: UnderScriptItems;
+  /** @deprecated Use `underscript.constants.priority` */
   readonly priority: UnderScriptPriorities;
+  /** @deprecated Use `underscript.constants.rarity` */
   readonly rarity: UnderScriptRarities;
-  readonly soul: UnderScriptSouls;
 }
