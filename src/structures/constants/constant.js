@@ -16,6 +16,10 @@ export default class Constant {
     return this.#value[0];
   }
 
+  toJSON() {
+    return this.valueOf();
+  }
+
   static find(value) {
     if (value instanceof this) return value;
     return Object.values(this).find(
