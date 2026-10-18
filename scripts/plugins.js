@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import axios from 'axios';
 import createParser from '../src/utils/parser/index.js';
-import { isMain } from './utils.js';
+import { isMain, writeFile } from './utils.js';
 
 export const REGISTRY = 'plugins.json';
 export const FIELDS = ['name', 'author', 'updateURL', 'downloadURL'];
@@ -182,13 +182,41 @@ function label({ index, name }) {
   return index === undefined ? '' : `entry ${index + 1}`;
 }
 
+const MARKER = '<!-- plugin-registry-check -->';
+const REPORT = '--report=';
+
+function plain(text) {
+  return `${text}`.replace(/@/g, `@${String.fromCharCode(0x200b)}`).replace(/\r?\n/g, ' ');
+}
+
+/**
+ * @param {Problem[]} problems
+ * @param {{ network?: boolean }} [options]
+ * @returns {string} a markdown comment
+ */
+export function markdown(problems, { network = true } = {}) {
+  const heading = `${MARKER}\n### Plugin registry check\n\n`;
+  if (!problems.length) {
+    const checked = network ? ', and every plugin resolves an install link' : '';
+    return `${heading}:white_check_mark: \`${REGISTRY}\` is valid${checked}.\n`;
+  }
+  const lines = problems.map((problem) => {
+    const title = label(problem);
+    return `- ${title ? `**${plain(title)}**: ` : ''}${plain(problem.message)}`;
+  });
+  const count = `${problems.length} problem${problems.length === 1 ? '' : 's'}`;
+  return `${heading}:x: Found ${count} in \`${REGISTRY}\`:\n\n${lines.join('\n')}\n\nThis comment updates when you push a fix.\n`;
+}
+
 export default async function main(args = process.argv.slice(2)) {
   const network = !args.includes('--offline');
+  const output = args.find((arg) => arg.startsWith(REPORT))?.slice(REPORT.length);
   const file = args.find((arg) => !arg.startsWith('-')) ?? REGISTRY;
   if (process.env.GITHUB_TOKEN) authenticate(process.env.GITHUB_TOKEN);
   axios.defaults.timeout = TIMEOUT;
 
   const problems = await check(await fs.readFile(file, 'utf8'), { network });
+  if (output) await writeFile(output, markdown(problems, { network }));
   if (!problems.length) {
     console.log(`${file} is valid${network ? ', and every plugin resolves an install link' : ''}`);
     return;
