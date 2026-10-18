@@ -168,6 +168,15 @@ export class SavedDeck {
     }
   }
 
+  write(cards: ReadonlyArray<SavedCard>, artifacts: ReadonlyArray<Id>): void {
+    const key = this.#deckKey;
+    if (key === undefined) throw new Error('Not logged in');
+    localStorage.setItem(key, JSON.stringify({
+      cards: cards.map(({ id, shiny }) => (shiny ? { id, shiny: true } : { id })),
+      artifacts: [...artifacts],
+    }));
+  }
+
   erase(): void {
     const deck = this.#deckKey;
     const meta = this.#metaKey;

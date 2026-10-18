@@ -104,6 +104,59 @@ describe('plugin decks', () => {
     });
   });
 
+  describe('writes', () => {
+    let originalAdapter;
+    let requests;
+
+    beforeEach(() => {
+      requests = [];
+      globalThis.location = { pathname: '/' };
+      originalAdapter = axios.defaults.adapter;
+      axios.defaults.adapter = (config) => {
+        const data = config.method === 'get' ?
+          { decks: JSON.stringify([{ soul: { name: 'KINDNESS' }, cardsList: [{ id: 1, shiny: false }], artifacts: [] }]) } :
+          { status: 'success', card: '{}', action: 'getArtifactAdded', soul: 'KINDNESS' };
+        if (config.method !== 'get') requests.push(JSON.parse(config.data));
+        return Promise.resolve({ data, status: 200, statusText: '', headers: {}, config });
+      };
+    });
+
+    afterEach(() => {
+      axios.defaults.adapter = originalAdapter;
+      delete globalThis.location;
+    });
+
+    it('sends each change through the plugin', async () => {
+      const { decks } = setup();
+      const edit = await decks.addCard('KINDNESS', 5, { shiny: true });
+      await decks.addArtifact('KINDNESS', 2);
+      expect(edit).to.deep.equal({ soul: 'KINDNESS', action: 'addCard', id: 5, shiny: true });
+      expect(requests.map(({ action }) => action)).to.deep.equal(['addCard', 'addArtifact']);
+    });
+
+    it('loads a saved deck into the current one', async () => {
+      store('KINDNESS', 0, { cards: [{ id: 1 }, { id: 2 }], artifacts: [] });
+      const edits = await setup().decks.get('KINDNESS', 0).load();
+      expect(edits).to.deep.equal([{ soul: 'KINDNESS', action: 'addCard', id: 2, shiny: false }]);
+    });
+
+    it('saves the current deck and hands back the saved deck', async () => {
+      const { decks } = setup();
+      const saved = await decks.save('KINDNESS', 3);
+      expect(saved.cards).to.deep.equal([{ id: 1, shiny: false }]);
+      expect(decks.get('KINDNESS', 3)).to.equal(saved);
+    });
+
+    it('removes a saved deck with its meta', () => {
+      store('KINDNESS', 0, { cards: [{ id: 1 }], artifacts: [] });
+      const deck = setup().decks.get('KINDNESS', 0);
+      deck.meta.set('k', 1);
+      deck.remove();
+      expect(deck.exists).to.equal(false);
+      expect(localStorage.length).to.equal(0);
+    });
+  });
+
   describe('events', () => {
     it('delivers a change to the plugin', () => {
       const { decks } = setup();
