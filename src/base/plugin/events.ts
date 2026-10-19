@@ -36,7 +36,6 @@ wrap(() => {
     }
 
     type Flags = Partial<Record<typeof options[number], true>>;
-
     function createEmit(flags: Flags = {}): UnderScriptEmit {
       const call = ((...args: unknown[]) => {
         const [first] = args;
@@ -71,7 +70,7 @@ wrap(() => {
 
         compoundEvent(...events, wrapper(fn as Listener, `Compound[${events.join(';')}]`));
       },
-      on(event: string, fn: Listener): void {
+      on(event: string, fn: Listener): UnderScriptPluginEvents {
         if (typeof fn !== 'function') throw new Error('Must pass a function');
 
         if (event.split(' ').includes(':loaded')) {
@@ -79,13 +78,14 @@ wrap(() => {
         }
 
         eventManager.on.call(obj, event, wrapper(fn, event));
+        return obj;
       },
       off(event: string, fn: (...args: any[]) => unknown): UnderScriptPluginEvents {
         eventManager.off(event, fn);
         return obj;
       },
       emit,
-    };
+    } as unknown as UnderScriptPluginEvents;
 
     return Object.freeze(obj);
   }

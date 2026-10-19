@@ -11,16 +11,16 @@ Listen to and emit events. `plugin.events` is UnderScript's [EventEmitter]({{ si
 
 ## Methods
 on(*event*, *listener*)
-: Listen to an event
+: Listen to an event. Returns `plugin.events`, so calls can be chained.
 
 once(*event*, *listener*), one(*event*, *listener*)
-: Listen to an event, once
+: Listen to an event, once. Returns `plugin.events`.
 
 until(*event*, *listener*)
-: Listen to an event until the listener returns `true`
+: Listen to an event until the listener returns `true`. Returns `plugin.events`.
 
 off(*event*, *listener*)
-: Stop listening
+: Stop listening. Returns `plugin.events`.
 
 compound(...*events*, *listener*)
 : Call `listener` once every one of the events has happened. Needs at least two events.

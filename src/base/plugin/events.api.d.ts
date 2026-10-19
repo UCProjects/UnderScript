@@ -41,10 +41,10 @@ type UnderScriptEmit<F extends UnderScriptEmitFlags = {}> = {
 };
 
 type UnderScriptPluginEvents = {
-  on<E extends string>(event: E, listener: UnderScriptListener<E>): void;
-  once<E extends string>(event: E, listener: UnderScriptListener<E>): void;
-  one<E extends string>(event: E, listener: UnderScriptListener<E>): void;
-  until<E extends string>(event: E, listener: UnderScriptListener<E>): void;
+  on<E extends string>(event: E, listener: UnderScriptListener<E>): UnderScriptPluginEvents;
+  once<E extends string>(event: E, listener: UnderScriptListener<E>): UnderScriptPluginEvents;
+  one<E extends string>(event: E, listener: UnderScriptListener<E>): UnderScriptPluginEvents;
+  until<E extends string>(event: E, listener: UnderScriptListener<E>): UnderScriptPluginEvents;
   off(event: string, listener: (...args: any[]) => unknown): UnderScriptPluginEvents;
   compound(...args: [...events: [string, string, ...string[]], listener: (...args: any[]) => unknown]): void;
   readonly emit: UnderScriptEmit;
