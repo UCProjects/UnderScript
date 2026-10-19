@@ -47,6 +47,9 @@ export default function Plugin(name = '', version = '') {
 
   const methods = {
     name,
+    get isActive() {
+      return methods.enabled !== false;
+    },
   };
 
   if (version) {

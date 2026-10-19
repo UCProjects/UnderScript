@@ -42,3 +42,24 @@ describe('plugin names', () => {
     expect(() => create('Bad-Name')).to.throw('Name contains illegal characters (Bad-Name)');
   });
 });
+
+describe('plugin.isActive', () => {
+  it('is true for a plugin nothing has switched off', () => {
+    expect(create('Active Default').isActive).to.equal(true);
+  });
+
+  it('follows the enabled switch when something provides it', async () => {
+    const { registerModule } = await import('src/utils/plugin');
+    let on = true;
+    registerModule('activeSwitchForTest', (plugin) => {
+      if (plugin.name !== 'Active Switched') return;
+      Object.defineProperty(plugin, 'enabled', { get: () => on });
+    });
+    const plugin = create('Active Switched');
+    expect(plugin.isActive).to.equal(true);
+    on = false;
+    expect(plugin.isActive).to.equal(false);
+    on = true;
+    expect(plugin.isActive).to.equal(true);
+  });
+});
