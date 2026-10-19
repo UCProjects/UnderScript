@@ -1,7 +1,7 @@
 ---
 title: EventEmitter
 ---
-Events are how UnderScript tells your code that something happened, such as a page finishing loading or a chat message arriving. Plugins get one through [`plugin.events`]({{ site.baseurl }}{% link _api/plugin/events.md %}), and `underscript.utils.eventEmitter()` creates a new one for your own use.
+Events tell your code that something happened, such as a page finishing loading or a chat message arriving. Plugins get one through [`plugin.events`]({{ site.baseurl }}{% link _api/plugin/events.md %}), and `underscript.utils.eventEmitter()` creates a new one for your own use.
 
 ## Methods
 on(*event*, *listener*)
@@ -23,7 +23,7 @@ emit(*options*, *event*, ...*data*)
 : The same, with [options](#emit-options) that change how the event behaves.
 
 ## Listener
-The listener is called with the event's data. `this` is the [event object](#event-object), so use a regular `function` for a listener that needs it, because an arrow function has no `this`.
+The listener is called with the event's data. `this` is the [event object](#event-object), so a listener that needs it must be a regular `function`.
 
 ## Event object
 event: `string`
@@ -33,7 +33,7 @@ cancelable: `boolean`
 : Whether listeners can cancel it. Setting `canceled` only does something when this is `true`.
 
 canceled: `boolean`
-: Whether something canceled it. This always exists. Set it to `true` to cancel the event, and read it to see whether a listener before you already did.
+: Whether something canceled it. Set it to `true` to cancel the event.
 
 async: `boolean`
 : Whether `emit` waits for listeners that return a promise

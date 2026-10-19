@@ -10,7 +10,7 @@ Settings for crafting and disenchanting. To craft cards or listen to crafting, u
 
 ## Methods
 bypassProtection(*value*)
-: On the Crafting page, UnderScript stops a craft or disenchant from starting while another one is still going, so double clicking a button doesn't do it twice. Pass `true` to turn that protection off, so your plugin can start several at once through the page's own functions, and `false` to turn it back on. It is on by default. The methods of [plugin.craft]({{ site.baseurl }}{% link _api/plugin/craft.md %}) always go one at a time and are not affected.
+: On the Crafting page, UnderScript stops a craft or disenchant from starting while another one is still going. Pass `true` to turn that protection off, and `false` to turn it back on. It is on by default. The methods of [plugin.craft]({{ site.baseurl }}{% link _api/plugin/craft.md %}) always go one at a time and are not affected.
 
 ## Properties
 dust: `number` or `undefined`

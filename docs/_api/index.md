@@ -26,4 +26,4 @@ if (underscript.semver.meets('0.65.0')) {
 See [underscript.semver]({{ site.baseurl }}{% link _api/underscript/semver.md %}).
 
 ## Editor support
-Starting with 0.65.0, every release has a file called `underscript.d.ts`. It is optional, and plugins work the same without it, but editors like VS Code use it to suggest and check your code. Download it from the [latest release](https://github.com/UCProjects/UnderScript/releases/latest) and put it next to your plugin's script.
+Every release since 0.65.0 includes `underscript.d.ts`, which editors like VS Code use to suggest and check your code. Download it from the [latest release](https://github.com/UCProjects/UnderScript/releases/latest) and put it next to your plugin's script.
