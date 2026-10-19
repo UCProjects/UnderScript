@@ -19,6 +19,16 @@ type Singleton = {
   async: boolean;
 };
 
+const flagNames = ['cancelable', 'canceled', 'singleton', 'async'] as const;
+
+function withFlags(flags: EmitOptions, given: EmitOptions): EmitOptions {
+  const merged = { ...flags };
+  flagNames.forEach((key) => {
+    if (given[key] !== undefined) merged[key] = !!given[key];
+  });
+  return merged;
+}
+
 export default function eventEmitter<
   M extends Record<keyof M, any[]> = Record<string, any[]>,
 >(): UnderScriptEventEmitter<{}, M> {
@@ -28,33 +38,26 @@ export default function eventEmitter<
   const singletonEvents: Record<string, Singleton> = {
     // eventName: { data, async }
   };
-  const options: Options = {
-    cancelable: undefined,
-    canceled: false,
-    singleton: false,
-    async: false,
-  };
+  const warned = new Set<string>();
 
-  function reset(): Options {
-    const ret = { ...options };
-    options.cancelable = undefined;
-    options.canceled = false;
-    options.singleton = false;
-    options.async = false;
-    return ret;
+  function warnDeprecated(key: string): void {
+    if (warned.has(key)) return;
+    warned.add(key);
+    console.warn(`EventEmitter: \`${key}\` is deprecated, pass \`{ ${key}: true }\` to emit directly.`);
   }
 
   function emit(
+    flags: EmitOptions,
     event: string,
     e: unknown,
     ...data: unknown[]
   ): UnderScriptEmitResult | Promise<UnderScriptEmitResult> {
     const {
-      canceled: canceledState,
+      canceled: canceledState = false,
       cancelable = canceledState,
-      singleton,
-      async,
-    } = reset();
+      singleton = false,
+      async = false,
+    } = flags;
 
     const delayed = e !== events[event];
 
@@ -125,81 +128,78 @@ export default function eventEmitter<
     });
   }
 
-  const emitter = {
-    on(this: UnderScriptEventEmitter, event: string, fn: Listener) {
-      reset();
-      if (typeof fn !== 'function') return this;
-      event.split(' ').forEach((e) => {
-        const singleton = singletonEvents[e];
-        if (singleton) {
-          sleep().then(() => {
-            reset(); // Make sure nothing is set!
-            options.async = singleton.async;
-            emit(e, [fn], ...singleton.data);
-          });
-        } else {
-          if (!Array.isArray(events[e])) {
-            events[e] = [];
+  function createEmitter(flags: EmitOptions): UnderScriptEventEmitter<{}, M> {
+    const emitter = {
+      on(this: UnderScriptEventEmitter, event: string, fn: Listener) {
+        if (typeof fn !== 'function') return this;
+        event.split(' ').forEach((e) => {
+          const singleton = singletonEvents[e];
+          if (singleton) {
+            sleep().then(() => {
+              emit({ async: singleton.async }, e, [fn], ...singleton.data);
+            });
+          } else {
+            if (!Array.isArray(events[e])) {
+              events[e] = [];
+            }
+            events[e].push(fn);
           }
-          events[e].push(fn);
-        }
-      });
-      return this;
-    },
-    once(this: UnderScriptEventEmitter, event: string, fn: Listener) {
-      if (typeof fn !== 'function') return this;
-      function wrapper(this: UnderScriptEventMeta, ...args: unknown[]) {
-        off(event, wrapper);
-        return fn.call(this, ...args);
-      }
-      return this.on(event, wrapper);
-    },
-    one(this: UnderScriptEventEmitter, event: string, fn: Listener) {
-      return this.once(event, fn);
-    },
-    until(this: UnderScriptEventEmitter, event: string, fn: Listener) {
-      if (typeof fn !== 'function') return this;
-      function wrapper(this: UnderScriptEventMeta, ...args: unknown[]): unknown {
-        const ret = fn.call(this, ...args);
-        if (ret instanceof Promise) {
-          return ret.then((val) => {
-            if (val) off(event, wrapper);
-            return val;
-          });
-        }
-        if (ret) {
-          off(event, wrapper);
-        }
-        return ret;
-      }
-      return this.on(event, wrapper);
-    },
-    emit(first: string | EmitOptions, ...rest: unknown[]) {
-      if (typeof first !== 'object' || first === null) {
-        const event = first as string;
-        return emit(event, singletonEvents[event] || events[event], ...rest);
-      }
-      const given = first as EmitOptions;
-      const [event, ...data] = rest as [string, ...unknown[]];
-      (['cancelable', 'canceled', 'singleton', 'async'] as const).forEach((key) => {
-        if (given[key] !== undefined) options[key] = !!given[key];
-      });
-      return emit(event, singletonEvents[event] || events[event], ...data);
-    },
-    off(this: UnderScriptEventEmitter, event: string, fn: unknown) {
-      off(event, fn);
-      return this;
-    },
-  };
-
-  (Object.keys(options) as Array<keyof Options>).forEach((key) => {
-    Object.defineProperty(emitter, key, {
-      get() {
-        options[key] = true;
+        });
         return this;
       },
-    });
-  });
+      once(this: UnderScriptEventEmitter, event: string, fn: Listener) {
+        if (typeof fn !== 'function') return this;
+        function wrapper(this: UnderScriptEventMeta, ...args: unknown[]) {
+          off(event, wrapper);
+          return fn.call(this, ...args);
+        }
+        return this.on(event, wrapper);
+      },
+      one(this: UnderScriptEventEmitter, event: string, fn: Listener) {
+        return this.once(event, fn);
+      },
+      until(this: UnderScriptEventEmitter, event: string, fn: Listener) {
+        if (typeof fn !== 'function') return this;
+        function wrapper(this: UnderScriptEventMeta, ...args: unknown[]): unknown {
+          const ret = fn.call(this, ...args);
+          if (ret instanceof Promise) {
+            return ret.then((val) => {
+              if (val) off(event, wrapper);
+              return val;
+            });
+          }
+          if (ret) {
+            off(event, wrapper);
+          }
+          return ret;
+        }
+        return this.on(event, wrapper);
+      },
+      emit(first: string | EmitOptions, ...rest: unknown[]) {
+        if (typeof first !== 'object' || first === null) {
+          const event = first as string;
+          return emit(flags, event, singletonEvents[event] || events[event], ...rest);
+        }
+        const [event, ...data] = rest as [string, ...unknown[]];
+        return emit(withFlags(flags, first), event, singletonEvents[event] || events[event], ...data);
+      },
+      off(this: UnderScriptEventEmitter, event: string, fn: unknown) {
+        off(event, fn);
+        return this;
+      },
+    };
 
-  return Object.freeze(emitter) as unknown as UnderScriptEventEmitter<{}, M>;
+    flagNames.forEach((key) => {
+      Object.defineProperty(emitter, key, {
+        get() {
+          warnDeprecated(key);
+          return createEmitter({ ...flags, [key]: true });
+        },
+      });
+    });
+
+    return Object.freeze(emitter) as unknown as UnderScriptEventEmitter<{}, M>;
+  }
+
+  return createEmitter({});
 }

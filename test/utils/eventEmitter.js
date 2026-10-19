@@ -9,6 +9,17 @@ const expect = chai.expect;
 
 describe('EventEmitter', () => {
   let emitter = eventEmitter();
+  let warnings;
+  const originalWarn = console.warn; // eslint-disable-line no-console
+
+  beforeEach(() => {
+    warnings = [];
+    console.warn = (...args) => warnings.push(args.join(' ')); // eslint-disable-line no-console
+  });
+
+  afterEach(() => {
+    console.warn = originalWarn; // eslint-disable-line no-console
+  });
 
   afterEach('Reset state', () => {
     // TODO: Better way to clear events
@@ -36,10 +47,10 @@ describe('EventEmitter', () => {
         one: 'function',
         until: 'function',
         emit: 'function',
-        cancelable: 'this',
-        canceled: 'this',
-        singleton: 'this',
-        async: 'this',
+        cancelable: 'emitter',
+        canceled: 'emitter',
+        singleton: 'emitter',
+        async: 'emitter',
       };
 
       Object.keys(properties).forEach((key) => {
@@ -48,8 +59,12 @@ describe('EventEmitter', () => {
         const type = properties[key];
         switch (type) {
           case '': return;
-          case 'this':
-            expect(emitter[key]).to.equal(emitter);
+          case 'emitter':
+            expect(emitter[key]).to.not.equal(emitter);
+            expect(emitter[key]).to.be.frozen;
+            ['on', 'once', 'one', 'until', 'off', 'emit'].forEach((method) => {
+              expect(emitter[key][method]).to.be.a('function');
+            });
             break;
           default:
             expect(emitter[key]).to.be.a(type);
@@ -64,6 +79,71 @@ describe('EventEmitter', () => {
       ['on', 'once', 'one', 'until'].forEach((key) => {
         expect(emitter2[key]()).to.equal(emitter2);
       });
+    });
+  });
+
+  describe('flags', () => {
+    it('warn that asking for them is deprecated, once each', () => {
+      emitter.cancelable;
+      emitter.cancelable;
+      emitter.async.singleton;
+      expect(warnings).to.deep.equal([
+        'EventEmitter: `cancelable` is deprecated, pass `{ cancelable: true }` to emit directly.',
+        'EventEmitter: `async` is deprecated, pass `{ async: true }` to emit directly.',
+        'EventEmitter: `singleton` is deprecated, pass `{ singleton: true }` to emit directly.',
+      ]);
+    });
+
+    it('do not warn when passed to emit', () => {
+      emitter.emit({ cancelable: true, async: true, singleton: true, canceled: true }, 'test');
+      expect(warnings).to.deep.equal([]);
+    });
+
+    it('stay with the emitter they were asked from', () => {
+      const flagged = emitter.cancelable;
+      emitter.on('test', function cancel() { this.canceled = true; });
+      expect(emitter.emit('test').canceled).to.be.false;
+      expect(flagged.emit('test').canceled).to.be.true;
+      expect(flagged.emit('test').canceled).to.be.true;
+    });
+
+    it('are not left behind when nothing is emitted', () => {
+      emitter.async;
+      emitter.cancelable;
+      emitter.singleton;
+      emitter.on('test', function cancel() { this.canceled = true; });
+      const result = emitter.emit('test');
+      expect(result).to.not.be.instanceOf(Promise);
+      expect(result.canceled).to.be.false;
+      expect(emitter.emit('test').canceled).to.be.false;
+    });
+
+    it('add up when chained', async () => {
+      emitter.on('test', function cancel() { this.canceled = true; });
+      const result = emitter.async.cancelable.emit('test');
+      expect(result).to.be.instanceOf(Promise);
+      expect((await result).canceled).to.be.true;
+    });
+
+    it('can be given to emit instead', () => {
+      emitter.on('test', function cancel() { this.canceled = true; });
+      expect(emitter.emit({ cancelable: true }, 'test').canceled).to.be.true;
+      expect(emitter.cancelable.emit({ cancelable: false }, 'test').canceled).to.be.false;
+    });
+
+    it('share the listeners of the emitter they came from', () => {
+      emitter.cancelable.on('test', () => {
+        expect().inc();
+      });
+      emitter.async.emit('test');
+      emitter.emit('test');
+      assertInc(2);
+    });
+
+    it('keep chaining from the emitter they came from', () => {
+      const flagged = emitter.cancelable;
+      expect(flagged.on('test', () => {})).to.equal(flagged);
+      expect(flagged.once('test', () => {})).to.equal(flagged);
     });
   });
 

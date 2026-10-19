@@ -286,7 +286,7 @@ onPage('Packs', async function quickOpenPack() {
     clearResume();
     // Post results
     $(`#nb${status.pack.substring(4, status.pack.length - 4)}Packs`).text(status.original - results.packs);
-    const event = eventManager.cancelable.emit('openedPacks', {
+    const event = eventManager.emit({ cancelable: true }, 'openedPacks', {
       count: results.packs,
       cards: Object.freeze([...results.cards]),
       late: false,
@@ -319,7 +319,7 @@ onPage('Packs', async function quickOpenPack() {
       const remaining = parseInt(counter.text(), 10);
       if (!Number.isNaN(remaining)) counter.text(Math.max(remaining - packs, 0));
     }
-    const event = eventManager.cancelable.emit('openedPacks', {
+    const event = eventManager.emit({ cancelable: true }, 'openedPacks', {
       count: packs,
       cards: Object.freeze([...cards]),
       late: true,

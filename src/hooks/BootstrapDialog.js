@@ -32,7 +32,7 @@ function get(target, prop, R) {
   if (prop === 'show') {
     return (o = {}) => {
       const ret = new R(o);
-      if (eventManager.cancelable.emit('BootstrapDialog:preshow', ret).canceled) {
+      if (eventManager.emit({ cancelable: true }, 'BootstrapDialog:preshow', ret).canceled) {
         return ret;
       }
       return ret.open();

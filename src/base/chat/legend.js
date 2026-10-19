@@ -33,7 +33,7 @@ const friends = settings.register({
   category,
 });
 
-// test method: plugin.events.emit.cancelable('preChat:getMessageAuto', { message: JSON.stringify({ args: JSON.stringify(['chat-new-legend', 'user']) }) })
+// test method: plugin.events.emit({ cancelable: true }, 'preChat:getMessageAuto', { message: JSON.stringify({ args: JSON.stringify(['chat-new-legend', 'user']) }) })
 const events = ['chat-new-legend'];
 eventManager.on('preChat:getMessageAuto', function legend(data) {
   const [type, user] = JSON.parse(JSON.parse(data.message).args);

@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import eventManager from 'src/utils/eventManager';
+import 'src/base/plugin/logger';
 import 'src/base/plugin/events';
 import { switchOff, switchOn } from '../../setup/inactive';
 
@@ -12,6 +13,40 @@ function setup() {
 }
 
 describe('plugin events', () => {
+  const originalWarn = console.warn; // eslint-disable-line no-console
+  let warnings;
+
+  beforeEach(() => {
+    warnings = [];
+    console.warn = (...args) => warnings.push(args.join(' ')); // eslint-disable-line no-console
+  });
+
+  afterEach(() => {
+    console.warn = originalWarn; // eslint-disable-line no-console
+  });
+
+  it('warns once per plugin and flag that chaining flags onto emit is deprecated', () => {
+    const { events, event } = setup();
+    events.emit.cancelable(event);
+    events.emit.cancelable(event);
+    events.emit.async.canceled(event);
+    const { events: other, event: otherEvent } = setup();
+    other.emit.cancelable(otherEvent);
+    const messages = warnings.filter((text) => text.includes('is deprecated, pass'));
+    expect(messages.map((text) => text.slice(text.indexOf('events.emit.')))).to.deep.equal([
+      'events.emit.cancelable is deprecated, pass `{ cancelable: true }` to emit directly.',
+      'events.emit.async is deprecated, pass `{ async: true }` to emit directly.',
+      'events.emit.canceled is deprecated, pass `{ canceled: true }` to emit directly.',
+      'events.emit.cancelable is deprecated, pass `{ cancelable: true }` to emit directly.',
+    ]);
+  });
+
+  it('does not warn when the flags are passed to emit', () => {
+    const { events, event } = setup();
+    events.emit({ cancelable: true, async: true }, event);
+    expect(warnings).to.deep.equal([]);
+  });
+
   it('skips a listener while the plugin is switched off', () => {
     const { events, event } = setup();
     const name = `Events test ${counter}`;

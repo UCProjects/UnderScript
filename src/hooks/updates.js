@@ -197,7 +197,7 @@ async function check(auto = true) {
   const previousState = !pendingUpdates.size;
 
   if (!auto || !disabled.value()) {
-    await eventManager.async.emit(':update', auto);
+    await eventManager.emit({ async: true }, ':update', auto);
   }
 
   if (!pendingUpdates.size !== previousState) {

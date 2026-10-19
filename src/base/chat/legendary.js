@@ -32,7 +32,7 @@ function getToast(user) {
   return toasts.find(({ exists, owner, time }) => exists() && owner === user && time + 1000 > now);
 }
 
-// test method: plugin.events.emit.cancelable('preChat:getMessageAuto', { message: JSON.stringify({ args: JSON.stringify(['chat-legendary-notification', 'user', 'card']) }) })
+// test method: plugin.events.emit({ cancelable: true }, 'preChat:getMessageAuto', { message: JSON.stringify({ args: JSON.stringify(['chat-legendary-notification', 'user', 'card']) }) })
 const events = ['chat-legendary-notification', 'chat-legendary-shiny-notification'];
 eventManager.on('preChat:getMessageAuto', function drawAnnouncement(data) {
   const [event, user, card] = JSON.parse(JSON.parse(data.message).args);

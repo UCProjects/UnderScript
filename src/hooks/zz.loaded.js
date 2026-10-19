@@ -6,18 +6,18 @@ import sleep from 'src/utils/sleep';
 const page = getPageName();
 
 function loaded() {
-  if (eventManager.singleton.emit(':loaded').ran) {
+  if (eventManager.emit({ singleton: true }, ':loaded').ran) {
     console.warn('`:loaded` event is depricated, please migrate to `:preload`.');
   }
-  eventManager.singleton.emit(':preload');
-  if (eventManager.singleton.emit(`:loaded:${page}`).ran) {
+  eventManager.emit({ singleton: true }, ':preload');
+  if (eventManager.emit({ singleton: true }, `:loaded:${page}`).ran) {
     console.warn(`\`:loaded:${page}\` event is depricated, please migrate to \`:preload:${page}\``);
   }
-  eventManager.singleton.emit(`:preload:${page}`);
+  eventManager.emit({ singleton: true }, `:preload:${page}`);
 }
 function done() {
-  eventManager.singleton.emit(':load');
-  eventManager.singleton.emit(`:load:${page}`);
+  eventManager.emit({ singleton: true }, ':load');
+  eventManager.emit({ singleton: true }, `:load:${page}`);
 }
 
 if (!location.host.includes('feildmaster')) {

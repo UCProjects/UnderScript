@@ -6,7 +6,7 @@ eventManager.on('PlayingGame', function fixEndTurn() {
     let endedTurn = false;
     globalSet('endTurn', function endTurn() {
       if (endedTurn || $('#endTurnBtn').prop('disabled')) return;
-      if (eventManager.cancelable.emit('player:endTurn').canceled) return;
+      if (eventManager.emit({ cancelable: true }, 'player:endTurn').canceled) return;
       endedTurn = true;
       this.super();
     });

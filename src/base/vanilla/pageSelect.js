@@ -41,7 +41,7 @@ export default function changePage(page) {
 
 eventManager.on(':preload', () => {
   globalSet('showPage', function showPage(page) {
-    if (!eventManager.cancelable.emit('preShowPage', page).canceled) {
+    if (!eventManager.emit({ cancelable: true }, 'preShowPage', page).canceled) {
       this.super(page);
     }
     eventManager.emit('ShowPage', page);

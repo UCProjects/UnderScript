@@ -3,11 +3,11 @@ import eventManager from 'src/utils/eventManager';
 import { global } from 'src/utils/global';
 
 eventManager.on(':preload:Friendship', () => {
-  eventManager.singleton.emit('Friendship:load');
+  eventManager.emit({ singleton: true }, 'Friendship:load');
   $(document).ajaxComplete((event, xhr, settings) => {
     if (settings.url !== 'FriendshipConfig') return;
     if (settings.type === 'GET') {
-      eventManager.singleton.emit('Friendship:loaded');
+      eventManager.emit({ singleton: true }, 'Friendship:loaded');
     } else if (xhr.responseJSON) {
       const data = xhr.responseJSON;
       if (data.status === 'success') {

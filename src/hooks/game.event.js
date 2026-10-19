@@ -19,8 +19,7 @@ eventManager.on('GameStart', function gameEvents() {
   });
   eventManager.on('PreGameEvent', function callPreEvent(data) {
     if (finished) return;
-    const emit = this.cancelable ? eventManager.cancelable.emit : eventManager.emit;
-    const event = emit(`${data.action}:before`, data);
+    const event = eventManager.emit({ cancelable: this.cancelable }, `${data.action}:before`, data);
     if (!event.ran) return;
     this.canceled = event.canceled;
   });
