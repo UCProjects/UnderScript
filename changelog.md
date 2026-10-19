@@ -44,6 +44,9 @@
     - `changed` fires when the player's deck changes and the server accepts it, whether it came from the Decks page or from these methods.</extended>
 1. Fixed an event emitter's `cancelable`, `canceled`, `singleton` and `async` chains (the deprecated way of passing emit options) leaking into a later `emit`, when they were used but never emitted<extended>
     - Each chain now carries its own options, so `emitter.cancelable.emit(...)` behaves as before, and a lone `emitter.async` no longer changes the next emit by anyone. Pass the options to `emit` instead, as `emit({ async: true }, ...)`. Using one now logs a deprecation warning, once per option (and once per plugin for `plugin.events.emit`).</extended>
+1. New `plugin.packs` to buy and open packs from any page: `packs.buy(count, { type, gold })`, `packs.open(count, type)`, `packs.on('bought' | 'opened' | 'rejected', ...)`<extended>
+    - A buy or an opening always shows a toast with a Stop button while it runs, and a buy says which currency it is paying with. A `bought` or `opened` listener can cancel the event to show the result itself.
+    - The server stops a run when it refuses, and a rate limit makes it wait and carry on. `underscript.buyPacks()` and `openPacks()` are unchanged.</extended>
 1. Added `plugin.chat.open(target)` to open a chat window, or a private chat with a user. A channel has `open()` too, and `isOpen` tells you whether its window is open. `plugin.chat.channel()` and `send()` take a user, for the private chat with them
 1. `plugin.events.on` now returns `plugin.events`, like `once`, `until` and `off`, so calls can be chained
 1. Added `plugin.isActive`, which is `false` only when the player has switched your plugin off, so a plugin can skip its own regular work then
