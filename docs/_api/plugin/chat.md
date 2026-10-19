@@ -11,22 +11,6 @@ The existing `Chat:*` [events]({{ site.baseurl }}{% link _api/events.md %}) and 
 ## Syntax
 > plugin.chat;
 
-## Properties
-connected: `boolean`
-: Chat is connected right now
-
-replaced: `boolean`
-: Chat was taken over by another session of your account, and this one is not reconnecting on its own
-
-channels: `Channel[]`
-: The chat windows that are open right now
-
-self: `User`
-: You, as a [user](#user). `undefined` until chat has connected
-
-friends: `User[]`
-: Your friends, as [users](#user). It follows your friends list, which refreshes every few seconds, and is empty until chat has connected
-
 ## Methods
 on(*event*, *listener*), once(*event*, *listener*)
 : Listen to a chat event. Returns `plugin.chat`.
@@ -45,6 +29,22 @@ user(*who*)
 
 send(*channel*, *text*)
 : Send a message. `channel` is a channel, or anything `chat.channel` takes. Returns a [send result](#send-result) promise. It does not fire `send`. You can send to a room whether or not its window is open.
+
+## Properties
+connected: `boolean`
+: Chat is connected right now
+
+replaced: `boolean`
+: Chat was taken over by another session of your account, and this one is not reconnecting on its own
+
+channels: `Channel[]`
+: The chat windows that are open right now
+
+self: `User`
+: You, as a [user](#user). `undefined` until chat has connected
+
+friends: `User[]`
+: Your friends, as [users](#user). It follows your friends list, which refreshes every few seconds, and is empty until chat has connected
 
 ## Events
 Listeners get an [event object]({{ site.baseurl }}{% link _api/eventemitter.md %}#event-object) as `this`. Set `this.canceled = true` to cancel an event. It only does something when the event is cancelable (`this.cancelable`), which is the case for `preMessage`, `send` and `command`. Use a regular `function`, because an arrow function has no `this`.
