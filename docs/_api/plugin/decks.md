@@ -4,7 +4,7 @@ categories: plugin
 plugin: true
 property: true
 ---
-Read and change the player's decks from any page, work with the decks saved in UnderScript's deck storage, and keep your own data on them. Errors thrown by your listeners are caught and written to your plugin's [logger]({{ site.baseurl }}{% link _api/plugin/logger.md %}) instead of breaking other listeners.
+Read and change the player's decks from any page, work with the decks saved in UnderScript's deck storage, and keep your own data on them. Errors thrown by your listeners are caught and written to your plugin's [logger]({{ site.baseurl }}{% link _api/plugin/logger.md %}).
 
 The methods that change a deck work whether or not the player is on the Decks page, one at a time and in the order you called them, and they do not show the game's dialogs. If the server refuses a change, or the request fails, the promise rejects with an `Error` whose message is what the server said, already translated. When the server sends back nothing at all, which is what it does when you have no copies of a card left to add, the message is `The server sent an empty reply`. `load` stops at the first change that is refused and leaves the deck as it got to. On the Decks page, the cards and artifacts shown there are updated to match, for whichever soul changed.
 

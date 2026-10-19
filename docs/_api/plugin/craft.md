@@ -4,7 +4,7 @@ categories: plugin
 plugin: true
 property: true
 ---
-Craft and disenchant cards from any page, and listen to crafting. The methods and events work whether or not the player is on the Crafting page. Errors thrown by your listeners are caught and written to your plugin's [logger]({{ site.baseurl }}{% link _api/plugin/logger.md %}) instead of breaking other listeners.
+Craft and disenchant cards from any page, and listen to crafting. The methods and events work whether or not the player is on the Crafting page. Errors thrown by your listeners are caught and written to your plugin's [logger]({{ site.baseurl }}{% link _api/plugin/logger.md %}).
 
 The existing `craftcard`, `crafterrror` and `Craft:*` [events]({{ site.baseurl }}{% link _api/events.md %}) are unchanged.
 
@@ -31,7 +31,7 @@ The methods go one at a time, in the order you called them, and they do not show
 
 ## Properties
 dust: `number` or `undefined`
-: The dust UnderScript last saw you have, or `undefined` before it has seen any. On the Crafting page it reads the dust shown there. On other pages it is what your last craft, disenchant or auto left you with, or what the page's own buttons and Smart Disenchant did, which is kept for the next page in the same tab for half an hour, so it can be out of date. Check it before crafting in a loop, or stop at the first `rejected`.
+: The dust UnderScript last saw you have, or `undefined` before it has seen any. On the Crafting page it reads the dust shown there. On other pages it is what your last craft, disenchant or auto left you with, or what the page's own buttons and Smart Disenchant did, which is retained for up to half an hour.
 
 ## Events
 crafted({ *id*, *name*, *dust*, *shiny* })

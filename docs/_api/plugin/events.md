@@ -4,14 +4,14 @@ categories: plugin
 plugin: true
 property: true
 ---
-Listen to and emit events. `plugin.events` is UnderScript's [EventEmitter]({{ site.baseurl }}{% link _api/eventemitter.md %}), so events you emit can be heard by other plugins. Errors thrown by your listeners are caught and written to your plugin's [logger]({{ site.baseurl }}{% link _api/plugin/logger.md %}) instead of breaking other listeners.
+Listen to and emit events. `plugin.events` is UnderScript's [EventEmitter]({{ site.baseurl }}{% link _api/eventemitter.md %}), so events you emit can be heard by other plugins. Errors thrown by your listeners are caught and written to your plugin's [logger]({{ site.baseurl }}{% link _api/plugin/logger.md %}).
 
 ## Syntax
 > plugin.events;
 
 ## Methods
 on(*event*, *listener*)
-: Listen to an event. Returns `plugin.events`, so calls can be chained.
+: Listen to an event. Returns `plugin.events`.
 
 once(*event*, *listener*), one(*event*, *listener*)
 : Listen to an event, once. Returns `plugin.events`.

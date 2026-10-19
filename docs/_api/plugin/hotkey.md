@@ -30,7 +30,7 @@ bindClick(*button*), unbindClick(*button*)
 keybound(*key*), clickbound(*button*)
 : `true` if the key or button is bound
 
-All of these return the hotkey, so they can be chained.
+All of these return the hotkey.
 
 ## Examples
 {% highlight javascript %}

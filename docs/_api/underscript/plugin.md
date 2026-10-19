@@ -3,7 +3,7 @@ title: underscript.plugin()
 categories: underscript
 method: true
 ---
-The Plugin API is a service made to allow elevated access to UnderScript's internals.
+Create a plugin to access UnderScript's internals.
 
 ## Syntax
 > underscript.plugin(*name*, *version*);
@@ -37,8 +37,8 @@ Return Value
 Plugin names have the following restrictions:
 
 1. No two plugins may share the same name
-2. Plugin names cant be longer than 20 characters
-3. Plugin names can only contain alphanumeric characters and space (A-Z0-9 )
+2. Plugin names can't be longer than 20 characters
+3. Plugin names can only contain alphanumeric characters and space (`A-Z0-9 `)
 4. The names UnderScript and Undercards are reserved, in any letter case
 
-Any plugin names outside these bounds will trigger an error and not create a plugin
+A name that breaks these rules throws an error and no plugin is created.

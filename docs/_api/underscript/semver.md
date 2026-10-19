@@ -3,11 +3,9 @@ title: underscript.semver
 categories: underscript
 property: true
 ---
-Compare versions. Each method compares a version you give it to a second version, `current`, which defaults to the version of UnderScript that is running. That makes it useful for checking if a feature exists.
+Compare versions. Each method compares a version you give it to a second version, `current`, which defaults to the version of UnderScript that is running.
 
-`meets` and `isBehind` read naturally when `current` is UnderScript: "does UnderScript meet 0.65.0?" is `meets('0.65.0')`. The functions `isNewer`, `isOlder`, and `atLeast` describe the version you pass, compared to `current`, so the same question is answered by `isOlder('0.65.0')`.
-
-Local builds of UnderScript count as newer than everything.
+When `current` is UnderScript, "does UnderScript meet 0.65.0?" is `meets('0.65.0')`. `isNewer`, `isOlder` and `atLeast` describe the version you pass, compared to `current`. `meets('0.65.0')` is equivalent to `isOlder('0.65.0')`.
 
 ## Syntax
 > underscript.semver;

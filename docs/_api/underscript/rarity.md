@@ -3,7 +3,7 @@ title: underscript.constants.rarity
 categories: underscript
 parent: underscript.constants
 ---
-Names for card rarities. Compare against these instead of writing the text yourself. Anywhere one is accepted you can also pass its name as text, such as `'EPIC'`.
+Names for card rarities. Anywhere one is accepted you can also pass its name as text, such as `'EPIC'`.
 
 ## Syntax
 > underscript.constants.rarity.*NAME*;
@@ -18,8 +18,6 @@ TOKEN
 : Cards that can't be crafted. Also known as `'GENERATED'`.
 
 Every rarity has `equals(other)`, and turns into the game's text for that rarity when used as text, including in JSON. To turn text into a rarity, or check if something is one, use [underscript.constants]({{ site.baseurl }}{% link _api/underscript/constants.md %}).
-
-This used to be `underscript.rarity`. That name still works, but logs a deprecation warning.
 
 ## Examples
 {% highlight javascript %}

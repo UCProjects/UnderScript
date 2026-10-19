@@ -3,7 +3,7 @@ title: underscript.constants.item
 categories: underscript
 parent: underscript.constants
 ---
-Names for the things that can be rewarded or spent in the game. Compare against these instead of writing the text yourself.
+Names for the things that can be rewarded or spent in the game.
 
 ## Syntax
 > underscript.constants.item.*NAME*;
@@ -18,8 +18,6 @@ CARD, SKIN, AVATAR, EMOTE, PROFILE
 : Cosmetics and cards
 
 Every item has `equals(other)`, and turns into text when used as one, including in JSON.
-
-This used to be `underscript.item`. That name still works, but logs a deprecation warning.
 
 ## Examples
 {% highlight javascript %}

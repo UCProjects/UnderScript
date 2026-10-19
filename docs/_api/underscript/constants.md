@@ -3,7 +3,7 @@ title: underscript.constants
 categories: underscript
 property: true
 ---
-Holds the [items]({{ site.baseurl }}{% link _api/underscript/item.md %}), [priorities]({{ site.baseurl }}{% link _api/underscript/priority.md %}), [rarities]({{ site.baseurl }}{% link _api/underscript/rarity.md %}) and [souls]({{ site.baseurl }}{% link _api/underscript/soul.md %}) as named values, and helpers for working with them when you are not sure what you were given. The helpers accept an item, priority, rarity or soul, or the text for one, like `'gold'`, `'high'`, `'DT'` or `'BRAVERY'`.
+Holds the [items]({{ site.baseurl }}{% link _api/underscript/item.md %}), [priorities]({{ site.baseurl }}{% link _api/underscript/priority.md %}), [rarities]({{ site.baseurl }}{% link _api/underscript/rarity.md %}) and [souls]({{ site.baseurl }}{% link _api/underscript/soul.md %}) as named values, with helpers that accept one of them, or the text for one, like `'gold'`, `'high'`, `'DT'` or `'BRAVERY'`.
 
 ## Syntax
 > underscript.constants;

@@ -34,7 +34,7 @@ Add a setting to your plugin's page.
 <br>});
 
 key: `string`
-: Setting key, required. UnderScript adds your plugin's name to the front, so keys never clash with other plugins.
+: Setting key, required. UnderScript adds your plugin's name to the front.
 
 name: `string` or `function(): string`
 : Name shown in the settings window (default: the key)

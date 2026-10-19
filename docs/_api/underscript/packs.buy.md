@@ -3,7 +3,7 @@ title: underscript.buyPacks()
 categories: underscript
 method: true
 ---
-Buy packs. Only exists on the Packs page, so check for it first.
+Buy packs. Only exists on the Packs page.
 
 ## Syntax
 > underscript.buyPacks(*count*, { *type*, *gold* });

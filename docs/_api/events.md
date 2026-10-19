@@ -123,7 +123,7 @@ Plugins can get crafting events already parsed, and craft from any page, with [p
 : The craftable card highlights on the Crafting page are redrawn. Emit it to refresh them yourself.
 
 `openedPacks`({ *count*, *cards*, *late* })
-: Packs were opened. `late` is `true` for packs that arrived after the event was already reported finished, so a plugin showing its own results can add them to the ones it already has.
+: Packs were opened. `late` is `true` for packs that arrived after the event was already reported finished.
 
 `questProgress`(*updated*, *previous*)
 : Quest progress changed. Both are lists of [quests]({{ site.baseurl }}{% link _api/plugin/quests.md %}).

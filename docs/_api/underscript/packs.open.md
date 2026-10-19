@@ -18,7 +18,7 @@ type
 ## Checking if packs are opening
 > underscript.openingPacks();
 
-Returns `true` while packs are being opened, and `false` when they are not. Check it before calling `openPacks()`.
+Returns `true` while packs are being opened.
 
 ## Examples
 {% highlight javascript %}

@@ -4,7 +4,7 @@ categories: plugin
 plugin: true
 method: true
 ---
-Add your own filter to the collection on the Decks and Crafting pages. On any other page `addFilter` does not exist, so check for it first.
+Add your own filter to the collection on the Decks and Crafting pages. On any other page `addFilter` does not exist.
 
 ## Syntax
 > plugin.addFilter(*filter*, *priority*);
