@@ -21,6 +21,7 @@
 1. Right clicking a user in chat now opens a profile card with their avatar, level and division, and their Elo over the division icon for Master and above, above the same options as before, and a Spectate option for users who are in a game<extended>
     - Message and Mute show only for moderators, and Ignore and Mute are hidden, instead of greyed out, for yourself and for moderators.
     - Holding Ctrl while right clicking still shows the browser menu, and the Disable Chat Context setting still turns the card off.
+    - The Note button keeps a note about a user on your computer. Hover it to read the note, click it to edit, and Ctrl+Enter, or clicking away, saves. Escape drops the change.
     - A new Chat setting opens the card when you click a user in chat, instead of the game's profile, which is still one option away in the card (or Ctrl+click).</extended>
 1. Added a Leaderboard+ link to the Leaderboards menu in the footer
 1. The Card Editor link is back in the footer, in the Community menu next to the Wiki

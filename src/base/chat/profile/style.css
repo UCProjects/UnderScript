@@ -143,3 +143,23 @@
     flex: 1;
   }
 }
+
+.us-profile-note-field {
+  display: block;
+  box-sizing: border-box;
+  width: calc(100% - 16px);
+  margin: 4px 8px 6px;
+  padding: 4px;
+  border: 1px solid #555;
+  background: #111;
+  color: #fff;
+  font: inherit;
+  resize: vertical;
+}
+
+.us-profile-note-preview {
+  max-width: 280px;
+  padding: 2px 4px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

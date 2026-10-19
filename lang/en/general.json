@@ -89,6 +89,10 @@
   "unignore": "Unignore",
   "mention": "Mention",
   "mute": "Mute",
+  "note": {
+    "~": "Note",
+    "placeholder": "Notes about this user"
+  },
   "spectate": "Spectate",
   "quest.pending": "Completed Quests",
   "random": "Random",

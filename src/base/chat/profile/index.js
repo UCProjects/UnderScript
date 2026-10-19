@@ -50,13 +50,14 @@ function outside(event) {
 }
 
 function escape(event) {
-  if (event.key === 'Escape') close();
+  if (event.key === 'Escape' && event.target.tagName !== 'TEXTAREA') close();
 }
 
 function getPopup() {
   if (popup?.isConnected) return popup;
   popup = document.createElement('div');
   popup.id = 'underscript-profile';
+  visible = false;
   if (native()) {
     popup.setAttribute('popover', 'auto');
     popup.addEventListener('toggle', ({ newState }) => {
