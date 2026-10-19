@@ -7,33 +7,29 @@ Compare versions. Each method compares a version you give it to a second version
 
 `meets` and `isBehind` read naturally when `current` is UnderScript: "does UnderScript meet 0.65.0?" is `meets('0.65.0')`. The functions `isNewer`, `isOlder`, and `atLeast` describe the version you pass, compared to `current`, so the same question is answered by `isOlder('0.65.0')`.
 
-## Syntax
-> underscript.semver.meets(*version*, *current*);<br>
-> underscript.semver.isBehind(*version*, *current*);<br>
-> underscript.semver.isNewer(*version*, *current*);<br>
-> underscript.semver.isOlder(*version*, *current*);<br>
-> underscript.semver.atLeast(*version*, *current*);<br>
-> underscript.semver.compare(*newer*, *current*);
+Local builds of UnderScript count as newer than everything.
 
-meets
+## Syntax
+> underscript.semver;
+
+## Methods
+meets(*version*, *current*)
 : `true` if `current` is `version` or newer. When `current` is UnderScript, that means UnderScript has everything from `version`.
 
-isBehind
+isBehind(*version*, *current*)
 : `true` if `current` is older than `version`. When `current` is UnderScript, that means UnderScript is too old.
 
-isNewer
+isNewer(*version*, *current*)
 : `true` if `version` is newer than `current`. Same result as `isBehind`.
 
-isOlder
+isOlder(*version*, *current*)
 : `true` if `version` is older than, or the same as, `current`. Same result as `meets`.
 
-atLeast
+atLeast(*version*, *current*)
 : `true` if `version` is newer than, or the same as, `current`
 
-compare
+compare(*newer*, *current*)
 : `true` if `newer` is newer than `current`, `false` if it is older, and `undefined` if they are the same. Both versions are required.
-
-Local builds of UnderScript count as newer than everything.
 
 ## Examples
 {% highlight javascript %}
