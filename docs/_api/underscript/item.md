@@ -1,7 +1,7 @@
 ---
 title: underscript.constants.item
 categories: underscript
-property: true
+parent: underscript.constants
 ---
 Names for the things that can be rewarded or spent in the game. Compare against these instead of writing the text yourself.
 

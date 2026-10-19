@@ -2,7 +2,22 @@
 layout: default
 ---
 <header class="page-head">
-  <h1>{{ page.title }}</h1>
+  <h1>
+    {%- assign parts = page.title | split: "." -%}
+    {%- assign head = parts | first -%}
+    {%- if page.parent -%}
+    {%- assign parent = site.api | where: "title", page.parent | first -%}
+    {%- assign between = page.parent | remove_first: head | remove_first: "." -%}
+    {%- assign tail = page.title | remove_first: page.parent | remove_first: "." -%}
+    {% if head == "plugin" %}<a href="{{site.baseurl}}{% link _api/plugin/index.md %}">plugin</a>{% else %}<a href="{{site.baseurl}}{% link _api/underscript/index.md %}">underscript</a>{% endif %}.<a href="{{ parent.url | relative_url }}">{{ between }}</a>.{{ tail }}
+    {%- elsif parts.size > 1 and head == "underscript" and page.categories contains "underscript" -%}
+    <a href="{{site.baseurl}}{% link _api/underscript/index.md %}">underscript</a>.{{ page.title | remove_first: "underscript." }}
+    {%- elsif parts.size > 1 and head == "plugin" and page.categories contains "plugin" -%}
+    <a href="{{site.baseurl}}{% link _api/plugin/index.md %}">plugin</a>.{{ page.title | remove_first: "plugin." }}
+    {%- else -%}
+    {{ page.title }}
+    {%- endif -%}
+  </h1>
   <p class="meta">by {{ page.author }} ({{ page.date | date: "%B %-d, %Y" }})</p>
 </header>
 
