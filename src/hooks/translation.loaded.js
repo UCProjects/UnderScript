@@ -6,10 +6,10 @@ let fallback;
 
 eventManager.on(':preload', () => {
   if (global(READY, { throws: false })) {
-    eventManager.singleton.emit('translation:loaded');
+    eventManager.emit({ singleton: true }, 'translation:loaded');
   } else {
     document.addEventListener(READY, () => {
-      eventManager.singleton.emit('translation:loaded', fallback);
+      eventManager.emit({ singleton: true }, 'translation:loaded', fallback);
     }, {
       once: true,
     });

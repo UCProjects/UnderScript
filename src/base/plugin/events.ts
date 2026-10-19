@@ -36,6 +36,14 @@ wrap(() => {
     }
 
     type Flags = Partial<Record<typeof options[number], true>>;
+    const warned = new Set<string>();
+
+    function warnDeprecated(key: string): void {
+      if (warned.has(key)) return;
+      warned.add(key);
+      plugin.logger.warn(`events.emit.${key} is deprecated, pass \`{ ${key}: true }\` to emit directly.`);
+    }
+
     function createEmit(flags: Flags = {}): UnderScriptEmit {
       const call = ((...args: unknown[]) => {
         const [first] = args;
@@ -51,7 +59,10 @@ wrap(() => {
 
       options.forEach((key) => {
         Object.defineProperty(call, key, {
-          get: () => createEmit({ ...flags, [key]: true }),
+          get: () => {
+            warnDeprecated(key);
+            return createEmit({ ...flags, [key]: true });
+          },
         });
       });
       return call;
@@ -90,5 +101,5 @@ wrap(() => {
     return Object.freeze(obj);
   }
 
-  registerModule(name, mod);
+  registerModule(name, mod, 'logger');
 });

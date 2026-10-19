@@ -6,11 +6,11 @@ import wrap from 'src/utils/2.pokemon';
 import { window } from 'src/utils/1.variables';
 
 onPage('Spectate', () => {
-  eventManager.singleton.emit('GameStart');
+  eventManager.emit({ singleton: true }, 'GameStart');
 
   eventManager.on(':preload', () => {
     function callGameHooks(data, original) {
-      const run = !eventManager.cancelable.emit('PreGameEvent', data).canceled;
+      const run = !eventManager.emit({ cancelable: true }, 'PreGameEvent', data).canceled;
       if (run) {
         wrap(() => original(data));
       }

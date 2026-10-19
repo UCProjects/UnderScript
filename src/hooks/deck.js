@@ -17,7 +17,7 @@ onPage('Decks', function deckPage() {
       if (options.url !== 'DecksConfig') return;
       const data = xhr.responseJSON;
       if (options.type === 'GET') {
-        eventManager.singleton.emit('Deck:Loaded', data);
+        eventManager.emit({ singleton: true }, 'Deck:Loaded', data);
         return;
       }
       const {

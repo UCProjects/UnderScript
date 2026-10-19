@@ -137,7 +137,7 @@ function bind(socketChat) {
     }
 
     eventManager.emit('preChatMessage', data);
-    const raw = eventManager.cancelable.emit(`preChat:${action}`, data);
+    const raw = eventManager.emit({ cancelable: true }, `preChat:${action}`, data);
     if (preMessageCanceled(data, raw.canceled)) {
       settleSends(data);
       return;
@@ -152,7 +152,7 @@ function bind(socketChat) {
 
     if (action === 'getSelfInfos') {
       flaps.connected(Date.now());
-      eventManager.singleton.emit('Chat:Connected');
+      eventManager.emit({ singleton: true }, 'Chat:Connected');
       emitChat('connected');
       getMessages(data);
     }
@@ -254,7 +254,7 @@ function sendWrapper(type) {
 eventManager.on(':preload', () => {
   if (typeof socketChat !== 'undefined') {
     debug('Chat detected');
-    eventManager.singleton.emit('ChatDetected');
+    eventManager.emit({ singleton: true }, 'ChatDetected');
 
     bind(global('socketChat'));
     attachChat({

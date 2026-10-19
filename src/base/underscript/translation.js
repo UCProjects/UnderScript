@@ -41,7 +41,7 @@ const translations = (async () => {
 
 eventManager.on('translation:loaded', async () => {
   await $.i18n().load(await translations);
-  eventManager.singleton.emit('translation:underscript');
+  eventManager.emit({ singleton: true }, 'translation:underscript');
 });
 
 export function getLength(key) {

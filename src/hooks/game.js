@@ -7,11 +7,11 @@ import { window } from 'src/utils/1.variables';
 
 function gameHook() {
   debug('Playing Game');
-  eventManager.singleton.emit('GameStart');
-  eventManager.singleton.emit('PlayingGame');
+  eventManager.emit({ singleton: true }, 'GameStart');
+  eventManager.emit({ singleton: true }, 'PlayingGame');
   eventManager.on(':preload', () => {
     function callGameHooks(data, original) {
-      const run = !eventManager.cancelable.emit('PreGameEvent', data).canceled;
+      const run = !eventManager.emit({ cancelable: true }, 'PreGameEvent', data).canceled;
       if (run) {
         wrap(() => original(data));
       }

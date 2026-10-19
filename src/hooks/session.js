@@ -5,7 +5,7 @@ import { global } from 'src/utils/global';
 export const sessionId = window.crypto?.randomUUID() || Math.random().toString();
 
 function login(id, username) {
-  eventManager.singleton.emit('login', id, username);
+  eventManager.emit({ singleton: true }, 'login', id, username);
 }
 
 if (sessionStorage.getItem('UserID')) {

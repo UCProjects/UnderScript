@@ -21,7 +21,7 @@ function loadFriends(validate) {
   return axios.get('/Friends').then((response) => {
     const data = decrypt($(response.data));
     if (data.find(`span[data-i18n="[html]error-not-allowed"]`).length) {
-      eventManager.singleton.emit(':GuestMode');
+      eventManager.emit({ singleton: true }, ':GuestMode');
       return true;
     }
     const requests = {};

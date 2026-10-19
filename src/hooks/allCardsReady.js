@@ -4,7 +4,7 @@ import { global } from 'src/utils/global';
 
 eventManager.on(':preload', () => {
   function call(cards) {
-    eventManager.singleton.emit('allCardsReady', cards);
+    eventManager.emit({ singleton: true }, 'allCardsReady', cards);
   }
   const allCards = global('allCards', {
     throws: false,
