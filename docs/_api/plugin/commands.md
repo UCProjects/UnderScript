@@ -4,7 +4,7 @@ categories: plugin
 plugin: true
 property: true
 ---
-Add chat commands, the `/name` messages players type in chat. They are listed in the chat suggestions under your plugin's name. Errors thrown by your `handler` or `enabled` are caught and written to your plugin's [logger]({{ site.baseurl }}{% link _api/plugin/logger.md %}) instead of breaking chat.
+Add chat commands, the `/name` messages players type in chat. They are listed in the chat suggestions under your plugin's name. Errors thrown by your `handler` or `enabled` are caught and written to your plugin's [logger]({{ site.baseurl }}{% link _api/plugin/logger.md %}).
 
 ## Syntax
 > plugin.commands.register(*options*);
@@ -27,7 +27,7 @@ icon: `string`
 : The address of a small image shown in front of the name in the suggestions
 
 enabled: `function`
-: Return `false` to hide the command and turn it off for now. It runs every time suggestions are built, so keep it quick. If it throws, the command is turned off and the error is logged once.
+: Return `false` to hide the command and turn it off for now. It runs every time suggestions are built. If it throws, the command is turned off and the error is logged once.
 
 handler: `function(command)`
 : Called when the player sends the command. Without a handler the command is only listed, and what the player typed goes to the game as it is.
@@ -47,7 +47,7 @@ text
 output
 : Assign a string to send that instead of what the player typed
 
-Set `this.canceled = true` to send nothing. The handler needs to be a regular `function` for that, because an arrow function has no `this`. It can return a promise, and an error it throws or rejects with is logged.
+Set `this.canceled = true` to send nothing. The handler needs to be a regular `function () {}` to access `this`. It can return a promise, and an error it throws or rejects with is logged. `canceled` and `output` only count if they are set before the first `await`.
 
 ### Handle
 remove()
@@ -80,6 +80,17 @@ plugin.commands.register({
   handler(command) {
     this.canceled = true;
     command.channel.send('Hello!');
+  },
+});
+
+// Wait for something, then reply
+plugin.commands.register({
+  command: 'ucp',
+  description: 'Tells the room how much UCP you have',
+  async handler(command) {
+    this.canceled = true;
+    const ucp = await underscript.user.getUCP();
+    command.channel.send(`I have ${ucp} UCP`);
   },
 });
 
