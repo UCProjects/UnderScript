@@ -3,6 +3,7 @@ import 'src/base/plugin/logger';
 import 'src/base/plugin/chat';
 import { switchOff, switchOn } from '../../setup/inactive';
 import { attach, emit } from '../../../src/structures/chat/chat';
+import { updateUser } from '../../../src/structures/chat/user';
 
 let counter = 0;
 
@@ -36,6 +37,23 @@ describe('plugin chat', () => {
     switchOn(name);
     emit('message', { text: 'three' });
     expect(seen).to.deep.equal(['one', 'three']);
+  });
+
+  it('opens a window through the chat object', () => {
+    const { chat } = setup();
+    const opened = [];
+    attach({
+      connected: () => true,
+      reconnect() {},
+      send: () => true,
+      open: (channel) => {
+        opened.push(channel.room);
+        return true;
+      },
+    });
+    updateUser({ id: 5, username: 'Five', mainGroup: { id: 1, name: 'Player', priority: 99 }, groups: [] });
+    expect(chat.open('chat-private-5').room).to.equal('chat-private-5');
+    expect(opened).to.deep.equal(['chat-private-5']);
   });
 
   it('delivers events to the plugin', () => {
@@ -105,10 +123,15 @@ describe('plugin chat', () => {
 
   it('finds a channel', () => {
     const { chat } = setup();
-    const channel = chat.channel('chat-public-3');
-    expect(channel.room).to.equal('chat-public-3');
-    expect(chat.channel(3)).to.equal(channel);
-    expect(channel.send).to.be.a('function');
+    globalThis.chatNames = ['one', 'two', 'three'];
+    try {
+      const channel = chat.channel('chat-public-3');
+      expect(channel.room).to.equal('chat-public-3');
+      expect(chat.channel(3)).to.equal(channel);
+      expect(channel.send).to.be.a('function');
+    } finally {
+      delete globalThis.chatNames;
+    }
   });
 
   it('shares its state with the global object, which has no actions', () => {

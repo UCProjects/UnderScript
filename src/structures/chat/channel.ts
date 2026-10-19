@@ -9,6 +9,8 @@ export type ChannelRef = {
 
 export type ChannelOwner = {
   send(channel: UnderScriptChatChannel, text: string): Promise<UnderScriptChatSendResult>;
+  open(target: UnderScriptChatChannel): UnderScriptChatChannel | undefined;
+  user(who: string | number): UnderScriptChatUser | undefined;
 };
 
 const ROOM_PATTERN = /^chat-(public|private)-(.+)$/;
@@ -28,14 +30,11 @@ export default class ChatChannel implements UnderScriptChatChannel {
   }
 
   get name(): string | undefined {
-    if (this.type !== 'public') return undefined;
-    const names: unknown = global('chatNames', { throws: false });
-    if (!Array.isArray(names)) return undefined;
-    const name: unknown = names[Number(this.id) - 1];
-    return typeof name === 'string' ? name : undefined;
+    if (this.type === 'private') return this.#owner.user(this.id)?.name;
+    return publicName(this.id);
   }
 
-  get open(): boolean {
+  get isOpen(): boolean {
     if (this.type === 'public') {
       const list: unknown = global('openPublicChats', { throws: false });
       return Array.isArray(list) && list.some((value) => `${value}` === this.id);
@@ -44,9 +43,21 @@ export default class ChatChannel implements UnderScriptChatChannel {
     return Array.isArray(chats?.[this.id]);
   }
 
+  open(): boolean {
+    return this.#owner.open(this) !== undefined;
+  }
+
   send(text: string): Promise<UnderScriptChatSendResult> {
     return this.#owner.send(this, text);
   }
+}
+
+export function publicName(id: string): string | undefined {
+  const names: unknown = global('chatNames', { throws: false });
+  if (!Array.isArray(names)) return undefined;
+  if (id === '0') return '';
+  const name: unknown = names[Number(id) - 1];
+  return typeof name === 'string' ? name : undefined;
 }
 
 export function refFromRoom(room: unknown): ChannelRef | undefined {

@@ -2,10 +2,15 @@ import { expect } from 'chai';
 import ChatChannel from '../../src/structures/chat/channel';
 import chat, { channelFromRoom, findChannel, getChannel } from '../../src/structures/chat/chat';
 import { channelFromData } from '../../src/structures/chat/message';
+import { updateUser } from '../../src/structures/chat/user';
 
 const names = ['chat-discussion', 'chat-strategy', 'chat-beginner', 'chat-tournament', 'chat-roleplay'];
 
-const owner = { send: () => Promise.resolve({ status: 'canceled' }) };
+const owner = {
+  send: () => Promise.resolve({ status: 'canceled' }),
+  open: (channel) => channel,
+  user: () => undefined,
+};
 
 describe('ChatChannel', () => {
   afterEach(() => {
@@ -39,37 +44,60 @@ describe('ChatChannel', () => {
       expect(new ChatChannel(owner, 'public', '5').name).to.equal(undefined);
     });
 
-    it('is undefined for a private chat', () => {
+    it('is the other player\'s name for a private chat, when it is known', () => {
       globalThis.chatNames = names;
       expect(new ChatChannel(owner, 'private', '5').name).to.equal(undefined);
+      const known = { ...owner, user: (id) => (`${id}` === '5' ? { name: 'Frisk' } : undefined) };
+      expect(new ChatChannel(known, 'private', '5').name).to.equal('Frisk');
+      expect(new ChatChannel(known, 'private', '6').name).to.equal(undefined);
     });
   });
 
-  describe('open', () => {
+  describe('isOpen', () => {
     it('follows the game\'s open public rooms, as they change', () => {
       globalThis.openPublicChats = [1];
       const channel = new ChatChannel(owner, 'public', '5');
-      expect(channel.open).to.equal(false);
+      expect(channel.isOpen).to.equal(false);
       globalThis.openPublicChats.push(5);
-      expect(channel.open).to.equal(true);
+      expect(channel.isOpen).to.equal(true);
     });
 
     it('matches an id the game stored as a number', () => {
       globalThis.openPublicChats = [5];
-      expect(new ChatChannel(owner, 'public', '5').open).to.equal(true);
+      expect(new ChatChannel(owner, 'public', '5').isOpen).to.equal(true);
     });
 
     it('follows the game\'s private chats', () => {
       globalThis.privateChats = {};
       const channel = new ChatChannel(owner, 'private', '9');
-      expect(channel.open).to.equal(false);
+      expect(channel.isOpen).to.equal(false);
       globalThis.privateChats[9] = [];
-      expect(channel.open).to.equal(true);
+      expect(channel.isOpen).to.equal(true);
     });
 
     it('is false before the game has any chats', () => {
-      expect(new ChatChannel(owner, 'public', '1').open).to.equal(false);
-      expect(new ChatChannel(owner, 'private', '1').open).to.equal(false);
+      expect(new ChatChannel(owner, 'public', '1').isOpen).to.equal(false);
+      expect(new ChatChannel(owner, 'private', '1').isOpen).to.equal(false);
+    });
+  });
+
+  describe('open()', () => {
+    it('asks its owner to open it, and says whether that worked', () => {
+      const asked = [];
+      const channel = new ChatChannel({
+        ...owner,
+        open: (target) => {
+          asked.push(target);
+          return target;
+        },
+      }, 'public', '2');
+      expect(channel.open()).to.equal(true);
+      expect(asked).to.deep.equal([channel]);
+    });
+
+    it('is false when the owner cannot open it', () => {
+      const channel = new ChatChannel({ ...owner, open: () => undefined }, 'public', '2');
+      expect(channel.open()).to.equal(false);
     });
   });
 
@@ -148,9 +176,21 @@ describe('ChatChannel', () => {
   });
 
   describe('findChannel', () => {
-    it('finds a room', () => {
+    beforeEach(() => {
+      globalThis.chatNames = names;
+    });
+
+    it('finds a public room the game names', () => {
       expect(findChannel('chat-public-5')).to.equal(getChannel('public', '5'));
-      expect(findChannel('chat-private-9')).to.equal(getChannel('private', '9'));
+    });
+
+    it('finds a private chat with a player chat knows, or one that already exists', () => {
+      const known = updateUser({ id: 851, username: 'Frisk', mainGroup: { id: 1, name: 'Player', priority: 99 }, groups: [] });
+      expect(findChannel('chat-private-851')).to.equal(getChannel('private', '851'));
+      expect(findChannel(known)).to.equal(getChannel('private', '851'));
+      expect(findChannel('chat-private-852')).to.equal(undefined);
+      const made = getChannel('private', '853');
+      expect(findChannel('chat-private-853')).to.equal(made);
     });
 
     it('finds the room of a name the game gave it', () => {
@@ -168,15 +208,19 @@ describe('ChatChannel', () => {
     it('finds a public room by its id, as a number or as text', () => {
       expect(findChannel(5)).to.equal(getChannel('public', '5'));
       expect(findChannel('5')).to.equal(getChannel('public', '5'));
-      expect(findChannel(' 42 ')).to.equal(getChannel('public', '42'));
-      expect(findChannel(0)).to.equal(getChannel('public', '0'));
-      expect(findChannel('0')).to.equal(getChannel('public', '0'));
+      expect(findChannel(' 4 ')).to.equal(getChannel('public', '4'));
     });
 
-    it('finds a room the game has no name for', () => {
-      globalThis.chatNames = names;
-      expect(findChannel('chat-public-42').name).to.equal(undefined);
-      expect(findChannel(42).room).to.equal('chat-public-42');
+    it('finds room 0, which has no entry in the names', () => {
+      expect(findChannel(0)).to.equal(getChannel('public', '0'));
+      expect(findChannel('0')).to.equal(getChannel('public', '0'));
+      expect(findChannel('chat-public-0').name).to.equal('');
+    });
+
+    it('does not make a channel for a public room the game does not have', () => {
+      expect(findChannel('chat-public-42')).to.equal(undefined);
+      expect(findChannel(42)).to.equal(undefined);
+      expect(findChannel({ type: 'public', id: 'x' })).to.equal(undefined);
     });
 
     it('finds the channel an object describes, and gives back the shared one', () => {
@@ -186,11 +230,14 @@ describe('ChatChannel', () => {
       expect(findChannel({ type: 'public', id: 5 })).to.equal(getChannel('public', '5'));
     });
 
-    it('does not know a name when the game has not named its rooms yet', () => {
+    it('finds no public room, room 0 included, when the game has not named its rooms yet', () => {
+      delete globalThis.chatNames;
       expect(findChannel('roleplay')).to.equal(undefined);
       expect(findChannel('chat-roleplay')).to.equal(undefined);
-      expect(findChannel('chat-public-5')).to.equal(getChannel('public', '5'));
-      expect(findChannel(5)).to.equal(getChannel('public', '5'));
+      expect(findChannel('chat-public-5')).to.equal(undefined);
+      expect(findChannel(5)).to.equal(undefined);
+      expect(findChannel(0)).to.equal(undefined);
+      expect(findChannel('chat-public-0')).to.equal(undefined);
     });
 
     it('finds nothing for a name the game does not have', () => {

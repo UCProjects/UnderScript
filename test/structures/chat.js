@@ -1,9 +1,10 @@
 import { expect } from 'chai';
 import chat, { attach, emit } from '../../src/structures/chat/chat';
+import { updateUser } from '../../src/structures/chat/user';
 import { claim, echoed, forgetAll, refused, submitted } from '../../src/structures/chat/pending';
 
 function hooks(overrides = {}) {
-  const calls = { reconnect: 0, sent: [] };
+  const calls = { reconnect: 0, sent: [], opened: [] };
   return {
     calls,
     api: {
@@ -12,6 +13,10 @@ function hooks(overrides = {}) {
       send: (channel, text) => {
         calls.sent.push([channel, text]);
         submitted(channel, claim(channel), text);
+        return true;
+      },
+      open: (channel) => {
+        calls.opened.push([channel.room, channel.name]);
         return true;
       },
       ...overrides,
@@ -26,10 +31,15 @@ describe('chat', () => {
     removers.push(() => chat.off(event, listener));
   };
 
+  beforeEach(() => {
+    globalThis.chatNames = ['chat-discussion', 'chat-strategy'];
+  });
+
   afterEach(() => {
     removers.splice(0).forEach((remove) => remove());
     forgetAll();
     emit('connected');
+    delete globalThis.chatNames;
   });
 
   it('delivers events to its own listeners', () => {
@@ -98,6 +108,7 @@ describe('chat', () => {
     const { api, calls } = hooks();
     attach(api);
     const channel = { type: 'public', id: '1', room: 'chat-public-1' };
+    updateUser({ id: 9, username: 'Nine', mainGroup: { id: 1, name: 'Player', priority: 99 }, groups: [] });
     chat.send(channel, 'hi');
     chat.send('chat-private-9', 'psst');
     expect(calls.sent).to.deep.equal([
@@ -113,6 +124,124 @@ describe('chat', () => {
     expect(await chat.send('chat-public-1', '')).to.deep.equal({ status: 'canceled' });
     expect(await chat.send('chat-public-1', 5)).to.deep.equal({ status: 'canceled' });
     expect(calls.sent).to.deep.equal([]);
+  });
+
+  describe('channel', () => {
+    it('gives the private chat with a user', () => {
+      const user = updateUser({ id: 733, username: 'Chara', mainGroup: { id: 1, name: 'Player', priority: 99 }, groups: [] });
+      const channel = chat.channel(user);
+      expect(channel.room).to.equal('chat-private-733');
+      expect(chat.channel(user)).to.equal(channel);
+      expect(chat.channel('chat-private-733')).to.equal(channel);
+    });
+
+    it('has no private chat with yourself', async () => {
+      const { api, calls } = hooks();
+      attach(api);
+      globalThis.selfId = 735;
+      try {
+        const me = updateUser({ id: 735, username: 'Me', mainGroup: { id: 1, name: 'Player', priority: 99 }, groups: [] });
+        expect(chat.channel(me)).to.equal(undefined);
+        expect(chat.channel('chat-private-735')).to.equal(undefined);
+        expect(chat.channel({ type: 'private', id: 735 })).to.equal(undefined);
+        expect(chat.open(me)).to.equal(undefined);
+        expect(await chat.send(me, 'hi')).to.deep.equal({ status: 'canceled' });
+        expect(calls.opened).to.deep.equal([]);
+        expect(calls.sent).to.deep.equal([]);
+        updateUser({ id: 736, username: 'Frisk', mainGroup: { id: 1, name: 'Player', priority: 99 }, groups: [] });
+        expect(chat.channel('chat-private-736').room).to.equal('chat-private-736');
+      } finally {
+        delete globalThis.selfId;
+      }
+    });
+
+    it('does not take an object that only looks like a user', () => {
+      expect(chat.channel({ id: 733, name: 'Chara' })).to.equal(undefined);
+    });
+
+    it('lets send go to a user', () => {
+      const { api, calls } = hooks();
+      attach(api);
+      const user = updateUser({ id: 734, username: 'Asriel', mainGroup: { id: 1, name: 'Player', priority: 99 }, groups: [] });
+      chat.send(user, 'hi');
+      expect(calls.sent.map(([channel, text]) => [channel.room, text])).to.deep.equal([['chat-private-734', 'hi']]);
+    });
+  });
+
+  describe('open', () => {
+    const named = ['chat-discussion', 'chat-strategy'];
+
+    beforeEach(() => {
+      globalThis.chatNames = named;
+    });
+
+    afterEach(() => {
+      delete globalThis.chatNames;
+    });
+
+    it('opens a public room by id, name or channel', () => {
+      const { api, calls } = hooks();
+      attach(api);
+      expect(chat.open(2).room).to.equal('chat-public-2');
+      expect(chat.open('strategy').room).to.equal('chat-public-2');
+      expect(chat.open({ type: 'public', id: '1', room: 'chat-public-1' }).room).to.equal('chat-public-1');
+      expect(calls.opened).to.deep.equal([
+        ['chat-public-2', 'chat-strategy'],
+        ['chat-public-2', 'chat-strategy'],
+        ['chat-public-1', 'chat-discussion'],
+      ]);
+    });
+
+    it('opens a private chat with a user, using their name', () => {
+      const { api, calls } = hooks();
+      attach(api);
+      const user = updateUser({ id: 412, username: 'Frisk', mainGroup: { id: 1, name: 'Player', priority: 99 }, groups: [] });
+      expect(chat.open(user).room).to.equal('chat-private-412');
+      expect(chat.open('chat-private-412').room).to.equal('chat-private-412');
+      expect(chat.open('chat-private-90001')).to.equal(undefined);
+      expect(calls.opened).to.deep.equal([
+        ['chat-private-412', 'Frisk'],
+        ['chat-private-412', 'Frisk'],
+      ]);
+    });
+
+    it('opens room 0, which has no name in the list, and refuses a room that does not exist', () => {
+      const { api, calls } = hooks();
+      attach(api);
+      expect(chat.open(0).room).to.equal('chat-public-0');
+      expect(chat.open('chat-public-99')).to.equal(undefined);
+      expect(calls.opened).to.deep.equal([['chat-public-0', '']]);
+    });
+
+    it('takes exactly the targets that chat.channel takes', () => {
+      const { api } = hooks();
+      attach(api);
+      globalThis.selfId = 740;
+      try {
+        const user = updateUser({ id: 741, username: 'Toriel', mainGroup: { id: 1, name: 'Player', priority: 99 }, groups: [] });
+        const me = updateUser({ id: 740, username: 'Me', mainGroup: { id: 1, name: 'Player', priority: 99 }, groups: [] });
+        const targets = [0, 1, 2, 99, -1, 1.5, '2', '0', 'strategy', 'nowhere', 'chat-public-1', 'chat-public-0', 'chat-private-9', 'chat-private-740', user, me, {}, true, undefined];
+        targets.forEach((target) => {
+          expect(chat.open(target), String(target)).to.equal(chat.channel(target));
+        });
+      } finally {
+        delete globalThis.selfId;
+      }
+    });
+
+    it('does nothing for what it cannot resolve', () => {
+      const { api, calls } = hooks();
+      attach(api);
+      expect(chat.open('nowhere')).to.equal(undefined);
+      expect(chat.open({})).to.equal(undefined);
+      expect(chat.open(-1)).to.equal(undefined);
+      expect(calls.opened).to.deep.equal([]);
+    });
+
+    it('gives nothing back when the game does not open it', () => {
+      attach(hooks({ open: () => false }).api);
+      expect(chat.open(1)).to.equal(undefined);
+    });
   });
 
   describe('send result', () => {

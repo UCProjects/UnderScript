@@ -266,6 +266,13 @@ eventManager.on(':preload', () => {
         send(text, id);
         return true;
       },
+      open({ type, id, name }) {
+        const open = global(type === 'public' ? 'openRoom' : 'openPrivateRoom', { throws: false });
+        if (typeof open !== 'function') return false;
+        if (type === 'public') open(Number(id));
+        else open(id, name ?? null);
+        return true;
+      },
     });
 
     // Attempt to reconnect when sending messages
