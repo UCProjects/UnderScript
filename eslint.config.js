@@ -1,4 +1,5 @@
 import globals from 'globals';
+import airbnbStyle from 'eslint-config-airbnb-base/rules/style';
 import {
   base,
   ignores,
@@ -7,6 +8,7 @@ import {
 } from 'eslint-config-ucprojects';
 
 const readonly = 'readonly';
+const [level, ...restricted] = airbnbStyle.rules['no-restricted-syntax'];
 const noNode = Object.fromEntries(Object.keys(globals.node).map((name) => [name, 'off']));
 
 export default [
@@ -84,6 +86,15 @@ export default [
         globalThis: readonly,
         window: 'off',
       },
+    },
+  },
+  {
+    files: ['src/**'],
+    rules: {
+      'no-restricted-syntax': [level, ...restricted, {
+        selector: "VariableDeclaration[kind='let']:not(ForStatement > VariableDeclaration)",
+        message: 'Keep changing state in a VarStore instead of a let.',
+      }],
     },
   },
   {
