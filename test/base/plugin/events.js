@@ -183,6 +183,16 @@ describe('plugin events', () => {
     expect(calls).to.equal(1);
   });
 
+  it('gives back the plugin events from every way of listening, so calls chain', () => {
+    const { events, event } = setup();
+    const listener = () => {};
+    expect(events.on(event, listener)).to.equal(events);
+    expect(events.once(event, listener)).to.equal(events);
+    expect(events.one(event, listener)).to.equal(events);
+    expect(events.until(event, listener)).to.equal(events);
+    expect(events.on(event, listener).on(event, listener)).to.equal(events);
+  });
+
   it('gives back the plugin events from off', () => {
     const { events, event } = setup();
     expect(events.off(event, () => {})).to.equal(events);
