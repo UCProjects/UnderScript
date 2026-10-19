@@ -1,0 +1,487 @@
+{
+  "src/base/api/constants.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/chat/ignore.js": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/base/chat/isFocused.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/chat/legendary.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/chat/notify.new.js": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/base/chat/profile/buttons/mention.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/chat/profile/buttons/note.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/chat/profile/index.js": {
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/base/chat/scroll.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/chat/tag.friend.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/friends/delete.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/friends/online.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/friendship/collect.js": {
+    "no-restricted-syntax": {
+      "count": 3
+    }
+  },
+  "src/base/friendship/ranking.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/game/@opponent.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/game/battleLog.js": {
+    "no-restricted-syntax": {
+      "count": 10
+    }
+  },
+  "src/base/game/commands/spectate.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/game/emotes.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/game/endTurnSafety.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/game/gameLog.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/game/questProgress.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/game/restoreSound.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/game/tag.opponent.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/home/index.refresh.js": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/base/home/newContent.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/leaderboard/friends.js": {
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/base/leaderboard/goto.js": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/base/library/craft/disenchant.js": {
+    "no-restricted-syntax": {
+      "count": 5
+    }
+  },
+  "src/base/library/craft/max.js": {
+    "no-restricted-syntax": {
+      "count": 3
+    }
+  },
+  "src/base/library/craft/protection.js": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/base/library/deck/average.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/library/deck/random.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/library/deck/storage.js": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/base/lobby/customFriendsOnly.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/lobby/disconnected.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/lobby/enterOnCustom.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/lobby/playQueueButton.js": {
+    "no-restricted-syntax": {
+      "count": 3
+    }
+  },
+  "src/base/lobby/wasd.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/plugin/addFilter.ts": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/plugin/commands.ts": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/base/plugin/decks.ts": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/plugin/updater.ts": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/store/quickPacks.js": {
+    "no-restricted-syntax": {
+      "count": 6
+    }
+  },
+  "src/base/underscript/plugins.js": {
+    "no-restricted-syntax": {
+      "count": 5
+    }
+  },
+  "src/base/underscript/settings/advanced.local.js": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/base/underscript/updates.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/base/vanilla/card.append.js": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/hooks/BootstrapDialog.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/hooks/chat.js": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/hooks/friends.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/hooks/game.event.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/hooks/translation.loaded.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/hooks/updates.js": {
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/structures/chat/chat.ts": {
+    "no-restricted-syntax": {
+      "count": 3
+    }
+  },
+  "src/structures/chat/deletion.ts": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/structures/chat/games.ts": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/structures/chat/pending.ts": {
+    "no-restricted-syntax": {
+      "count": 3
+    }
+  },
+  "src/structures/chat/user.ts": {
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/structures/craft/craft.ts": {
+    "no-restricted-syntax": {
+      "count": 3
+    }
+  },
+  "src/structures/deck/decks.ts": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/structures/deck/saved.ts": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/structures/deck/write.ts": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/structures/packs/results.js": {
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/structures/quests/Reward.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/2.toasts.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/autocomplete.js": {
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/utils/chatHistory.ts": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/utils/chatReconnect.ts": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/utils/checkboxGroup.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/compoundEvent.ts": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/decrypt.emails.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/eventEmitter.ts": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/utils/extendLangParser.ts": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/extractImageName.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/footerlinks.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/githubAuth.js": {
+    "no-restricted-syntax": {
+      "count": 3
+    }
+  },
+  "src/utils/hover.js": {
+    "no-restricted-syntax": {
+      "count": 3
+    }
+  },
+  "src/utils/loadDeck.js": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/utils/menu.js": {
+    "no-restricted-syntax": {
+      "count": 6
+    }
+  },
+  "src/utils/menubuttons.ts": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/onPage.ts": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/pluginRegistry.js": {
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/utils/quests.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/rateLimit.ts": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/utils/season.ts": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/settings/index.js": {
+    "no-restricted-syntax": {
+      "count": 3
+    }
+  },
+  "src/utils/settings/search.js": {
+    "no-restricted-syntax": {
+      "count": 3
+    }
+  },
+  "src/utils/settings/types/array.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/settings/types/keybind.js": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/utils/settings/types/list.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/settings/types/map.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/settings/types/map2.js": {
+    "no-restricted-syntax": {
+      "count": 4
+    }
+  },
+  "src/utils/style.ts": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/tabbedView.js": {
+    "no-restricted-syntax": {
+      "count": 10
+    }
+  },
+  "src/utils/toastCss.js": {
+    "no-restricted-syntax": {
+      "count": 1
+    }
+  },
+  "src/utils/user.ts": {
+    "no-restricted-syntax": {
+      "count": 2
+    }
+  },
+  "src/utils/workQueue.ts": {
+    "no-restricted-syntax": {
+      "count": 9
+    }
+  }
+}
