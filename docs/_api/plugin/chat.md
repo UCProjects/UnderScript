@@ -4,7 +4,7 @@ categories: plugin
 plugin: true
 property: true
 ---
-Listen to chat and send messages. Messages, notices and everything else the server sends arrive already parsed, so you don't have to unpick the game's raw frames. Errors thrown by your listeners are caught and written to your plugin's [logger]({{ site.baseurl }}{% link _api/plugin/logger.md %}) instead of breaking other listeners.
+Listen to chat and send messages. Errors thrown by your listeners are caught and written to your plugin's [logger]({{ site.baseurl }}{% link _api/plugin/logger.md %}).
 
 The existing `Chat:*` [events]({{ site.baseurl }}{% link _api/events.md %}) and their raw data are unchanged.
 
@@ -21,14 +21,17 @@ off(*event*, *listener*)
 reconnect()
 : Connect to chat again, if it is not connected
 
-channel(*name*)
-: Find a [channel](#channel), or `undefined` if there isn't one. `name` can be a room such as `chat-public-5`, the game's name for a public room such as `chat-roleplay` or just `roleplay`, or a public room's id such as `5`. You get the same channel object every time, so you can keep it.
+channel(*target*)
+: Find a [channel](#channel), or `undefined` if there isn't one. `target` can be a room such as `chat-public-5` or `chat-private-12` (a private chat is named for the other player's id), the game's name for a public room such as `chat-roleplay` or just `roleplay`, or a public room's id such as `5`. A [user](#user) (excluding `chat.self`) gives the private chat with them. Numbers and plain names only find public rooms. A public room has to be one the game names, or room `0`. A private chat has to be with a player chat has seen, or one that has already had a message. You get the same channel object every time.
 
 user(*who*)
-: Find a [user](#user) chat has seen, by id or by name, or `undefined`. Chat only knows users who have spoken since the page loaded and your friends. You get the same user object every time, so you can keep it.
+: Find a [user](#user) chat has seen, by id or by name, or `undefined`. Chat only knows users who have spoken since the page loaded and your friends. You get the same user object every time.
 
-send(*channel*, *text*)
-: Send a message. `channel` is a channel, or anything `chat.channel` takes. Returns a [send result](#send-result) promise. It does not fire `send`. You can send to a room whether or not its window is open.
+open(*target*)
+: Open a chat window. `target` is a [channel](#channel), anything `chat.channel` takes. Returns the [channel](#channel), or `undefined` when `chat.channel` finds none for `target`, or chat is not available. A window that is already open stays as it is.
+
+send(*target*, *text*)
+: Send a message. `target` is a [channel](#channel), or anything `chat.channel` takes. Returns a [send result](#send-result) promise. It does not fire `send`. You can send to a room whether or not its window is open.
 
 ## Properties
 connected: `boolean`
@@ -47,7 +50,7 @@ friends: `User[]`
 : Your friends, as [users](#user). It follows your friends list, which refreshes every few seconds, and is empty until chat has connected
 
 ## Events
-Listeners get an [event object]({{ site.baseurl }}{% link _api/eventemitter.md %}#event-object) as `this`. Set `this.canceled = true` to cancel an event. It only does something when the event is cancelable (`this.cancelable`), which is the case for `preMessage`, `send` and `command`. Use a regular `function`, because an arrow function has no `this`.
+Listeners get an [event object]({{ site.baseurl }}{% link _api/eventemitter.md %}#event-object) as `this`. Set `this.canceled = true` to cancel an event. It only does something when the event is cancelable (`this.cancelable`), which is the case for `preMessage`, `send` and `command`. Use a regular `function`.
 
 message(*message*)
 : A public or private message arrived. Fires after the game has shown and stored it.
@@ -65,7 +68,7 @@ notice(*notice*)
 : A system line from the server: info, an announcement, or a broadcast. The info lines that refuse a message, such as the spam protection one, are reported by `rejected` instead.
 
 rejected(*notice*)
-: The server refused or failed something you tried. That includes the refusals the server words as a plain line, such as "Spam protection: You can't send any messages before 3 seconds", whose `kind` stays `info`. Not every refusal is announced, some are dropped silently.
+: The server refused or failed something you tried, including refusals worded as a plain line such as "Spam protection: You can't send any messages before 3 seconds" (its `kind` stays `info`). Some refusals are dropped silently.
 
 send({ *channel*, *text*, *result* })
 : The player pressed Enter in a chat window. Cancel it to send nothing, or assign `text` to change what is sent. Fires before `command`, and not for `chat.send`. `result` is a [promise](#send-result) that says what became of the message.
@@ -88,10 +91,10 @@ channel
 : Where it was sent
 
 author
-: Who sent it, as a [user](#user). The user is always the newest data chat has for that player, so an older message's `author` can differ from how the player looked when they sent it. `message.raw.user` is what that message arrived with.
+: Who sent it, as a [user](#user). It is the newest data chat has for that player, which can differ from how they looked when they sent it. `message.raw.user` is what that message arrived with.
 
 deleted
-: Whether a moderator removed it. This stays current: it turns `true` on a message you already have when its author's messages are removed.
+: Whether a moderator removed it. It turns `true` on messages you already have when their author's messages are removed.
 
 raw
 : The original data
@@ -125,25 +128,28 @@ isFriend, isOnline
 : Whether they are on your friends list, and whether that friend is online. `isOnline` is `undefined` for anyone who is not a friend, and for you it is whether chat is connected.
 
 gameId
-: The game they are in, or `undefined`. It comes from their latest message, and for friends from the friends list too.
+: The game they are in, or `undefined`. It comes from their latest message, the games list on the home page, and for friends the friends list.
 
 raw
 : The latest data the game sent about them
 
 toString()
-: Their name, so a user can go straight into a string, as in `${message.author}`
+: Their name, as in `${message.author}`
 
-You get the same user object every time for the same player, so you can keep one. It stays current: each new message from the player updates their name, avatar, division, groups and game, and your friends list updates `isFriend`, `isOnline` and `gameId` every few seconds. History messages never overwrite newer data. Chat only knows players who have spoken since the page loaded, your friends, and you, which `chat.self` gives.
+You get the same user object every time for the same player. It stays current: each new message from the player updates their name, avatar, division, groups and game, and your friends list updates `isFriend`, `isOnline` and `gameId` every few seconds. History messages never overwrite newer data. Chat only knows players who have spoken since the page loaded, your friends, and you (`chat.self`).
 
 ### Channel
 type, id, room
 : `public` or `private`, its id, and its room such as `chat-public-1`
 
 name
-: The game's key for a public room, such as `chat-roleplay`, and `undefined` for a private chat or a public room the game has no name for
+: The game's key for a public room, such as `chat-roleplay` (an empty string for room `0`), the other player's name for a private chat, and `undefined` when it is not known
 
-open
+isOpen
 : Whether its window is open right now
+
+open()
+: Open its window, the same as `chat.open`. Returns `true` when the window is open afterward, and `false` when the game cannot open it.
 
 send(*text*)
 : Send a message to this channel. Returns a [send result](#send-result) promise, the same as `chat.send`.
@@ -176,7 +182,7 @@ unconfirmed
 canceled
 : A listener or the game canceled it, the game never sent it, or `chat.send` had nothing it could send.
 
-There is no id to match a reply to a message. A message that comes back from you in the same room settles the waiting send with the same text, or the oldest waiting send in that room when none matches, since the server changes some text, such as turning emote codes into images. A refusal settles the oldest send still waiting. A message that comes back after its send was reported `unconfirmed` is recognized by its text for a minute, so it isn't taken for a later send. When two sends have the same text, or a message was dropped silently, a reply can still be matched to the wrong send.
+A reply is matched to a send by text. A message that comes back from you in the same room settles the waiting send with the same text, or the oldest waiting send in that room when none matches. A refusal settles the oldest send still waiting. A message that comes back within a minute of its send being reported `unconfirmed` is recognized by its text. Sends with the same text, and messages dropped silently, can be matched to the wrong send.
 
 ## Examples
 {% highlight javascript %}

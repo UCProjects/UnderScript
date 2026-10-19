@@ -68,6 +68,7 @@ wrap(() => {
       },
       reconnect: () => chat.reconnect(),
       channel: (target) => chat.channel(target),
+      open: (target) => chat.open(target),
       user: (who) => chat.user(who),
       send: (channel, text) => chat.send(channel, text),
     };

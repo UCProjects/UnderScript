@@ -1,15 +1,16 @@
 import eventEmitter from 'src/utils/eventEmitter';
 import * as api from 'src/utils/4.api';
 import { global } from 'src/utils/global';
-import ChatChannel, { openRefs, refFrom, refFromRoom } from './channel';
+import ChatChannel, { openRefs, publicName, refFrom, refFromRoom } from './channel';
 import type { ChannelRef, ChannelType } from './channel';
 import { arm, createPending } from './pending';
-import { findUser, findUserByName, friendUsers } from './user';
+import ChatUser, { findUser, findUserByName, friendUsers } from './user';
 
 type Hooks = {
   connected(): boolean;
   reconnect(): void;
   send(channel: UnderScriptChatChannel, text: string): boolean;
+  open(channel: UnderScriptChatChannel): boolean;
 };
 
 const events = eventEmitter<UnderScriptChatEvents>();
@@ -55,6 +56,11 @@ const chat: UnderScriptChat = {
     if (typeof who === 'string') return findUserByName(who) ?? findUser(who);
     return findUser(who);
   },
+  open(target) {
+    const channel = findChannel(target);
+    if (!hooks || !channel) return undefined;
+    return hooks.open(channel) ? channel : undefined;
+  },
   send(channel, text) {
     const target = findChannel(channel);
     if (!hooks || typeof text !== 'string' || !text || !target) {
@@ -85,8 +91,21 @@ export function channelFromRoom(room: unknown): ChatChannel | undefined {
   return channelOf(refFromRoom(room));
 }
 
+function refOf(name: unknown): ChannelRef | undefined {
+  if (name instanceof ChatUser) return { type: 'private', id: `${name.id}` };
+  return refFrom(name);
+}
+
+function exists({ type, id }: ChannelRef): boolean {
+  if (type === 'public') return publicName(id) !== undefined;
+  if (id === `${global('selfId', { throws: false })}`) return false;
+  return channels.has(`chat-private-${id}`) || findUser(id) !== undefined;
+}
+
 export function findChannel(name: unknown): ChatChannel | undefined {
-  return channelOf(refFrom(name));
+  if (name instanceof ChatChannel) return name;
+  const ref = refOf(name);
+  return ref && exists(ref) ? channelOf(ref) : undefined;
 }
 
 export function attach(next: Hooks): void {

@@ -254,6 +254,19 @@ chat.channel(5)?.send('hi') satisfies Promise<UnderScriptChatSendResult> | undef
 chat.on('message', (message) => message.channel.send('hi') satisfies Promise<UnderScriptChatSendResult>);
 chat.on('command', (command) => command.channel.send('hi').then((result) => result.status));
 chat.send(5, 'hi') satisfies Promise<UnderScriptChatSendResult>;
+chat.open('roleplay') satisfies UnderScriptChatChannel | undefined;
+chat.user(5) && chat.channel(chat.user(5)!) satisfies UnderScriptChatChannel | undefined;
+chat.user(5) && chat.send(chat.user(5)!, 'hi') satisfies Promise<UnderScriptChatSendResult>;
+chat.channel('roleplay')?.open() satisfies boolean | undefined;
+chat.channel('roleplay')?.isOpen satisfies boolean | undefined;
+// @ts-expect-error whether it is open is a property, opening it is a call
+chat.channel('roleplay')?.open satisfies boolean | undefined;
+chat.open(5)?.send('hi') satisfies Promise<UnderScriptChatSendResult> | undefined;
+chat.user(5) && chat.open(chat.user(5)!) satisfies UnderScriptChatChannel | undefined;
+// @ts-expect-error a target is a channel, a user, a name or a number
+chat.open(true);
+// @ts-expect-error opening needs a target
+chat.open();
 // @ts-expect-error a channel needs a name
 chat.channel();
 // @ts-expect-error a message is text
