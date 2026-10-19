@@ -275,3 +275,38 @@ chat.channel(5)?.send(5);
 chat.channel(true);
 // @ts-expect-error a channel is not a name, there is nothing to look up
 chat.channel(chat.channel(5)!);
+
+const { packs } = plain;
+packs.buy(5) satisfies Promise<UnderScriptPacksBought>;
+packs.buy(3, { type: 'DR', gold: false }).then(({ count, requested, type: kind, gold, stopped, error }) => {
+  count satisfies number;
+  requested satisfies number;
+  kind satisfies UnderScriptBuyPackType;
+  gold satisfies boolean;
+  stopped satisfies boolean;
+  error satisfies string | undefined;
+});
+packs.open(2, 'Shiny') satisfies Promise<UnderScriptPacksOpened>;
+packs.open(2).then(({ cards }) => {
+  cards[0].name satisfies string;
+  cards[0].new satisfies boolean;
+});
+packs.buying satisfies boolean;
+packs.opening satisfies boolean;
+packs.on('bought', function listener(bought) {
+  bought.count satisfies number;
+  this.event satisfies string;
+}).once('opened', ({ cards }) => cards.length satisfies number)
+  .on('rejected', ({ action, message }) => {
+    action satisfies string;
+    message satisfies string;
+  })
+  .off('bought', (bought: UnderScriptPacksBought) => bought);
+// @ts-expect-error a count is required
+packs.buy();
+// @ts-expect-error shiny packs cannot be bought
+packs.buy(1, { type: 'Shiny' });
+// @ts-expect-error gold is a boolean
+packs.buy(1, { gold: 'yes' });
+// @ts-expect-error there is no such event
+packs.on('boughtt', () => {});

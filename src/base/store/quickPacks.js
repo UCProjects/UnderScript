@@ -11,11 +11,9 @@ import { packs as packsFlag } from 'src/utils/debugFlags';
 import { retryAfter, waitSeconds } from 'src/utils/rateLimit';
 import formatNumber from 'src/utils/formatNumber';
 import { getCollection } from 'src/utils/user';
-import { window } from 'src/utils/1.variables';
 import Item from 'src/structures/constants/item';
-import length from 'src/utils/length';
 import isCtrl from 'src/utils/isCtrl';
-import Rarity from 'src/structures/constants/rarity';
+import showResults from 'src/structures/packs/results';
 
 const SILENCE_PINGS = 25;
 const ORPHAN_LIFETIME = 30000;
@@ -214,68 +212,6 @@ onPage('Packs', async function quickOpenPack() {
     }
   });
 
-  const rarity = [Rarity.DETERMINATION, Rarity.LEGENDARY, Rarity.EPIC, Rarity.RARE, Rarity.COMMON].map(String);
-  function showResults(packs, opened, heading = 'Results') {
-    const cardResults = {
-      shiny: 0,
-    };
-    rarity.forEach((type) => {
-      cardResults[type] = {};
-    });
-    opened.forEach((card) => { // Convert each card
-      const r = cardResults[card.rarity];
-      const c = r[card.name] = r[card.name] || { total: 0, shiny: 0, new: false };
-      c.total += 1;
-      if (card.new) c.new = true;
-      if (card.shiny) {
-        if (status.pack !== 'openShinyPack') {
-          cardResults.shiny += 1;
-        }
-        c.shiny += 1;
-      }
-    });
-
-    // Magic numbers, yep. Have between 6...26 cards showing
-    let limit = Math.min(Math.max(Math.floor(window.innerHeight / 38), 6), 26);
-    // Increase the limit if we don't have a specific rarity
-    rarity.forEach((key) => {
-      if (!length(cardResults[key])) {
-        limit += 1;
-      }
-    });
-
-    let text = '';
-    // Build visual results
-    rarity.forEach((key) => {
-      const cards = cardResults[key];
-      const keys = Object.keys(cards);
-      if (!keys.length) return;
-      const buffer = [];
-      let count = 0;
-      let shiny = 0;
-      if (keys.length > limit) keys.sort((a, b) => cards[b].new - cards[a].new); // Push new cards to top of list if we have cards that'll get cut off
-      keys.forEach((name) => {
-        const card = cards[name];
-        count += card.total;
-        shiny += card.shiny;
-        if (limit) {
-          limit -= 1;
-          buffer.push(`${card.new ? `<span class="yellow">{${$.i18n('cosmetics-new')}}</span>` : ''}${card.shiny ? '<span class="yellow">S</span> ' : ''}${name}${card.total > 1 ? ` (${formatNumber(card.total)}${card.shiny ? `, ${card.shiny}` : ''})` : ''}${limit ? '' : '...'}`);
-        }
-      });
-      text += `${key} (${count}${shiny ? `, ${shiny} shiny` : ''}):${buffer.length ? `\n- ${buffer.join('\n- ')}` : ' ...'}\n`;
-    });
-
-    // Create result toast
-    const total = opened.length;
-    basicToast({
-      // TODO: translation?
-      title: `${heading}: ${formatNumber(packs)} Packs${cardResults.shiny ? ` (${total % 4 ? `${formatNumber(total)}, ` : ''}${formatNumber(cardResults.shiny)} shiny)` : total % 4 ? ` (${formatNumber(total)})` : ''}`,
-      text,
-      className: 'underscript-toast-inherit',
-    });
-  }
-
   events.on('finished', () => {
     if (status.state === 'waiting') return; // Invalid state
     status.state = 'waiting';
@@ -292,7 +228,7 @@ onPage('Packs', async function quickOpenPack() {
       late: false,
     });
     if (!event.canceled && results.packs > 0) {
-      showResults(results.packs, results.cards);
+      showResults(results.packs, results.cards, { shinyPack: status.pack === 'openShinyPack' });
 
       // Show cards... I guess
       showCards();
@@ -324,7 +260,7 @@ onPage('Packs', async function quickOpenPack() {
       cards: Object.freeze([...cards]),
       late: true,
     });
-    if (!event.canceled) showResults(packs, cards, 'Late results');
+    if (!event.canceled) showResults(packs, cards, { heading: 'Late results', shinyPack: status.pack === 'openShinyPack' });
   });
 
   events.on('cancel', () => { // Sets the canceled flag
