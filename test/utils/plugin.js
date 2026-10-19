@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import 'src/utils/plugin';
+import { switchOff, switchOn } from '../setup/inactive';
 
 const { plugin: create } = globalThis.underscript;
 
@@ -48,18 +49,12 @@ describe('plugin.isActive', () => {
     expect(create('Active Default').isActive).to.equal(true);
   });
 
-  it('follows the enabled switch when something provides it', async () => {
-    const { registerModule } = await import('src/utils/plugin');
-    let on = true;
-    registerModule('activeSwitchForTest', (plugin) => {
-      if (plugin.name !== 'Active Switched') return;
-      Object.defineProperty(plugin, 'enabled', { get: () => on });
-    });
+  it('follows the enabled switch when something provides it', () => {
     const plugin = create('Active Switched');
     expect(plugin.isActive).to.equal(true);
-    on = false;
+    switchOff('Active Switched');
     expect(plugin.isActive).to.equal(false);
-    on = true;
+    switchOn('Active Switched');
     expect(plugin.isActive).to.equal(true);
   });
 });

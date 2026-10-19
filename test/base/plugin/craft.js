@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import 'src/base/plugin/logger';
 import 'src/base/plugin/craft';
+import { switchOff, switchOn } from '../../setup/inactive';
 import { reportSmartDisenchant } from '../../../src/structures/craft/craft';
 
 let counter = 0;
@@ -24,6 +25,17 @@ describe('plugin craft', () => {
 
   afterEach(() => {
     console.error = originalError; // eslint-disable-line no-console
+  });
+
+  it('skips a listener while the plugin is switched off', () => {
+    const { name, craft } = setup();
+    let count = 0;
+    craft.on('smartDisenchanted', () => { count += 1; });
+    switchOff(name);
+    reportSmartDisenchant(run);
+    switchOn(name);
+    reportSmartDisenchant(run);
+    expect(count).to.equal(1);
   });
 
   it('delivers events to the plugin', () => {

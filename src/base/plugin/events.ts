@@ -18,6 +18,7 @@ wrap(() => {
     }
     function wrapper(fn: Listener, event: string) {
       function listener(this: UnderScriptEventMeta, ...args: unknown[]) {
+        if (!plugin.isActive) return undefined;
         try {
           const val = fn.call(this, ...args);
           if (val instanceof Promise) {
@@ -34,18 +35,30 @@ wrap(() => {
       return listener;
     }
 
-    const emit = ((...args: unknown[]) => (
-      (eventManager.emit as (...params: unknown[]) => unknown)(...args)
-    )) as unknown as UnderScriptEmit;
+    type Flags = Partial<Record<typeof options[number], true>>;
 
-    options.forEach((key) => {
-      Object.defineProperty(emit, key, {
-        get: () => {
-          eventManager[key]; // eslint-disable-line no-unused-expressions
-          return emit;
-        },
+    function createEmit(flags: Flags = {}): UnderScriptEmit {
+      const call = ((...args: unknown[]) => {
+        const [first] = args;
+        const given = typeof first === 'object' && first !== null;
+        const merged = { ...flags, ...(given ? first as Flags : {}) };
+        const rest = given ? args.slice(1) : args;
+        if (!plugin.isActive) {
+          const result = { ran: false, canceled: merged.canceled === true };
+          return merged.async ? Promise.resolve(result) : result;
+        }
+        return (eventManager.emit as (...params: unknown[]) => unknown)(merged, ...rest);
+      }) as unknown as UnderScriptEmit;
+
+      options.forEach((key) => {
+        Object.defineProperty(call, key, {
+          get: () => createEmit({ ...flags, [key]: true }),
+        });
       });
-    });
+      return call;
+    }
+
+    const emit = createEmit();
 
     const obj = {
       ...eventManager,

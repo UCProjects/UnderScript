@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { switchOff, switchOn } from '../../setup/inactive';
 
 let counter = 0;
 
@@ -216,6 +217,23 @@ describe('plugin commands', () => {
       send('plugrejects');
       await new Promise((resolve) => { setTimeout(resolve, 0); });
       expect(errors.some((args) => args.some((arg) => typeof arg === 'string' && arg.includes(name)))).to.equal(true);
+    });
+  });
+
+  describe('while the plugin is switched off', () => {
+    it('hides the command and does not run its handler', () => {
+      const { name, plugin } = setup();
+      let ran = 0;
+      plugin.commands.register({ command: 'plugswitched', handler() { ran += 1; } });
+      send('plugswitched');
+      expect(find('plugswitched', name)).to.not.equal(undefined);
+      switchOff(name);
+      expect(find('plugswitched', name)).to.equal(undefined);
+      send('plugswitched');
+      switchOn(name);
+      expect(find('plugswitched', name)).to.not.equal(undefined);
+      send('plugswitched');
+      expect(ran).to.equal(2);
     });
   });
 

@@ -1,5 +1,6 @@
 import Translation from 'src/structures/constants/translation';
 import wrap from 'src/utils/2.pokemon';
+import eventManager from 'src/utils/eventManager';
 import { registerModule } from 'src/utils/plugin';
 import * as settings from 'src/utils/settings/index';
 
@@ -35,7 +36,7 @@ wrap(() => {
       return;
     }
 
-    plugin.events.on(':load', () => {
+    eventManager.on(':load', () => {
       const isEnabled = enabled.value();
       plugin.toast({
         title: 'New Plugin Detected',
@@ -59,5 +60,5 @@ wrap(() => {
     });
   }
 
-  registerModule(name, mod, ['settings', 'events']);
+  registerModule(name, mod, 'settings');
 });

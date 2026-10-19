@@ -27,6 +27,7 @@ wrap(() => {
 
     function wrapper<K extends DecksEvent>(fn: DecksListener<K>, event: K) {
       function listener(this: UnderScriptEventMeta, ...args: UnderScriptDecksEvents[K]) {
+        if (!plugin.isActive) return undefined;
         try {
           const val = fn.call(this, ...args);
           if (val instanceof Promise) {

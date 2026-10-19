@@ -46,7 +46,9 @@ wrap(() => {
           description,
           usage,
           icon,
-          enabled: enabled && (() => {
+          enabled: () => {
+            if (!plugin.isActive) return false;
+            if (!enabled) return true;
             try {
               return enabled() !== false;
             } catch (e) {
@@ -54,8 +56,9 @@ wrap(() => {
               reported = true;
               return false;
             }
-          }),
+          },
           handler: handler && function run(this: UnderScriptEventMeta, data: RawCommand) {
+            if (!plugin.isActive) return;
             const view = commandView(data.room, data as Parameters<typeof commandView>[1], command);
             if (!view) return;
             try {

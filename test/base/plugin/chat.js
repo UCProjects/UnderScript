@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import 'src/base/plugin/logger';
 import 'src/base/plugin/chat';
+import { switchOff, switchOn } from '../../setup/inactive';
 import { attach, emit } from '../../../src/structures/chat/chat';
 
 let counter = 0;
@@ -23,6 +24,18 @@ describe('plugin chat', () => {
   afterEach(() => {
     console.error = originalError; // eslint-disable-line no-console
     emit('connected');
+  });
+
+  it('skips a listener while the plugin is switched off', () => {
+    const { name, chat } = setup();
+    const seen = [];
+    chat.on('message', (message) => seen.push(message.text));
+    emit('message', { text: 'one' });
+    switchOff(name);
+    emit('message', { text: 'two' });
+    switchOn(name);
+    emit('message', { text: 'three' });
+    expect(seen).to.deep.equal(['one', 'three']);
   });
 
   it('delivers events to the plugin', () => {
