@@ -19,6 +19,7 @@ wrap(() => {
 
     function wrapper<K extends ChatEvent>(fn: ChatListener<K>, event: K) {
       function listener(this: UnderScriptEventMeta, ...args: UnderScriptChatEvents[K]) {
+        if (!plugin.isActive) return undefined;
         try {
           const val = fn.call(this, ...args);
           if (val instanceof Promise) {

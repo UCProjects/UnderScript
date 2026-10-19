@@ -20,6 +20,7 @@ class PluginHotkey extends Hotkey {
   }
 
   run(event?: unknown, ...rest: unknown[]): unknown {
+    if (!this.plugin.isActive) return undefined;
     try {
       return this.hotkey.run(event, ...rest);
     } catch (e) {

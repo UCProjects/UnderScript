@@ -20,6 +20,7 @@ wrap(() => {
       counter += 1;
       const functionName = filter.displayName || filter.name || `filter${counter}`;
       function customFilter(this: unknown, ...args: Parameters<UnderScriptFilter>) {
+        if (!plugin.isActive) return undefined;
         try {
           return filter.call(this, ...args);
         } catch (e) {

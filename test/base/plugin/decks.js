@@ -1,7 +1,9 @@
 import { expect } from 'chai';
 import axios from 'axios';
 import 'src/base/plugin/logger';
+import 'src/base/api/constants';
 import 'src/base/plugin/decks';
+import { switchOff, switchOn } from '../../setup/inactive';
 import { emit } from '../../../src/structures/deck/decks';
 
 let counter = 0;
@@ -210,6 +212,17 @@ describe('plugin decks', () => {
   });
 
   describe('events', () => {
+    it('skips a listener while the plugin is switched off', () => {
+      const { name, decks } = setup();
+      let count = 0;
+      decks.on('changed', () => { count += 1; });
+      switchOff(name);
+      emit('changed', { soul: 'KINDNESS', action: 'addCard' });
+      switchOn(name);
+      emit('changed', { soul: 'KINDNESS', action: 'addCard' });
+      expect(count).to.equal(1);
+    });
+
     it('delivers a change to the plugin', () => {
       const { decks } = setup();
       const seen = [];
