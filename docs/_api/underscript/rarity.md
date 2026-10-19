@@ -1,7 +1,7 @@
 ---
 title: underscript.constants.rarity
 categories: underscript
-property: true
+parent: underscript.constants
 ---
 Names for card rarities. Compare against these instead of writing the text yourself. Anywhere one is accepted you can also pass its name as text, such as `'EPIC'`.
 

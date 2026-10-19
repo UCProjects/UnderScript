@@ -6,38 +6,39 @@ property: true
 Holds the [items]({{ site.baseurl }}{% link _api/underscript/item.md %}), [priorities]({{ site.baseurl }}{% link _api/underscript/priority.md %}), [rarities]({{ site.baseurl }}{% link _api/underscript/rarity.md %}) and [souls]({{ site.baseurl }}{% link _api/underscript/soul.md %}) as named values, and helpers for working with them when you are not sure what you were given. The helpers accept an item, priority, rarity or soul, or the text for one, like `'gold'`, `'high'`, `'DT'` or `'BRAVERY'`.
 
 ## Syntax
-> underscript.constants.getItem(*value*);<br>
-> underscript.constants.isItem(*value*);<br>
-> underscript.constants.getPriority(*value*);<br>
-> underscript.constants.isPriority(*value*);<br>
-> underscript.constants.getRarity(*value*);<br>
-> underscript.constants.isRarity(*value*);<br>
-> underscript.constants.getSoul(*value*);<br>
-> underscript.constants.isSoul(*value*);
+> underscript.constants;
 
-getItem
-: Returns the matching `underscript.constants.item`, or `undefined` if there isn't one.
+## Methods
+getItem(*value*)
+: Returns the matching [`underscript.constants.item`]({{ site.baseurl }}{% link _api/underscript/item.md %}), or `undefined` if there isn't one.
 
-isItem
+isItem(*value*)
 : `true` if the value is an item, or the text for one.
 
-getPriority
+getPriority(*value*)
 : Returns the matching [`underscript.constants.priority`]({{ site.baseurl }}{% link _api/underscript/priority.md %}), or `undefined` if there isn't one.
 
-isPriority
+isPriority(*value*)
 : `true` if the value is a priority, or the text for one.
 
-getRarity
+getRarity(*value*)
 : Returns the matching [`underscript.constants.rarity`]({{ site.baseurl }}{% link _api/underscript/rarity.md %}), or `undefined` if there isn't one.
 
-isRarity
+isRarity(*value*)
 : `true` if the value is a rarity, or the text for one.
 
-getSoul
+getSoul(*value*)
 : Returns the matching [`underscript.constants.soul`]({{ site.baseurl }}{% link _api/underscript/soul.md %}), or `undefined` if there isn't one.
 
-isSoul
+isSoul(*value*)
 : `true` if the value is a soul, or the text for one.
+
+## Properties
+{% assign children = site.api | where: "parent", "underscript.constants" %}
+{% for page in children %}
+<a href="{{ page.url | relative_url }}">{{ page.title }}</a>
+: {{ page.excerpt }}
+{% endfor %}
 
 ## Examples
 {% highlight javascript %}

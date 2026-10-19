@@ -1,7 +1,7 @@
 ---
 title: underscript.constants.priority
 categories: underscript
-property: true
+parent: underscript.constants
 ---
 Names for deciding what goes first, used when a filter or similar has to be put in order. Anywhere one is accepted you can also pass its name as text, such as `'high'`.
 

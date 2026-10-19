@@ -1,7 +1,7 @@
 ---
 title: underscript.constants.soul
 categories: underscript
-property: true
+parent: underscript.constants
 ---
 Names for the souls. Compare against these instead of writing the text yourself. Anywhere one is accepted you can also pass its name as text, such as `'BRAVERY'`.
 
