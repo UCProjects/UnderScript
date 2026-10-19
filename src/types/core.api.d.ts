@@ -7,6 +7,7 @@ interface UnderScriptAPI {
 interface UnderScriptPlugin {
   readonly name: string;
   readonly version?: string | number;
+  readonly isActive: boolean;
 }
 
 declare const underscript: Readonly<UnderScriptAPI>;
