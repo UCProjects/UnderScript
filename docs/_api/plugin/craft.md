@@ -11,10 +11,6 @@ The existing `craftcard`, `crafterrror` and `Craft:*` [events]({{ site.baseurl }
 ## Syntax
 > plugin.craft;
 
-## Properties
-dust: `number` or `undefined`
-: The dust UnderScript last saw you have, or `undefined` before it has seen any. On the Crafting page it reads the dust shown there. On other pages it is what your last craft, disenchant or auto left you with, or what the page's own buttons and Smart Disenchant did, which is kept for the next page in the same tab for half an hour, so it can be out of date. Check it before crafting in a loop, or stop at the first `rejected`.
-
 ## Methods
 craft(*id*, { *shiny* })
 : Craft one card. Returns a promise of `{ id, name, dust, shiny }`, where `dust` is what you have afterwards. `id` is the card's id, and `shiny` defaults to `false`.
@@ -32,6 +28,10 @@ off(*event*, *listener*)
 : Stop listening
 
 The methods go one at a time, in the order you called them, and they do not show the game's dialog. If the server refuses, or the request fails, the promise rejects with an `Error` whose message is what the server said, already translated. On the Crafting page, the cards and dust shown there are updated to match.
+
+## Properties
+dust: `number` or `undefined`
+: The dust UnderScript last saw you have, or `undefined` before it has seen any. On the Crafting page it reads the dust shown there. On other pages it is what your last craft, disenchant or auto left you with, or what the page's own buttons and Smart Disenchant did, which is kept for the next page in the same tab for half an hour, so it can be out of date. Check it before crafting in a loop, or stop at the first `rejected`.
 
 ## Events
 crafted({ *id*, *name*, *dust*, *shiny* })
