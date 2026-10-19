@@ -7,6 +7,8 @@ describe('chat profile card', () => {
   let updateUser;
   let place;
   let progress;
+  let getNote;
+  let setNote;
   let ProfileButton;
   let register;
   let clickSetting;
@@ -82,6 +84,8 @@ describe('chat profile card', () => {
     ({ syncFriends, updateUser } = await import('../../../src/structures/chat/user'));
     ({ default: place } = await import('../../../src/base/chat/profile/position'));
     ({ default: progress } = await import('../../../src/base/chat/profile/progress'));
+    ({ getNote, setNote } = await import('../../../src/base/chat/profile/notes'));
+    await import('../../../src/base/chat/profile/buttons/note');
     ({ ProfileButton, register, clickSetting } = await import('../../../src/base/chat/profile/index'));
     ({ forgetGames } = await import('../../../src/structures/chat/games'));
     await import('../../../src/base/chat/profile/buttons/profile');
@@ -147,7 +151,7 @@ describe('chat profile card', () => {
   it('offers profile, mention and ignore to a stranger, in that order', () => {
     updateUser(raw(11));
     rightClick(post(2, 11));
-    expect(labels()).to.deep.equal(['underscript.general.profile', 'underscript.general.mention', 'underscript.general.ignore']);
+    expect(labels()).to.deep.equal(['underscript.general.profile', 'underscript.general.mention', 'underscript.general.ignore', 'Note']);
   });
 
   it('puts an icon in front of each label', () => {
@@ -157,7 +161,7 @@ describe('chat profile card', () => {
       const icon = item.querySelector('.us-profile-icon');
       return icon.classList.contains('glyphicon') ? [...icon.classList].find((name) => name !== 'glyphicon' && name !== 'us-profile-icon') : icon.textContent;
     });
-    expect(icons).to.deep.equal(['glyphicon-user', '@', 'glyphicon-volume-off']);
+    expect(icons).to.deep.equal(['glyphicon-user', '@', 'glyphicon-volume-off', 'glyphicon-pencil']);
   });
 
   it('adds spectate for a friend in a game, but no message unless you are a moderator', async () => {
@@ -171,6 +175,7 @@ describe('chat profile card', () => {
       'underscript.general.profile',
       'underscript.general.mention',
       'underscript.general.ignore',
+      'Note',
     ]);
     expect(document.querySelector('#underscript-profile a').getAttribute('href'))
       .to.equal('/Spectate?gameId=77&playerId=12');
@@ -432,6 +437,89 @@ describe('chat profile card', () => {
     expect(popup.lastElementChild.textContent).to.contain('HIGH MASTER');
     popup.querySelector('.us-profile-division img').dispatchEvent(new window.MouseEvent('mouseleave'));
     expect(popup.textContent).to.not.contain('UnderScript');
+  });
+
+  describe('notes', () => {
+    const noteItem = () => [...document.querySelectorAll('#underscript-profile .us-profile-button')]
+      .find((item) => item.querySelector('.glyphicon-pencil'));
+    const open = (id, messageId) => {
+      updateUser(raw(id));
+      rightClick(post(messageId, id));
+      return noteItem();
+    };
+    const type = (field, text) => {
+      field.value = text;
+    };
+    const key = (field, init) => field.dispatchEvent(new window.KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init }));
+
+    it('offers a note button for other users', () => {
+      expect(open(60, 40).querySelector('.us-profile-label').textContent).to.equal('Note');
+    });
+
+    it('shows what was written as a hover note, and nothing when empty', () => {
+      const empty = open(61, 41);
+      empty.dispatchEvent(new window.MouseEvent('mouseenter'));
+      expect(document.querySelector('#underscript-profile .us-profile-note-preview')).to.equal(null);
+
+      setNote(62, 'met in the lobby');
+      const item = open(62, 42);
+      expect(item.querySelector('.yellow')).to.not.equal(null);
+      item.dispatchEvent(new window.MouseEvent('mouseenter'));
+      expect(document.querySelector('#underscript-profile .us-profile-note-preview').textContent).to.equal('met in the lobby');
+      item.dispatchEvent(new window.MouseEvent('mouseleave'));
+      expect(document.querySelector('#underscript-profile .us-profile-note-preview')).to.equal(null);
+    });
+
+    it('expands to an editor on click without closing the card', () => {
+      setNote(63, 'old');
+      const item = open(63, 43);
+      item.querySelector('button').click();
+      const field = item.querySelector('textarea');
+      expect(field.value).to.equal('old');
+      expect(item.querySelector('button').hidden).to.equal(true);
+      expect(document.querySelector('#underscript-profile').hidden).to.equal(false);
+    });
+
+    it('saves with ctrl+enter and when leaving the field', () => {
+      const item = open(64, 44);
+      item.querySelector('button').click();
+      let field = item.querySelector('textarea');
+      type(field, '  first  ');
+      key(field, { key: 'Enter', ctrlKey: true });
+      expect(getNote(64)).to.equal('first');
+      expect(item.querySelector('textarea')).to.equal(null);
+      expect(item.querySelector('button').hidden).to.equal(false);
+      expect(item.querySelector('.yellow')).to.not.equal(null);
+
+      item.querySelector('button').click();
+      field = item.querySelector('textarea');
+      type(field, 'second');
+      field.dispatchEvent(new window.FocusEvent('blur'));
+      expect(getNote(64)).to.equal('second');
+    });
+
+    it('drops the edit on escape and keeps the card open', () => {
+      setNote(65, 'keep');
+      const item = open(65, 45);
+      item.querySelector('button').click();
+      const field = item.querySelector('textarea');
+      type(field, 'changed');
+      key(field, { key: 'Escape' });
+      expect(getNote(65)).to.equal('keep');
+      expect(item.querySelector('textarea')).to.equal(null);
+      expect(document.querySelector('#underscript-profile').hidden).to.equal(false);
+    });
+
+    it('removes the note when saved empty', () => {
+      setNote(66, 'gone soon');
+      const item = open(66, 46);
+      item.querySelector('button').click();
+      const field = item.querySelector('textarea');
+      type(field, '   ');
+      key(field, { key: 'Enter', metaKey: true });
+      expect(getNote(66)).to.equal('');
+      expect(item.querySelector('.yellow')).to.equal(null);
+    });
   });
 
   it('only registers profile buttons', () => {
