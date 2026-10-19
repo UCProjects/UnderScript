@@ -22,12 +22,12 @@ wrap(() => {
       key: 'plugin.update',
       default: () => setting.value(),
       disabled: () => setting.value(),
-      hidden: () => !updater,
+      hidden: () => !updater || !plugin.isActive,
     });
     setting.on(() => update.refresh());
 
     Object.defineProperty(plugin, 'canUpdate', {
-      get: () => updater && !setting.value() && !update.value(),
+      get: () => updater && plugin.isActive && !setting.value() && !update.value(),
     });
 
     return (data: UnderScriptPluginUpdate): (() => void) => {
