@@ -8,7 +8,10 @@ type UnderScriptBuyPackOptions = {
 };
 
 interface UnderScriptAPI {
+  /** @deprecated Use `plugin.packs.buy` instead */
   buyPacks?(count: number, options?: UnderScriptBuyPackOptions): void;
+  /** @deprecated Use `plugin.packs.open` instead */
   openPacks?(count: number, type?: UnderScriptOpenPackType | UnderScriptItem): void;
+  /** @deprecated Use `plugin.packs.opening` instead */
   openingPacks?(): boolean;
 }

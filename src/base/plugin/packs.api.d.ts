@@ -21,6 +21,7 @@ type UnderScriptPacksOpened = {
   readonly type: UnderScriptOpenPackType;
   readonly cards: ReadonlyArray<UnderScriptPackCard>;
   readonly stopped: boolean;
+  readonly late: boolean;
   readonly error?: string;
 };
 

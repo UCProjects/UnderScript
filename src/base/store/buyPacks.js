@@ -1,10 +1,10 @@
 import eventManager from 'src/utils/eventManager';
-import { global, globalSet } from 'src/utils/global';
+import { global } from 'src/utils/global';
 import * as hover from 'src/utils/hover';
 import wrap from 'src/utils/2.pokemon';
-import sleep from 'src/utils/sleep';
 import * as api from 'src/utils/4.api';
 import Translation from 'src/structures/constants/translation';
+import packs from 'src/structures/packs/packs';
 import isCtrl from 'src/utils/isCtrl';
 import { getTranslationArray } from '../underscript/translation';
 
@@ -26,17 +26,14 @@ wrap(() => {
         throw new Error('Not enough UCP');
       }
     }
-    $.fx.off = true;
-    const addPack = global('addPack');
-    for (let i = 0; i < count; i++) {
-      sleep(i * 10).then(() => {
-        globalSet('canAdd', true);
-        addPack(`add${type}Pack${gold ? '' : 'Ucp'}`, true);
-      });
-    }
-    sleep(500).then(() => {
-      $.fx.off = false;
-    });
+    return packs.buy(count, { type, gold });
+  }
+
+  function purchase(data) {
+    if (data.count === 1) {
+      const { type, gold } = data;
+      global('addPack')(`add${type}Pack${gold ? '' : 'Ucp'}`, true);
+    } else buyPacks(data);
   }
 
   function getCount(e, cost, baseCost) {
@@ -54,6 +51,7 @@ wrap(() => {
         if (!el) return;
         el.onclick = null;
         el.addEventListener('click', (e) => {
+          if (packs.buying || packs.opening) return;
           const price = Number(el.nextElementSibling.textContent);
           const count = getCount(e, cost, price);
           if (!count) return;
@@ -70,7 +68,7 @@ wrap(() => {
                 label: `${Translation.CONTINUE}`,
                 cssClass: 'btn-success',
                 action(diag) {
-                  buyPacks(data);
+                  purchase(data);
                   diag.close();
                 },
               }, {
@@ -82,7 +80,7 @@ wrap(() => {
               }],
             });
           } else {
-            buyPacks(data);
+            purchase(data);
           }
         });
         eventManager.on('underscript:ready', () => {
@@ -99,7 +97,7 @@ wrap(() => {
     api.register('buyPacks', (count, { type = '', gold = true } = {}) => {
       if (!types.includes(type)) throw new Error(`Unsupported Pack: ${type}`);
       if (!Number.isInteger(count) || count < 1) throw new Error(`Count(${count}) must be a number`);
-      buyPacks({
+      return buyPacks({
         type,
         count,
         gold: !!gold,

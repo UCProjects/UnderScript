@@ -22,8 +22,16 @@ const BUY_TYPES: ReadonlyArray<string> = ['', 'DR', 'UTY'];
 const OPEN_TYPES: ReadonlyArray<string> = ['', 'DR', 'UTY', 'Shiny', 'Super', 'Final'];
 const OPEN_ITEMS = [Item.UT_PACK, Item.DR_PACK, Item.UTY_PACK, Item.SHINY_PACK, Item.SUPER_PACK, Item.FINAL_PACK];
 
+const LATE_DELAY = 500;
+
 const events = eventEmitter<UnderScriptPacksEvents>();
 const active = new VarStore<Run | undefined>();
+const late = {
+  packs: 0,
+  cards: [] as UnderScriptPackCard[],
+  type: '' as UnderScriptOpenPackType,
+  timer: undefined as ReturnType<typeof setTimeout> | undefined,
+};
 
 function count(value: unknown): number {
   if (typeof value !== 'number' || !Number.isInteger(value) || value < 1) {
@@ -73,13 +81,14 @@ async function execute<T>(
   run: Run,
   action: string,
   expected: string,
-  onOk: (data: PacksResponse) => T,
+  onOk: (data: PacksResponse, closed: boolean) => T,
 ): Promise<{ outcome: Outcome; values: T[] }> {
   if (active.value) throw new Error('Packs are already being bought or opened');
   active.value = run;
   const values: T[] = [];
   const refusal = new VarStore<string | undefined>();
   const queue = new VarStore<QueueRun | undefined>();
+  const closed = new VarStore(false);
   const stop = () => queue.value?.stop();
   try {
     display.start(run, stop);
@@ -97,11 +106,12 @@ async function execute<T>(
       onOk(_, value) {
         const data = value as PacksResponse;
         display.apply(action, data);
-        values.push(onOk(data));
+        values.push(onOk(data, closed.value));
       },
       onChange: (state) => display.progress(run, state),
     });
     const result = await queue.value.promise;
+    closed.value = true;
     const error = refusal.value;
     return { outcome: { done: result.done, stopped: result.stopped && error === undefined, error }, values };
   } finally {
@@ -114,10 +124,16 @@ function isCancelable(name: 'bought' | 'opened', result: UnderScriptPacksBought 
   return (events.emit({ cancelable: true }, name, result as never) as UnderScriptEmitResult).canceled;
 }
 
+export function checkBuy(amount: unknown, options: UnderScriptPacksBuyOptions = {}) {
+  return { requested: count(amount), type: buyType(options.type), gold: options.gold !== false };
+}
+
+export function checkOpen(amount: unknown, packType?: unknown) {
+  return { requested: count(amount), type: openType(packType) };
+}
+
 async function buy(amount: unknown, options: UnderScriptPacksBuyOptions = {}): Promise<UnderScriptPacksBought> {
-  const requested = count(amount);
-  const type = buyType(options.type);
-  const gold = options.gold !== false;
+  const { requested, type, gold } = checkBuy(amount, options);
   const run: Run = { kind: 'buy', type, gold, requested };
   const { outcome } = await execute(run, `add${type}Pack${gold ? '' : 'Ucp'}`, 'getPackAdded', () => 1);
   const result: UnderScriptPacksBought = {
@@ -132,24 +148,54 @@ async function buy(amount: unknown, options: UnderScriptPacksBuyOptions = {}): P
   return result;
 }
 
+function flushLate(): void {
+  const { packs: amount, cards, type } = late;
+  late.packs = 0;
+  late.cards = [];
+  late.timer = undefined;
+  if (!amount) return;
+  const result: UnderScriptPacksOpened = {
+    count: amount,
+    requested: amount,
+    type,
+    cards: Object.freeze(cards),
+    stopped: false,
+    late: true,
+  };
+  if (!isCancelable('opened', result)) display.opened(result);
+}
+
+function collectLate(type: UnderScriptOpenPackType, cards: UnderScriptPackCard[]): void {
+  if (late.packs && late.type !== type) {
+    clearTimeout(late.timer);
+    flushLate();
+  }
+  late.type = type;
+  late.packs += 1;
+  late.cards.push(...cards);
+  clearTimeout(late.timer);
+  late.timer = setTimeout(flushLate, LATE_DELAY);
+}
+
 async function open(amount: unknown, packType?: unknown): Promise<UnderScriptPacksOpened> {
-  const requested = count(amount);
-  const type = openType(packType);
+  const { requested, type } = checkOpen(amount, packType);
   const run: Run = { kind: 'open', type, gold: true, requested };
   const owned = await ownedCards();
   const cards: UnderScriptPackCard[] = [];
-  const { outcome } = await execute(run, `open${type}Pack`, 'getCards', (data) => {
-    parseCards(data).forEach((card) => {
+  const { outcome } = await execute(run, `open${type}Pack`, 'getCards', (data, closed) => {
+    const opened = parseCards(data).map((card): UnderScriptPackCard => {
       const isNew = !owned.some(({ id, shiny }) => id === card.id && shiny === card.shiny);
       if (isNew) owned.push({ id: card.id, shiny: card.shiny });
-      cards.push(Object.freeze({
+      return Object.freeze({
         id: card.id,
         name: card.name,
         rarity: card.rarity,
         shiny: !!card.shiny,
         new: isNew,
-      }));
+      });
     });
+    if (closed) collectLate(type, opened);
+    else cards.push(...opened);
   });
   const result: UnderScriptPacksOpened = {
     count: outcome.done,
@@ -157,6 +203,7 @@ async function open(amount: unknown, packType?: unknown): Promise<UnderScriptPac
     type,
     cards: Object.freeze([...cards]),
     stopped: outcome.stopped,
+    late: false,
     ...(outcome.error === undefined ? {} : { error: outcome.error }),
   };
   if (!isCancelable('opened', result) && (result.count || result.error !== undefined)) display.opened(result);

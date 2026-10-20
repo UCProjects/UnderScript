@@ -3,7 +3,7 @@ title: underscript.openPacks()
 categories: underscript
 method: true
 ---
-Opens packs and outputs the results (via toast). Only one set of packs can be opened at a time, it throws an error if packs are already being opened.
+Deprecated, use [plugin.packs]({{ site.baseurl }}{% link _api/plugin/packs.md %}) instead. Opens packs and outputs the results (via toast). Only one set of packs can be opened at a time, it throws an error if packs are already being opened.
 
 ## Syntax
 > underscript.openPacks(*count*, *type*);

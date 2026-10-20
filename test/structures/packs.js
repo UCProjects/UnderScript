@@ -3,9 +3,11 @@ import axios from 'axios';
 import eventManager from '../../src/utils/eventManager';
 import packs from '../../src/structures/packs/packs';
 import { clearToasts } from '../setup/simpletoast';
+import installClock from '../setup/clock';
 import Item from '../../src/structures/constants/item';
 
 const flush = () => new Promise((resolve) => { setImmediate(resolve); });
+const realTimeout = setTimeout;
 const EVENTS = ['bought', 'opened', 'rejected'];
 const added = (type = 'pack') => ({ action: 'getPackAdded', type, golds: 100, ucp: 20 });
 const cardsOf = (...cards) => ({ action: 'getCards', type: 'pack', cards: JSON.stringify(cards) });
@@ -32,6 +34,12 @@ describe('packs object', () => {
     await flush();
   };
   const body = (request) => JSON.parse(request.config.data);
+  const sent = async (amount) => {
+    for (let i = 0; i < 100 && requests.length < amount; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await new Promise((resolve) => { realTimeout(resolve, 20); });
+    }
+  };
   const waiting = () => requests.filter((request) => !request.answered);
   const respond = async (data) => {
     const [request] = waiting();
@@ -211,8 +219,7 @@ describe('packs object', () => {
   describe('open()', () => {
     it('opens packs and collects the cards, marking each card new the first time it shows up', async () => {
       const pending = packs.open(2);
-      await flush();
-      await flush();
+      await sent(2);
       expect(requests.map(body)).to.deep.equal([{ action: 'openPack' }, { action: 'openPack' }]);
       await respond(cardsOf(card(9001), card(9002), card(9002, { shiny: true }), card(9001)));
       await respond(cardsOf(card(9002)));
@@ -231,15 +238,13 @@ describe('packs object', () => {
 
     it('takes a pack type or its item', async () => {
       let pending = packs.open(1, 'Shiny');
-      await flush();
-      await flush();
+      await sent(1);
       expect(body(requests[0])).to.deep.equal({ action: 'openShinyPack' });
       await settleAll(() => cardsOf(card(1)));
       expect((await pending).type).to.equal('Shiny');
 
       pending = packs.open(1, Item.DR_PACK);
-      await flush();
-      await flush();
+      await sent(2);
       expect(body(requests[1])).to.deep.equal({ action: 'openDRPack' });
       await settleAll(() => cardsOf(card(1)));
       expect((await pending).type).to.equal('DR');
@@ -254,8 +259,7 @@ describe('packs object', () => {
 
     it('reports a refusal', async () => {
       const pending = packs.open(1);
-      await flush();
-      await flush();
+      await sent(1);
       await respond({ action: 'getError', message: 'No packs' });
       const result = await pending;
       expect(result).to.include({ count: 0, error: 'No packs' });
@@ -264,8 +268,7 @@ describe('packs object', () => {
 
     it('shows the result unless a listener cancels it', async () => {
       let pending = packs.open(1);
-      await flush();
-      await flush();
+      await sent(1);
       await settleAll(() => cardsOf(card(1)));
       await pending;
       expect(text()).to.include('Results: 1 Packs');
@@ -273,11 +276,55 @@ describe('packs object', () => {
 
       listen('opened', function cancel() { this.canceled = true; });
       pending = packs.open(1);
-      await flush();
-      await flush();
+      await sent(2);
       await settleAll(() => cardsOf(card(1)));
       await pending;
       expect(text()).to.not.include('Results');
+    });
+  });
+
+  describe('late answers', () => {
+    let clock;
+
+    beforeEach(() => {
+      clock = installClock(5000000);
+    });
+
+    afterEach(() => {
+      clock.restore();
+    });
+
+    it('reports a pack that answers after the run gave up on it', async () => {
+      const pending = packs.open(2);
+      await sent(2);
+      expect(requests).to.have.length(2);
+      await respond(cardsOf(card(7001)));
+      document.querySelector('.simpletoast-button').click();
+      clock.tick(6000);
+      const result = await pending;
+      expect(result).to.include({ count: 1, stopped: true, late: false });
+
+      await respond(cardsOf(card(7002), card(7003)));
+      expect(seen.filter(([name]) => name === 'opened')).to.have.length(1);
+      clock.tick(500);
+      const [, late] = seen.filter(([name]) => name === 'opened')[1];
+      expect(late).to.include({ count: 1, requested: 1, stopped: false, late: true });
+      expect(late.cards.map(({ id }) => id)).to.deep.equal([7002, 7003]);
+    });
+
+    it('puts answers that arrive together into one result', async () => {
+      const pending = packs.open(3);
+      await sent(3);
+      document.querySelector('.simpletoast-button').click();
+      clock.tick(6000);
+      await pending;
+      await respond(cardsOf(card(7101)));
+      await respond(cardsOf(card(7102)));
+      await respond(cardsOf(card(7103)));
+      clock.tick(500);
+      const lates = seen.filter(([name, result]) => name === 'opened' && result.late);
+      expect(lates).to.have.length(1);
+      expect(lates[0][1].count).to.equal(3);
     });
   });
 
@@ -293,8 +340,7 @@ describe('packs object', () => {
 
     it('shows what is being opened', async () => {
       const pending = packs.open(1, 'DR');
-      await flush();
-      await flush();
+      await sent(1);
       expect(text()).to.include('Opening 1 DR Pack');
       await settleAll(() => cardsOf(card(1)));
       await pending;

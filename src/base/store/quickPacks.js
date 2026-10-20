@@ -1,395 +1,67 @@
-/* eslint-disable no-multi-assign, no-nested-ternary */
 import eventManager from 'src/utils/eventManager';
-import eventEmitter from 'src/utils/eventEmitter';
-import { global, globalSet } from 'src/utils/global';
+import { global } from 'src/utils/global';
 import onPage from 'src/utils/onPage';
 import * as hover from 'src/utils/hover';
-import { blankToast, toast as basicToast } from 'src/utils/2.toasts';
 import * as api from 'src/utils/4.api';
-import { enabled, debug } from 'src/utils/debug';
-import { packs as packsFlag } from 'src/utils/debugFlags';
-import { retryAfter, waitSeconds } from 'src/utils/rateLimit';
-import formatNumber from 'src/utils/formatNumber';
-import { getCollection } from 'src/utils/user';
-import Item from 'src/structures/constants/item';
 import isCtrl from 'src/utils/isCtrl';
-import showResults from 'src/structures/packs/results';
+import packs, { checkOpen } from 'src/structures/packs/packs';
 
-const SILENCE_PINGS = 25;
-const ORPHAN_LIFETIME = 30000;
-const LATE_DELAY = 500;
-
-onPage('Packs', async function quickOpenPack() {
-  const collection = await getCollection();
-  const results = {
-    packs: 0,
-    cards: [],
-  };
-  const late = {
-    packs: 0,
-    cards: [],
-  };
-  const status = {
-    state: 'waiting', // waiting, processing, canceled
-    pack: '',
-    original: 0,
-    total: 0, // Total packs to open
-    remaining: 0, // How many packs still need to be opened
-    pending: 0, // How many packs are being waited on
-    pingTimeout: 0,
-    errors: 0,
-    rateLimits: 0,
-    waitUntil: 0,
-  };
-  const events = eventEmitter();
-
-  let timeoutID;
-  let resumeID;
-  let lateID;
-  let orphans = []; // Requests a finished run never heard back from: { count, at }
-
-  function takeOrphan() {
-    const now = Date.now();
-    orphans = orphans.filter(({ at }) => now - at < ORPHAN_LIFETIME);
-    if (!orphans.length) return false;
-    orphans[0].count -= 1;
-    if (orphans[0].count <= 0) orphans.shift();
-    return true;
-  }
-
-  function track(cards = []) {
-    cards.forEach((card) => {
-      const cCard = collection.find((c) => c.id === card.id && c.shiny === card.shiny);
-      // Don't have one yet?
-      if (!cCard) {
-        // Add to collection
-        collection.push({
-          ...card,
-          quantity: 1,
-        });
-        // Mark as new
-        card.new = true;
-      }
-    });
-  }
-
-  function isLimited() {
-    return Date.now() < status.waitUntil;
-  }
-
-  function clearResume() {
-    if (resumeID) clearTimeout(resumeID);
-    resumeID = 0;
-  }
-
-  function scheduleResume() {
-    clearResume();
-    resumeID = setTimeout(() => events.emit('next'), Math.min(1000, status.waitUntil - Date.now()));
-  }
-
-  function progress() {
-    const seconds = Math.ceil((status.waitUntil - Date.now()) / 1000);
-    const bar = `<progress value="${results.packs}" max="${status.total}"></progress>`;
-    if (status.state === 'canceled') {
-      const waiting = Math.max(status.pending, 0);
-      return `${bar}<br>Stopping, waiting for ${formatNumber(waiting)} pack${waiting === 1 ? '' : 's'}`;
-    }
-    return seconds > 0 ? `${bar}<br>Rate limited, resuming in ${seconds}s` : bar;
-  }
-
-  function setupPing(reset = true) {
-    if (status.state === 'waiting') return;
-    clearPing(reset);
-    if (isLimited()) return;
-    timeoutID = setTimeout(() => {
-      status.pingTimeout += 1;
-      if (status.pingTimeout > SILENCE_PINGS) {
-        events.emit('finished');
-        return;
-      }
-      setupPing(false);
-      events.emit('next');
-    }, 200);
-  }
-
-  function clearPing(safe = true) {
-    if (safe) status.pingTimeout = 0;
-    if (timeoutID) clearTimeout(timeoutID);
-    timeoutID = 0;
-  }
-
-  function open(pack, count) {
-    status.pending = 0;
-    const openPack = global('openPack');
-    // const amt = Math.min(step, count);
-    for (let i = 0; i < count; i++) {
-      status.pending += 1;
-      globalSet('canOpen', true);
-      openPack(pack);
-    }
-  }
+onPage('Packs', function quickOpenPack() {
+  let autoOpen = false;
 
   function showCards() {
     const show = global('revealCard', 'show');
     $('.slot .cardBack').each((i, e) => { show(e, i); });
   }
 
-  events.on('start', ({
-    pack = '',
-    count: amt = 0,
-    offset = false,
-  }) => {
-    if (openingPacks()) return;
-    results.packs = 0;
-    results.cards = [];
-    status.state = 'processing';
-    status.pack = pack;
-    status.total = amt;
-    status.remaining = amt - offset;
-    status.pending = 0;
-    status.errors = 0;
-    status.rateLimits = 0;
-    status.waitUntil = 0;
-    if (!offset) {
-      events.emit('next');
-    }
-    setupPing();
-  });
+  function available(type) {
+    return Number($(`#nb${type}Packs`).text());
+  }
 
-  let toast = blankToast();
-  events.on('pack', (cards = []) => {
-    status.pending -= 1;
-    status.rateLimits = 0;
-    results.packs += 1;
-    track(cards);
-    results.cards.push(...cards);
-    events.emit('next');
-    setupPing();
-  });
-
-  events.on('next', () => {
-    if (status.state === 'waiting') return;
-
-    if (status.state === 'processing') {
-      if (isLimited()) {
-        scheduleResume();
-      } else if (status.remaining > 0 && status.pending <= 0) {
-        const count = Math.min(status.remaining, 5);
-        status.remaining -= count;
-        open(status.pack, count);
-        setupPing();
-      }
-      events.emit('update');
-    }
-
-    const notWaiting = status.pending <= 0;
-    const finishedOpening = results.packs === status.total;
-    const canceled = status.state === 'canceled';
-    if (notWaiting && (finishedOpening || canceled)) {
-      events.emit('finished');
-    } else if (canceled) {
-      events.emit('update');
-    }
-  });
-
-  events.on('update', () => {
-    if (toast.exists()) {
-      toast.setText(progress());
-    } else if (status.state !== 'canceled') {
-      // TODO: translation
-      toast = basicToast({
-        title: `Opening ${formatNumber(status.total)} packs`,
-        text: progress(),
-        className: 'dismissable',
-        buttons: {
-          text: 'Stop',
-          dismiss: false,
-          onClick: (e) => {
-            events.emit('cancel');
-          },
-        },
-      });
-    }
-  });
-
-  events.on('finished', () => {
-    if (status.state === 'waiting') return; // Invalid state
-    status.state = 'waiting';
-    status.waitUntil = 0;
-    if (status.pending > 0) orphans.push({ count: status.pending, at: Date.now() });
-    status.pending = 0;
-    clearPing();
-    clearResume();
-    // Post results
-    $(`#nb${status.pack.substring(4, status.pack.length - 4)}Packs`).text(status.original - results.packs);
-    const event = eventManager.emit({ cancelable: true }, 'openedPacks', {
-      count: results.packs,
-      cards: Object.freeze([...results.cards]),
-      late: false,
-    });
-    if (!event.canceled && results.packs > 0) {
-      showResults(results.packs, results.cards, { shinyPack: status.pack === 'openShinyPack' });
-
-      // Show cards... I guess
-      showCards();
-    }
-    toast.close();
-  });
-
-  events.on('late', (cards = []) => {
-    track(cards);
-    late.packs += 1;
-    late.cards.push(...cards);
-    if (lateID) clearTimeout(lateID);
-    lateID = setTimeout(() => events.emit('lateResults'), LATE_DELAY);
-  });
-
-  events.on('lateResults', () => {
-    lateID = 0;
-    const { packs, cards } = late;
-    late.packs = 0;
-    late.cards = [];
-    if (!packs) return;
-    const counter = status.pack && $(`#nb${status.pack.substring(4, status.pack.length - 4)}Packs`);
-    if (counter?.length) {
-      const remaining = parseInt(counter.text(), 10);
-      if (!Number.isNaN(remaining)) counter.text(Math.max(remaining - packs, 0));
-    }
-    const event = eventManager.emit({ cancelable: true }, 'openedPacks', {
-      count: packs,
-      cards: Object.freeze([...cards]),
-      late: true,
-    });
-    if (!event.canceled) showResults(packs, cards, { heading: 'Late results', shinyPack: status.pack === 'openShinyPack' });
-  });
-
-  events.on('cancel', () => { // Sets the canceled flag
-    if (status.state === 'processing') {
-      status.state = 'canceled';
-      status.waitUntil = 0;
-      clearResume();
-      setupPing();
-      events.emit('next');
-    }
-  });
-
-  events.on('limited', (requested) => {
-    status.pending -= 1;
-    if (status.state !== 'processing') {
-      events.emit('next');
+  function click(event) {
+    const button = event.target.closest?.('[id^="btnOpen"]');
+    if (!button) return;
+    if (packs.opening || packs.buying) {
+      event.stopPropagation();
+      event.preventDefault();
       return;
     }
-    if (!isLimited()) status.rateLimits += 1;
-    status.waitUntil = Math.max(status.waitUntil, Date.now() + waitSeconds(requested, status.rateLimits) * 1000);
-    status.remaining += 1;
-    clearPing();
-    events.emit('next');
-  });
-
-  events.on('error', (err) => {
-    status.pending -= 1;
-    setupPing(); // We got a result, just not what we wanted
-    if (status.state !== 'processing') return; // Invalid state
-    status.errors += 1;
-    // Retry for every pack 3 times (this should act as if you're pushing the button 3 times... which usually opens all packs)
-    if (status.errors <= status.total * 3) {
-      status.remaining += 1;
+    const type = button.id.substring(7);
+    autoOpen = isCtrl(event);
+    if (event.shiftKey) {
+      event.stopPropagation();
+      event.preventDefault();
+      const count = available(type);
+      if (count > 0) {
+        packs.open(count, type);
+        hover.hide();
+      }
+    } else if (autoOpen || available(type) === 1) {
+      hover.hide();
     }
-  });
+  }
 
-  let autoOpen = false;
-
-  eventManager.on('BootstrapDialog:preshow', function cancel(dialog) {
-    if (openingPacks() && dialog.getTitle() === $.i18n('dialog-error')) {
-      this.canceled = true;
-    }
-  });
+  document.addEventListener('click', click, true);
 
   eventManager.on('jQuery', () => {
-    globalSet('translateFromServerJson', function override(message) {
-      try {
-        return this.super(message);
-      } catch {
-        return message;
-      }
-    });
-
     $(document).ajaxComplete((event, xhr, s) => {
-      if (s.url !== 'PacksConfig' || !s.data) return;
-      if (enabled(packsFlag)) debug(`PacksConfig ${xhr.status}`, packsFlag, xhr.getAllResponseHeaders());
-      const abandoned = takeOrphan();
-      if (xhr.status === 429) {
-        if (abandoned) return;
-        if (openingPacks()) events.emit('limited', retryAfter((name) => xhr.getResponseHeader(name)));
-        return;
-      }
+      if (s.url !== 'PacksConfig' || !s.data || !autoOpen) return;
       const data = xhr.responseJSON;
-      if (!data) {
-        if (!abandoned && openingPacks()) events.emit('error');
-        return;
-      }
-      const error = data.action === 'getError';
-      if (data.action !== 'getCards' && !error) return;
-      if (data.cards) { // This has to always be done, to update the collection
-        events.emit(abandoned ? 'late' : 'pack', JSON.parse(data.cards));
-      }
-      if (abandoned) return;
-      if (openingPacks()) {
-        if (data.status || error) {
-          events.emit('error', data.message);
-        }
-      } else if (autoOpen && !data.status) {
-        showCards();
-      }
+      if (data?.action === 'getCards' && data.cards && !data.status) showCards();
     });
-    // TODO: translation
-    $('[id^="btnOpen"]').on('click.script', (event) => {
-      autoOpen = isCtrl(event);
-      const type = $(event.target).prop('id').substring(7);
-      const count = autoOpen ? 1 : parseInt($(`#nb${type}Packs`).text(), 10);
-      if (event.shiftKey) {
-        openPacks(type, count, 1);
-        hover.hide();
-      } else if (count === 1) { // Last pack?
-        hover.hide();
-      }
-    }).on('mouseenter.script', hover.show(`<span style="font-style: italic;">
+    $('[id^="btnOpen"]').on('mouseenter.script', hover.show(`<span style="font-style: italic;">
         * CTRL Click to auto reveal one (1) pack<br />
         * Shift Click to auto open ALL packs
       </span>`)).on('mouseleave.script', hover.hide);
   });
 
-  function openingPacks() {
-    return status.state !== 'waiting';
-  }
-
-  function openPacks(type, count, start = 0) {
-    if (openingPacks()) return;
-    const packs = parseInt($(`#nb${type}Packs`).text(), 10);
-    // eslint-disable-next-line no-param-reassign
-    count = Math.max(Math.min(count, packs), 0);
-    if (count === 0) return;
-    status.original = packs;
-    events.emit('start', {
-      pack: `open${type}Pack`,
-      count,
-      offset: start,
-    });
-  }
-
-  const types = ['', 'DR', 'UTY', 'Shiny', 'Super', 'Final'];
-  const packTypes = [Item.UT_PACK, Item.DR_PACK, Item.UTY_PACK, Item.SHINY_PACK, Item.SUPER_PACK, Item.FINAL_PACK];
   api.register('openPacks', (count, type = '') => {
-    if (openingPacks()) throw new Error('Currently opening packs');
-    if (type instanceof Item) {
-      const index = packTypes.indexOf(type);
-      if (index === -1) throw new Error(`Unsupported Item: ${type}`);
-      openPacks(types[index], count);
-      return;
-    }
-    if (!types.includes(type)) throw new Error(`Unsupported Pack: ${type}`);
-    openPacks(type, count);
+    if (packs.opening || packs.buying) throw new Error('Currently opening packs');
+    const { type: kind } = checkOpen(count, type);
+    const amount = Math.min(count, available(kind));
+    if (!(amount > 0)) return undefined;
+    return packs.open(amount, kind);
   });
 
-  api.register('openingPacks', openingPacks);
+  api.register('openingPacks', () => packs.opening);
 }, 'quickPacks');

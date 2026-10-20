@@ -43,6 +43,17 @@ function setText(selector, value) {
   });
 }
 
+const lastPack = new VarStore([]);
+
+function parseCards(data) {
+  try {
+    const cards = JSON.parse(data.cards ?? '[]');
+    return Array.isArray(cards) ? cards : [];
+  } catch {
+    return [];
+  }
+}
+
 function sync(action, data) {
   const delta = action.startsWith('add') ? 1 : -1;
   if (COUNTERS[data.type]) {
@@ -103,7 +114,29 @@ export function end() {
   progressToast.value.close();
 }
 
-export const apply = sync;
+export function apply(action, data) {
+  sync(action, data);
+  if (action.startsWith('open')) lastPack.value = parseCards(data);
+}
+
+function showLastPack() {
+  const append = global('appendCard', { throws: false });
+  const reveal = global('revealCard', 'show', { throws: false });
+  const hoverable = global('makeHoverable', { throws: false });
+  if (typeof append !== 'function' || typeof reveal !== 'function' || !document.querySelector('.slot')) return;
+  $('.slot').empty();
+  lastPack.value.forEach((card, index) => {
+    const slot = $(`#cardPos${index}`);
+    const back = $('<div>')
+      .addClass(['cardBack', 'NORMAL', card.extension, card.shiny && 'shiny-card'].filter(Boolean).join(' '))
+      .attr({ 'data-name': card.name, 'data-rarity': card.rarity, onclick: `revealCard(this, ${index})` });
+    slot.append(back);
+    append(card, slot);
+    $('#cardsOpen .card:last').addClass(`pos${index}`).hide();
+  });
+  if (typeof hoverable === 'function') hoverable();
+  $('.slot .cardBack').each((index, element) => { reveal(element, index); });
+}
 
 export function bought(result) {
   toast({
@@ -115,7 +148,11 @@ export function bought(result) {
 
 export function opened(result) {
   if (result.count) {
-    showResults(result.count, result.cards, { shinyPack: result.type === 'Shiny' });
+    showResults(result.count, result.cards, {
+      heading: result.late ? 'Late results' : 'Results',
+      shinyPack: result.type === 'Shiny',
+    });
+    if (!result.late) showLastPack();
   }
   const note = describe(result);
   if (note) {
