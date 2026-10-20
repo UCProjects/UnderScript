@@ -37,8 +37,9 @@ wrap(() => {
   }
 
   function getCount(e, cost, baseCost) {
-    if (isCtrl(e)) return Math.floor(parseInt($(cost ? '#ucp' : '#golds').text(), 10) / baseCost);
-    if (e.altKey) return 10;
+    const affordable = Math.floor(parseInt($(cost ? '#ucp' : '#golds').text(), 10) / baseCost);
+    if (isCtrl(e)) return affordable;
+    if (e.altKey) return Math.min(10, affordable);
     return 1;
   }
 
