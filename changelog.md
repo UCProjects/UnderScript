@@ -48,6 +48,7 @@
     - A buy or an opening always shows a toast with a Stop button while it runs, and a buy says which currency it is paying with. A `bought` or `opened` listener can cancel the event to show the result itself.
     - The server stops a run when it refuses, and a rate limit makes it wait and carry on. A pack that answers after the run gave up on it is reported on its own, with `late: true`.
     - The Packs page buys and opens many packs through it (Ctrl and Alt click to buy, Shift click to open all), so those show the same Stop toast and results. A single click still goes through the game. `underscript.buyPacks()`, `openPacks()` and `openingPacks()` are deprecated, use `plugin.packs` instead.</extended>
+1. Fixed Alt-click on a buy pack button doing nothing when you could not afford all 10 packs, it now buys as many as you can afford, up to 10
 1. Added `plugin.chat.open(target)` to open a chat window, or a private chat with a user. A channel has `open()` too, and `isOpen` tells you whether its window is open. `plugin.chat.channel()` and `send()` take a user, for the private chat with them
 1. `plugin.events.on` now returns `plugin.events`, like `once`, `until` and `off`, so calls can be chained
 1. Added `plugin.isActive`, which is `false` only when the player has switched your plugin off, so a plugin can skip its own regular work then
