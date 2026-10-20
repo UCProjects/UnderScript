@@ -3,7 +3,7 @@ title: underscript.buyPacks()
 categories: underscript
 method: true
 ---
-Buy packs. Only exists on the Packs page.
+Deprecated, use [plugin.packs]({{ site.baseurl }}{% link _api/plugin/packs.md %}) instead. Buy packs. Only exists on the Packs page.
 
 ## Syntax
 > underscript.buyPacks(*count*, { *type*, *gold* });

@@ -211,7 +211,7 @@
   },
   "src/base/store/quickPacks.js": {
     "no-restricted-syntax": {
-      "count": 6
+      "count": 1
     }
   },
   "src/base/underscript/plugins.js": {

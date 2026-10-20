@@ -16,7 +16,7 @@ buy(*count*, { *type*, *gold* })
 : Buy packs. Returns a promise of `{ count, requested, type, gold, stopped, error }`, where `count` is how many were bought. `count` is a whole number of at least 1, `type` is `''`, `'DR'` or `'UTY'` (default `''`), and `gold` is `true` to pay with gold and `false` to pay with UCP (default `true`). `error` is only there when the server refused.
 
 open(*count*, *type*)
-: Open packs. Returns a promise of `{ count, requested, type, cards, stopped, error }`, where `cards` is `{ id, name, rarity, shiny, new }` for every card opened, and `new` is whether you did not own it before. `type` is `''`, `'DR'`, `'UTY'`, `'Shiny'`, `'Super'` or `'Final'`, or its [item]({{ site.baseurl }}{% link _api/underscript/item.md %}), like `underscript.constants.item.DR_PACK` (default `''`).
+: Open packs. Returns a promise of `{ count, requested, type, cards, stopped, late, error }`, where `cards` is `{ id, name, rarity, shiny, new }` for every card opened, and `new` is whether you did not own it before. `type` is `''`, `'DR'`, `'UTY'`, `'Shiny'`, `'Super'` or `'Final'`, or its [item]({{ site.baseurl }}{% link _api/underscript/item.md %}), like `underscript.constants.item.DR_PACK` (default `''`).
 
 on(*event*, *listener*), once(*event*, *listener*)
 : Listen to a pack event. Returns `plugin.packs`.
@@ -37,8 +37,8 @@ opening: `boolean`
 bought({ *count*, *requested*, *type*, *gold*, *stopped*, *error* })
 : A buy finished, was stopped, or was refused. Cancel the event, with `this.canceled = true`, to show the result yourself instead of UnderScript's toast.
 
-opened({ *count*, *requested*, *type*, *cards*, *stopped*, *error* })
-: An opening finished, was stopped, or was refused. Cancel the event to show the cards yourself instead of UnderScript's toast.
+opened({ *count*, *requested*, *type*, *cards*, *stopped*, *late*, *error* })
+: An opening finished, was stopped, or was refused. Cancel the event to show the cards yourself instead of UnderScript's toast. `late` is `true` for packs that answered after a stopped run had given up waiting, which come together in one event.
 
 rejected({ *action*, *message* })
 : The server refused a request. `action` is the one that was sent, such as `addPackUcp`.
