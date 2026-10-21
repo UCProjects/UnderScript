@@ -26,4 +26,9 @@ describe('settings register', () => {
     const setting = register({ key: 'test.register.retry', type: 'slider', min: 0, max: 5 });
     expect(setting.key).to.equal('test.register.retry');
   });
+
+  it('defaults a text setting to an empty string', () => {
+    const setting = register({ key: 'test.register.text', type: 'text' });
+    expect(setting.value()).to.equal('');
+  });
 });

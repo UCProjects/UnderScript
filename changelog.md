@@ -32,6 +32,7 @@
 ### Fixes
 1. Fixed the page selector being empty when there are exactly two pages, which happened on the Friendship page and any Decks or Crafting filter with two pages of cards
 1. Fixed links to a player or page on the leaderboard (`?user=` and `?page=`) opening the friendship leaderboard instead of the ranked one
+1. Fixed text settings that plugins register without a default starting out as `null` instead of an empty string
 ### Plugins
 1. New `underscript.constants.soul` with the souls (`KINDNESS`, `DETERMINATION`, `PATIENCE`, `BRAVERY`, `JUSTICE`, `PERSEVERANCE`, `INTEGRITY` and `MONSTER`, which players can't play, see `soul.playable`), and `underscript.constants.getSoul` and `isSoul`
 1. `underscript.item`, `priority` and `rarity` moved to `underscript.constants.item`, `priority` and `rarity`, so the named values live together instead of taking top level names. The old names still work, and log a deprecation warning the first time they are used
