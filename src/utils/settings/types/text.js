@@ -9,6 +9,10 @@ export default class Text extends Setting {
     return `${val}`;
   }
 
+  default() {
+    return '';
+  }
+
   element(value, update) {
     return $('<input type="text">')
       .val(value)
