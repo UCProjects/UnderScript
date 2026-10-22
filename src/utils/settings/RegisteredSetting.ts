@@ -1,16 +1,21 @@
 import Translation from 'src/structures/constants/translation';
 import type { Nullish } from 'src/types/utility';
+import wrap from 'src/utils/2.pokemon';
 import { translateText } from '../translate';
 import SettingType from './types/setting';
 
 const refresh = Translation.Setting('note.refresh');
 
-type SettingOwner = {
+type SettingOwner = Pick<UnderScriptPlugin, 'name' | 'logger'>;
+
+type PageToken = {
+  plugin: SettingOwner;
+  tab: string;
   name: string;
-  logger?: { error(...args: unknown[]): unknown };
+  logger: SettingOwner['logger'];
 };
 
-type SettingPage = string | SettingOwner | { plugin: SettingOwner; tab: string; name: string };
+type SettingPage = string | SettingOwner | PageToken;
 
 type Flag = UnderScriptDynamic<Nullish<boolean>>;
 
@@ -208,7 +213,11 @@ export default class RegisteredSetting {
     } else {
       localStorage.setItem(key, type.encode(val));
     }
-    this.#onChange?.(this.value, prev);
+    const onChange = this.#onChange;
+    if (onChange) {
+      const { value } = this;
+      wrap(() => onChange(value, prev), `${key} onChange`, this.#logger);
+    }
     this.#events.emit(key, this.value, prev);
     this.#events.emit('setting:change', key, this.value, prev);
   }
@@ -233,17 +242,24 @@ export default class RegisteredSetting {
     return this.#transform(this.type.default(this.data));
   }
 
+  get #logger(): SettingOwner['logger'] | undefined {
+    const page = this.#page;
+    return typeof page === 'object' && 'logger' in page ? page.logger : undefined;
+  }
+
   #convert(converter: (stored: string) => unknown): void {
     const { key } = this;
     const current = localStorage.getItem(key);
     if (current === null) return;
 
-    const converted = converter(current);
-    if (converted === null) {
-      localStorage.removeItem(key);
-    } else if (converted !== undefined) {
-      localStorage.setItem(key, this.type.encode(converted));
-    }
+    wrap(() => {
+      const converted = converter(current);
+      if (converted === null) {
+        localStorage.removeItem(key);
+      } else if (converted !== undefined) {
+        localStorage.setItem(key, this.type.encode(converted));
+      }
+    }, `${key} converter`, this.#logger);
   }
 
   #transform(value: unknown): any {
