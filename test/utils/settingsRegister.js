@@ -31,4 +31,53 @@ describe('settings register', () => {
     const setting = register({ key: 'test.register.text', type: 'text' });
     expect(setting.value()).to.equal('');
   });
+
+  it('reports a converter that throws to the plugin and keeps the stored value', () => {
+    const errors = [];
+    localStorage.setItem('test.register.converter', 'old');
+    const setting = register({
+      key: 'test.register.converter',
+      type: 'text',
+      page: { name: 'Converter plugin', logger: { error: (...args) => errors.push(args) } },
+      converter() {
+        throw new Error('broken');
+      },
+    });
+    expect(setting.value()).to.equal('old');
+    expect(errors).to.have.length(1);
+    expect(errors[0][0]).to.contain('test.register.converter converter');
+  });
+
+  it('reports an onChange that throws to the plugin and still emits the change', () => {
+    const errors = [];
+    const changes = [];
+    const setting = register({
+      key: 'test.register.onchange',
+      type: 'text',
+      page: { name: 'OnChange plugin', logger: { error: (...args) => errors.push(args) } },
+      onChange() {
+        throw new Error('broken');
+      },
+    });
+    setting.on((value) => changes.push(value));
+    setting.set('new');
+    expect(errors).to.have.length(1);
+    expect(errors[0][0]).to.contain('test.register.onchange onChange');
+    expect(changes).to.deep.equal(['new']);
+  });
+
+  it('reports a converter on a plugin tab to the plugin', () => {
+    const errors = [];
+    localStorage.setItem('test.register.tab', 'old');
+    register({
+      key: 'test.register.tab',
+      type: 'text',
+      page: { name: 'Tab plugin', logger: { error: (...args) => errors.push(args) } },
+      tab: 'Advanced',
+      converter() {
+        throw new Error('broken');
+      },
+    });
+    expect(errors).to.have.length(1);
+  });
 });
