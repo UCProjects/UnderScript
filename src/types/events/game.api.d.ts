@@ -1,9 +1,30 @@
+type UnderScriptCardStatus = {
+  name: string;
+  counter: number;
+  displayCounter: boolean;
+  statusType: string;
+  statusBehavior: string;
+};
+
+type UnderScriptStatusCard = {
+  id: number;
+  statuses: UnderScriptCardStatus[];
+  [key: string]: unknown;
+};
+
+type UnderScriptStatusChanges = {
+  added: UnderScriptCardStatus[];
+  removed: UnderScriptCardStatus[];
+  changed: Array<{ status: UnderScriptCardStatus; previous: UnderScriptCardStatus }>;
+};
+
 interface UnderScriptEvents {
   'GameStart': [];
   'PlayingGame': [];
   'GameEvent': [data: unknown];
   'PreGameEvent': [data: unknown];
   'Play:Message': [data: unknown];
+  'Card:Statuses': [card: UnderScriptStatusCard, element: JQuery, changes: UnderScriptStatusChanges];
   'player:endTurn': [];
   'enterCustom': [];
   'closeQueues': [message: string];

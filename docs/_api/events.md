@@ -86,6 +86,9 @@ Plugins can get messages already parsed, with events for sending, commands, noti
 `Play:Message`(*data*)
 : A message from the game
 
+`Card:Statuses`(*card*, *element*, { *added*, *removed*, *changed* })
+: A card in the game gained, lost or changed a status. `card` is the updated card, `element` is its jQuery element, and each list holds statuses with their `name`, `counter` and `displayCounter`. Entries in `changed` are `{ status, previous }`, so the old and new counter can be compared. It only fires when something actually changed, and it fires after the game has updated the card.
+
 `player:endTurn` (cancelable)
 : The player is ending their turn
 
