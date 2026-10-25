@@ -3,6 +3,10 @@
 
 ## Unreleased
 ### Features
+1. Claiming a quest no longer reloads the Quests page, the same way the Friendship page claims rewards<extended>
+    - A toast shows the reward, and the Claim and replace-quest buttons are removed, like the game does.
+    - If the claim fails, the page falls back to the normal form submit. There is a setting to turn it off.
+    - The Completed Quests block has a Claim All button.</extended>
 1. Smart Disenchant now lists every card you can disenchant, so you can choose exactly which cards and copies to disenchant<extended>
     - Cards are grouped as Normal and Shiny, then by rarity, then by card. A group's box selects everything inside it.
     - The Prioritize Normal and Prioritize Shiny buttons select what they would have disenchanted, and you can adjust the selection before confirming.

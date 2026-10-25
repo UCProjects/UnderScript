@@ -1,6 +1,7 @@
 import Translation from 'src/structures/constants/translation';
 import wrap from 'src/utils/2.pokemon';
 import eventManager from 'src/utils/eventManager';
+import * as settings from 'src/utils/settings/index';
 
 wrap(() => {
   const questSelector = 'input[type="submit"][value="Claim"]:not(:disabled)';
@@ -29,14 +30,23 @@ wrap(() => {
     const h3 = document.createElement('h3');
     h3.classList.add('event-title');
     h3.textContent = 'Completed Quests';
+    const claimAll = document.createElement('button');
+    claimAll.classList.add('btn', 'btn-success', 'btn-sm');
+    claimAll.textContent = 'Claim All';
+    claimAll.style.float = 'right';
+    claimAll.hidden = settings.value('underscript.disable.questClaim');
+    claimAll.addEventListener('click', () => {
+      block.querySelectorAll(questSelector).forEach((button) => button.form.requestSubmit(button));
+    });
     eventManager.on('underscript:ready', () => {
       h3.textContent = Translation.General('quest.pending');
+      claimAll.textContent = Translation.General('quest.claimAll');
     });
     const table = document.createElement('table');
     table.classList.add('table', 'questTable');
     const tbody = document.createElement('tbody');
     table.append(tbody);
-    block.append(h3, table);
+    block.append(claimAll, h3, table);
     return block;
   }
 });

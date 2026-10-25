@@ -53,6 +53,7 @@
     "remove": "Remove @underscript!",
     "settings": "Open settings"
   },
+  "quest.claimed": "Claimed Quest",
   "streamer": "Streamer Mode Active",
   "game": {
     "request": {

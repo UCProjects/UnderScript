@@ -169,6 +169,7 @@
     "on": "On",
     "toast": "Enable ping toasts"
   },
+  "quest.claim": "Disable Quest Claim Without Reload",
   "quest.highlight": "Disable Quest Highlight",
   "safelink": {
     "~": "Enabled",
