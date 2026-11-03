@@ -16,4 +16,11 @@ extendLangParser({
     const mouseOver = card ? `onmouseover="displayCardHelp(this, ${card});" onmouseleave="removeCardHover();" ` : '';
     return `<div><img style="width: ${width}px; height: ${height}px;" class="inserted-img" ${mouseOver}src="/images/inserted/${img}.png" alt="${name}"/></div>`;
   },
+  style(nodes) {
+    const [className, text] = nodes;
+    if (extract) {
+      return text;
+    }
+    return `<span class="${className}">${text}</span>`;
+  },
 });
