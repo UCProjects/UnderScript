@@ -65,6 +65,10 @@ describe('chat profile card', () => {
     return event;
   };
 
+  const hoverNote = (target, type) => target.dispatchEvent(
+    new window.MouseEvent(type, { bubbles: true, relatedTarget: document.body }),
+  );
+
   before(async () => {
     ['Element', 'HTMLElement', 'Node'].forEach((key) => {
       globalThis[key] ??= window[key];
@@ -94,6 +98,7 @@ describe('chat profile card', () => {
     await import('../../../src/base/chat/profile/buttons/ignore');
     await import('../../../src/base/chat/profile/buttons/spectate');
     await import('../../../src/base/chat/profile/buttons/mute');
+    eventManager.emit('jQuery');
   });
 
   beforeEach(() => {
@@ -135,8 +140,8 @@ describe('chat profile card', () => {
     const popup = document.querySelector('#underscript-profile');
     expect(popup.querySelector('.us-profile-avatar img.avatar').getAttribute('src')).to.equal('images/avatars/Frisk.png');
     expect(popup.querySelector('.us-profile-banner').style.backgroundImage).to.contain('profiles/Base.png');
-    popup.querySelector('.us-profile-group').dispatchEvent(new window.MouseEvent('mouseenter'));
-    expect(popup.lastElementChild.textContent).to.contain('Moderator');
+    hoverNote(popup.querySelector('.us-profile-group'), 'mouseover');
+    expect(document.body.lastElementChild.textContent).to.contain('Moderator');
     expect(popup.querySelector('.us-profile-level').textContent).to.equal('LV 77');
   });
 
@@ -433,10 +438,10 @@ describe('chat profile card', () => {
     }
     const popup = document.querySelector('#underscript-profile');
     expect(popup.querySelector('[title]')).to.equal(null);
-    popup.querySelector('.us-profile-division img').dispatchEvent(new window.MouseEvent('mouseenter'));
-    expect(popup.lastElementChild.textContent).to.contain('HIGH MASTER');
-    popup.querySelector('.us-profile-division img').dispatchEvent(new window.MouseEvent('mouseleave'));
-    expect(popup.textContent).to.not.contain('UnderScript');
+    hoverNote(popup.querySelector('.us-profile-division img'), 'mouseover');
+    expect(document.body.lastElementChild.textContent).to.contain('HIGH MASTER');
+    hoverNote(popup.querySelector('.us-profile-division img'), 'mouseout');
+    expect(document.body.textContent).to.not.contain('HIGH MASTER');
   });
 
   describe('notes', () => {

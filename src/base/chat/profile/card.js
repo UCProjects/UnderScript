@@ -1,5 +1,4 @@
 import decode from 'src/utils/decode';
-import { showIn } from 'src/utils/hover';
 import progress from './progress';
 
 function element(tag, className, text) {
@@ -26,14 +25,11 @@ function normalize(division) {
   return `${division}`.trim().toUpperCase().replaceAll(' ', '_');
 }
 
-export function useNotes(root, container) {
+export function useNotes(root) {
   root.querySelectorAll('[title]').forEach((el) => {
     const note = el.getAttribute('title');
     el.removeAttribute('title');
-    if (!note) return;
-    const show = showIn(container, note);
-    el.addEventListener('mouseenter', show);
-    el.addEventListener('mouseleave', show);
+    if (note) el.dataset.usNote = note;
   });
 }
 

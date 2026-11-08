@@ -149,7 +149,7 @@ export function open(user, { clientX: x, clientY: y }, reference) {
   const { card, buttons: list } = createCard(user, $(reference).data('infos')?.user);
   el.replaceChildren(card);
   mount(list, user, reference);
-  useNotes(card, el);
+  useNotes(card);
   show();
   const { width, height } = el.getBoundingClientRect();
   const { left, top } = place({ x, y }, { width, height }, {
