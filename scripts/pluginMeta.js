@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
-import axios from 'axios';
+import { authenticatedGet } from '../src/utils/githubAuth.js';
+import * as http from '../src/utils/http.js';
 import { authenticate, REGISTRY, resolve } from './plugins.js';
 import { fileExists, isMain, readJSON, writeFile } from './utils.js';
 
@@ -10,7 +11,7 @@ const SHORTHAND = /^[\w.-]+\/[\w.-]+$/;
 const API = 'https://api.github.com';
 
 async function api(path) {
-  const { data } = await axios.get(`${API}/${path}`);
+  const { data } = await authenticatedGet(http.get, `${API}/${path}`);
   return data;
 }
 
@@ -88,7 +89,7 @@ export async function build(entries, previous = {}, tools = {}) {
 export default async function main(args = process.argv.slice(2)) {
   const [registry = REGISTRY, output = META] = args.filter((arg) => !arg.startsWith('-'));
   if (process.env.GITHUB_TOKEN) authenticate(process.env.GITHUB_TOKEN);
-  axios.defaults.timeout = TIMEOUT;
+  http.defaults.timeout = TIMEOUT;
 
   const entries = await readJSON(registry);
   const previous = await fileExists(output) ? await readJSON(output) : {};
