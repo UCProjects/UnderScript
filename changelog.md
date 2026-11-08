@@ -30,6 +30,8 @@
     - Holding Ctrl while right clicking still shows the browser menu, and the Disable Chat Context setting still turns the card off.
     - The Note button keeps a note about a user on your computer. Hover it to read the note, click it to edit, and Ctrl+Enter, or clicking away, saves. Escape drops the change.
     - A new Chat setting opens the card when you click a user in chat, instead of the game's profile, which is still one option away in the card (or Ctrl+click).</extended>
+1. The community plugins list now shows when each plugin was last updated<extended>
+    - The date is looked up once a day and only shown while it belongs to the plugin's latest version, so a brand new version has no date until the next lookup.</extended>
 1. Added a Leaderboard+ link to the Leaderboards menu in the footer
 1. The Card Editor link is back in the footer, in the Community menu next to the Wiki
 1. Chat command suggestions now show where each command comes from, on the right of the suggestion<extended>

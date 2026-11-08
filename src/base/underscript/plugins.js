@@ -11,7 +11,6 @@ const keys = {
   button: Translation.Menu('plugins'),
   note: Translation.Menu('plugins.note'),
   title: Translation.General('plugins'),
-  author: Translation.General('plugins.author'),
   available: Translation.General('plugins.available'),
   empty: Translation.General('plugins.empty'),
   failed: Translation.General('plugins.failed'),
@@ -26,6 +25,7 @@ const keys = {
   search: Translation.General('search.plugins'),
   stale: Translation.General('plugins.stale'),
   unavailable: Translation.General('plugins.unavailable'),
+  updated: Translation.General('plugins.updated'),
 };
 
 const EMPTY = '-';
@@ -136,16 +136,16 @@ function render() {
       ({ name: nameA }, { name: nameB }) => nameA.localeCompare(nameB),
     ).forEach((entry) => body.append(row(entry)));
   }
-  complete = plugins.length > 0 && plugins.every(({ name }) => registry.info(name));
+  complete = registry.datesLoaded() && plugins.length > 0 && plugins.every(({ name }) => registry.info(name));
   tableHolder.empty().append($('<table class="table">').append(header(), body));
 }
 
 function header() {
   return $('<thead>').append($('<tr>').append(
     $('<th>').text(`${keys.name}`),
-    $('<th>').text(`${keys.author}`),
     $('<th class="version">').text(`${keys.installed}`),
     $('<th class="version">').text(`${keys.latest}`),
+    $('<th class="version">').text(`${keys.updated}`),
     $('<th class="action">'),
   ));
 }
@@ -165,10 +165,13 @@ function row({ name, author }) {
   return $('<tr>')
     .toggleClass('stale', stale)
     .append(
-      $('<td>').text(name),
-      $('<td>').text(author || EMPTY),
+      $('<td>').append(
+        $('<div>').text(name),
+        author && $('<small class="plugin-author">').text(author),
+      ),
       $('<td class="version">').text(installed({ name, running, stale })),
       latest({ name, running, version }),
+      updated(name),
       $('<td class="action">').append(action({ name, running, stale })),
     );
 }
@@ -191,6 +194,11 @@ function latest({ name, running, version }) {
     );
   }
   return cell.text(version);
+}
+
+function updated(name) {
+  const time = registry.modified(name);
+  return $('<td class="version">').text(time ? new Date(time).toLocaleDateString() : EMPTY);
 }
 
 function action({ name, running, stale }) {

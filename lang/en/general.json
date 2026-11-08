@@ -81,7 +81,8 @@
     "noMatch": "No plugins match your filters",
     "reinstall": "Reinstall",
     "stale": "Not running",
-    "unavailable": "Plugin list unavailable"
+    "unavailable": "Plugin list unavailable",
+    "updated": "Updated"
   },
   "reconnecting": "Reconnecting...",
   "profile": "Profile",

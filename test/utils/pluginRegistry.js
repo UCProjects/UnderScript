@@ -118,6 +118,45 @@ describe('pluginRegistry', () => {
     });
   });
 
+  describe('modified', () => {
+    const META = 'https://raw.githubusercontent.com/UCProjects/UnderScript/refs/heads/registry/plugins.meta.json';
+
+    function listAlpha(version) {
+      serve([{ name: 'Alpha', updateURL: 'https://example.com/alpha.user.js' }]);
+      responses.set('https://example.com/alpha.user.js', script(version, 'https://example.com/alpha.user.js'));
+    }
+
+    it('gives the date when the version matches', async () => {
+      listAlpha('1.2.3');
+      responses.set(META, { Alpha: { version: '1.2.3', date: '2026-10-01T12:00:00Z' } });
+      await registry.refresh({ force: true });
+      expect(registry.datesLoaded()).to.equal(true);
+      expect(registry.modified('Alpha')).to.equal(Date.parse('2026-10-01T12:00:00Z'));
+    });
+
+    it('drops the date when the version moved on', async () => {
+      listAlpha('1.3.0');
+      responses.set(META, { Alpha: { version: '1.2.3', date: '2026-10-01T12:00:00Z' } });
+      await registry.refresh({ force: true });
+      expect(registry.modified('Alpha')).to.equal(undefined);
+    });
+
+    it('ignores malformed entries', async () => {
+      listAlpha('1.2.3');
+      responses.set(META, { Alpha: { version: '1.2.3', date: 'never' }, Beta: 5 });
+      await registry.refresh({ force: true });
+      expect(registry.modified('Alpha')).to.equal(undefined);
+    });
+
+    it('shows no dates when the file is unavailable', async () => {
+      listAlpha('1.2.3');
+      responses.set(META, new Error('404'));
+      await registry.refresh({ force: true });
+      expect(registry.datesLoaded()).to.equal(true);
+      expect(registry.modified('Alpha')).to.equal(undefined);
+    });
+  });
+
   describe('running plugins', () => {
     it('reports nothing running when no plugin registered', () => {
       expect(registry.isRunning('Nothing')).to.equal(false);
