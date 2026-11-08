@@ -26,7 +26,7 @@ export const clickSetting = settings.register({
   note: Translation.Setting('chat.leftclick.note'),
   key: 'underscript.chat.leftclick',
   page: 'Chat',
-  default: false,
+  default: true,
 });
 
 const attribute = 'data-underscript-user';

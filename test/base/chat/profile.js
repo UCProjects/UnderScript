@@ -311,9 +311,10 @@ describe('chat profile card', () => {
     };
     const card = () => document.querySelector('#underscript-profile');
 
-    afterEach(() => clickSetting.set(false));
+    afterEach(() => clickSetting.set(true));
 
-    it('leaves the game dialog alone by default', () => {
+    it('leaves the game dialog alone when switched off', () => {
+      clickSetting.set(false);
       updateUser(raw(20));
       const name = post(10, 20);
       let gameOpened = false;
@@ -324,8 +325,7 @@ describe('chat profile card', () => {
       expect(card()?.hidden ?? true).to.equal(true);
     });
 
-    it('opens the card instead of the game dialog when switched on', () => {
-      clickSetting.set(true);
+    it('opens the card instead of the game dialog by default', () => {
       updateUser(raw(21));
       const name = post(11, 21);
       let gameOpened = false;
