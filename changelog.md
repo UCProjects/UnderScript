@@ -11,6 +11,7 @@
     - Cards are grouped as Normal and Shiny, then by rarity, then by card. A group's box selects everything inside it.
     - The Prioritize Normal and Prioritize Shiny buttons select what they would have disenchanted, and you can adjust the selection before confirming.
     - Disenchanting shows its progress, can be stopped, and waits and carries on when the game rate limits the requests.</extended>
+1. Smart Disenchant is now turned on by default, and the "Enable at own risk" note is gone from its setting
 1. Added an optional "GitHub token" setting under Updates, for when update checks fail because GitHub's request limit was reached<extended>
     - A token with no permissions is enough. It is only sent to api.github.com, is not included when exporting settings, and a rejected token falls back to checking without one.
     - A toast now points to the setting when the limit is what stopped an update check.</extended>

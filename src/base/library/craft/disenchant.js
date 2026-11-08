@@ -27,9 +27,7 @@ import styles from './disenchant.css';
 const setting = settings.register({
   name: Translation.Setting('disenchant'),
   key: 'underscript.disable.disenchant',
-  default: true,
   refresh: onPage('Crafting'),
-  note: Translation.Setting('disenchant.note'),
   category: Translation.CATEGORY_LIBRARY_CRAFTING,
   page: 'Library',
 });

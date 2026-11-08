@@ -66,8 +66,7 @@
     "preview": "Disable Deck Preview"
   },
   "disenchant": {
-    "~": "Disable Smart Disenchanting",
-    "note": "Enable at own risk"
+    "~": "Disable Smart Disenchanting"
   },
   "emote": {
     "disable": "Disable $1",
