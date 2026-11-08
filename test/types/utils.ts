@@ -107,6 +107,7 @@ store.value satisfies number;
 store.set(6) satisfies number;
 store.consume() satisfies number;
 store.isSet() satisfies boolean;
+store.reset() satisfies void;
 new utils.VarStore<string | null>(null).set('text');
 // @ts-expect-error the store holds numbers
 store.set('text');

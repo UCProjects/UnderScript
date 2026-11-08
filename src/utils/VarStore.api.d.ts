@@ -4,6 +4,7 @@ type UnderScriptVarStore<T> = {
   set(value: T): T;
   consume(): T;
   isSet(): boolean;
+  reset(): void;
 };
 
 interface UnderScriptUtils {

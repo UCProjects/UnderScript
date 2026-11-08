@@ -5,11 +5,15 @@ export default class Counter extends VarStore<number> {
     super(value);
   }
 
-  next(step = 1): number {
+  add(step = 1): number {
     return this.set(this.get() + step);
   }
 
-  add(step = 1): number {
-    return this.next(step);
+  next(step = 1): number {
+    return this.add(step);
+  }
+
+  remove(step = 1): number {
+    return this.set(this.get() - step);
   }
 }

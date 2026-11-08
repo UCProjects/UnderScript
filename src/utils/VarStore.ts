@@ -20,7 +20,7 @@ export default class VarStore<T = undefined> {
 
   consume(): T {
     const ret = this.#value;
-    this.set(this.#default);
+    this.reset();
     return ret;
   }
 
@@ -35,5 +35,9 @@ export default class VarStore<T = undefined> {
 
   isSet(): boolean {
     return this.#value !== this.#default;
+  }
+
+  reset(): void {
+    this.set(this.#default);
   }
 }
