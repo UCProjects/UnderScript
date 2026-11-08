@@ -68,6 +68,11 @@ class Group {
           this.collapsed = !this.collapsed;
         });
       legend.append(this.toggle, ' ');
+      this.element.on('click', (event) => {
+        if (event.target !== this.element[0] || this.collapsed) return;
+        this.collapsed = true;
+        this.element[0].scrollIntoView?.({ block: 'nearest' });
+      });
     }
     legend.append(label);
     input.on('change', () => {

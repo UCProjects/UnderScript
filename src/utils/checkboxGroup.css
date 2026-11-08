@@ -4,6 +4,16 @@
   margin-left: 5px;
 }
 
+.checkGroup:not(.checkFixed) {
+  cursor: pointer;
+}
+
+.checkGroup > legend,
+.checkGroup > .checkItem,
+.checkGroup > .checkEmpty {
+  cursor: default;
+}
+
 .checkGroup > legend > .checkToggle {
   background: none;
   border: 0;

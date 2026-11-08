@@ -268,6 +268,25 @@ describe('checkboxGroup', () => {
       expect(toggle(group).length).to.equal(0);
     });
 
+    it('collapses when the group itself is clicked, not what is inside it', () => {
+      const inner = checkboxGroup('Inner', ['b']);
+      const group = checkboxGroup('Root', [inner, 'a']);
+      group.find('.checkItem').first().trigger('click');
+      group.find('label').first().trigger('click');
+      expect(isCollapsed(group)).to.equal(false);
+      inner.trigger('click');
+      expect(isCollapsed(inner)).to.equal(true);
+      expect(isCollapsed(group)).to.equal(false);
+      group.trigger('click');
+      expect(isCollapsed(group)).to.equal(true);
+    });
+
+    it('does not collapse a fixed group when it is clicked', () => {
+      const group = checkboxGroup('Root', ['a'], { collapsible: false });
+      group.trigger('click');
+      expect(group.hasClass('collapsed')).to.equal(false);
+    });
+
     it('marks groups that are not collapsible', () => {
       expect(checkboxGroup('Root', ['a'], { collapsible: false }).hasClass('checkFixed')).to.equal(true);
       expect(checkboxGroup('Root', ['a']).hasClass('checkFixed')).to.equal(false);

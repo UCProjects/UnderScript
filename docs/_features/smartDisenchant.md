@@ -7,7 +7,7 @@ version: 0.22.0
 
 A Smart Disenchant button next to your dust on the Crafting page disenchants cards in bulk. It opens a window listing every card you can disenchant, with a Normal column and a Shiny column. Each column is split by rarity, and each card you own more than one of is split by copy, so you can pick exactly which copies go.
 
-Open and close a group with the arrow next to it. Expand selected opens every group that has something ticked in it, and Collapse all closes every group. Ticking a group ticks everything inside it, and a bar in the box means only some of it is ticked. To select every normal or shiny card, tick the Normal or Shiny box at the top of its column.
+Open and close a group with the arrow next to it. In a long list, clicking the empty space at the left of its cards closes the group, so you do not have to scroll back to the arrow. Expand selected opens every group that has something ticked in it, and Collapse all closes every group. Ticking a group ticks everything inside it, and a bar in the box means only some of it is ticked. To select every normal or shiny card, tick the Normal or Shiny box at the top of its column.
 
 Three buttons at the top fill in the selection for you, each showing how much dust you would get:
 
