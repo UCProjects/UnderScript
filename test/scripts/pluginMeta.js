@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { build } from '../../scripts/pluginMeta.js';
+import { build } from '../../scripts/pluginMeta';
 
 const entries = [
   { name: 'Beta', updateURL: 'https://example.com/b.user.js' },

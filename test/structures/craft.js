@@ -1,11 +1,27 @@
 import { expect } from 'chai';
 import { network } from '../setup/http';
-import craft, { attach, report, reportSmartDisenchant } from '../../src/structures/craft/craft';
+import craft, { report, reportSmartDisenchant } from '../../src/structures/craft/craft';
 
 const flush = () => new Promise((resolve) => { setImmediate(resolve); });
 const dog = (extra = {}) => ({ status: 'success', dust: 40, card: JSON.stringify({ id: 5, name: 'Dog' }), ...extra });
 const named = (id, name) => dog({ card: JSON.stringify({ id, name }) });
 const EVENTS = ['crafted', 'disenchanted', 'smartDisenchanted', 'autoDisenchanted', 'rejected'];
+const PAGE_GLOBALS = ['location', 'updateQuantity', 'updateQuantities', 'applyFilters', 'showPage', 'currentPage'];
+
+function leavePage() {
+  PAGE_GLOBALS.forEach((key) => delete globalThis[key]);
+  document.body.innerHTML = '';
+}
+
+function openPage(log, pathname = '/Crafting') {
+  globalThis.location = { pathname };
+  globalThis.currentPage = 3;
+  globalThis.updateQuantity = ({ id }, change) => log.push(['updateQuantity', id, change]);
+  globalThis.updateQuantities = (id, shiny, quantity) => log.push(['updateQuantities', id, shiny, quantity]);
+  globalThis.applyFilters = () => log.push(['applyFilters']);
+  globalThis.showPage = (page) => log.push(['showPage', page]);
+  document.body.innerHTML = '<span id="dust">100</span><span id="totalDisenchant">5</span><span id="nbDTFragments">0</span><button id="btnCraftDT"></button><div id="DTFragmentsDiv"></div>';
+}
 
 describe('craft object', () => {
   let requests;
@@ -42,13 +58,14 @@ describe('craft object', () => {
   beforeEach(() => {
     requests = [];
     seen = [];
+    globalThis.location = { pathname: '/Home' };
     i18n = globalThis.$.i18n;
     EVENTS.forEach((event) => listen(event, (...args) => seen.push([event, ...args])));
   });
 
   afterEach(() => {
     removers.splice(0).forEach((remove) => remove());
-    attach({ apply: undefined, liveDust: undefined });
+    leavePage();
     delete globalThis.translateFromServerJson;
     if (i18n === undefined) delete globalThis.$.i18n;
     else globalThis.$.i18n = i18n;
@@ -200,20 +217,49 @@ describe('craft object', () => {
     });
   });
 
-  describe('apply hook', () => {
-    it('runs with the raw response before listeners hear about it', async () => {
-      const order = [];
-      attach({ apply: (action, response, request) => order.push(['apply', action, response.dust, request.idCard]) });
-      listen('crafted', () => order.push(['event']));
+  describe('the Crafting page', () => {
+    it('is updated before listeners hear about it', async () => {
+      const log = [];
+      openPage(log);
+      listen('crafted', () => log.push(['event']));
       const pending = craft.craft(5);
       await flush();
       await answer(requests[0], { data: dog() });
       await pending;
-      expect(order).to.deep.equal([['apply', 'craft', 40, 5], ['event']]);
+      expect(log).to.deep.equal([['updateQuantity', 5, 1], ['applyFilters'], ['showPage', 3], ['event']]);
+    });
+
+    it('takes a copy away for a disenchant', async () => {
+      const log = [];
+      openPage(log);
+      const pending = craft.disenchant(5);
+      await flush();
+      await answer(requests[0], { data: dog() });
+      await pending;
+      expect(log[0]).to.deep.equal(['updateQuantity', 5, -1]);
+    });
+
+    it('updates every card an auto changed, and clears what was going to be disenchanted', async () => {
+      const log = [];
+      openPage(log);
+      const pending = craft.autoDisenchant();
+      await flush();
+      await answer(requests[0], {
+        data: { status: 'success', dust: 175, cardsId: '[1,2]', cardsShiny: '[false,true]', cardsQuantity: '[3,1]' },
+      });
+      await pending;
+      expect(log.filter(([name]) => name === 'updateQuantities')).to.deep.equal([
+        ['updateQuantities', 1, false, 3],
+        ['updateQuantities', 2, true, 1],
+      ]);
+      expect(document.querySelector('#dust').textContent).to.equal('175');
+      expect(document.querySelector('#totalDisenchant').textContent).to.equal('0');
     });
 
     it('still resolves and emits when the page update throws', async () => {
-      attach({ apply: () => { throw new Error('no table'); } });
+      const log = [];
+      openPage(log);
+      globalThis.updateQuantity = () => { throw new Error('no table'); };
       const heard = [];
       listen('crafted', (card) => heard.push(card.dust));
       const pending = craft.craft(5);
@@ -224,14 +270,24 @@ describe('craft object', () => {
       expect(heard).to.deep.equal([40]);
     });
 
-    it('is not used for a refusal', async () => {
-      let applied = false;
-      attach({ apply: () => { applied = true; } });
+    it('is not updated for a refusal', async () => {
+      const log = [];
+      openPage(log);
       const pending = craft.craft(5).catch((e) => e);
       await flush();
       await answer(requests[0], { data: { status: 'error', message: 'no' } });
       await pending;
-      expect(applied).to.equal(false);
+      expect(log).to.deep.equal([]);
+    });
+
+    it('is left alone on other pages', async () => {
+      const log = [];
+      openPage(log, '/Decks');
+      const pending = craft.craft(5);
+      await flush();
+      await answer(requests[0], { data: dog() });
+      await pending;
+      expect(log).to.deep.equal([]);
     });
   });
 
@@ -319,11 +375,19 @@ describe('craft object', () => {
       expect(globalThis.underscript.craft.dust).to.equal(321);
     });
 
-    it('reads the page when it can tell, and falls back to what it knows', () => {
+    it('reads the Crafting page when it can tell, and falls back to what it knows', () => {
       report('craft', true, dog({ dust: 300 }), {});
-      attach({ liveDust: () => 999 });
+      openPage([]);
+      document.querySelector('#dust').textContent = '999';
       expect(craft.dust).to.equal(999);
-      attach({ liveDust: () => undefined });
+      document.querySelector('#dust').textContent = '';
+      expect(craft.dust).to.equal(300);
+    });
+
+    it('does not read dust from other pages', () => {
+      report('craft', true, dog({ dust: 300 }), {});
+      openPage([], '/Decks');
+      document.querySelector('#dust').textContent = '999';
       expect(craft.dust).to.equal(300);
     });
   });

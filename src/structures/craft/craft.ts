@@ -4,17 +4,13 @@ import { cardName } from 'src/utils/cardHelper';
 import eventEmitter from 'src/utils/eventEmitter';
 import { global } from 'src/utils/global';
 import { loadDust, saveDust } from './dustStore';
+import * as display from './display';
 import { post } from './request';
 import type { CraftBody } from './request';
 import { isAction, parseAuto, parseCard, parseRejection } from './result';
 
 type Raw = Record<string, unknown>;
 type Card = Parameters<typeof cardName>[0];
-
-type Hooks = {
-  apply?(action: UnderScriptCraftAction, response: unknown, body: CraftBody): void;
-  liveDust?(): number | undefined;
-};
 
 type Results = {
   craft: UnderScriptCraftResult;
@@ -23,7 +19,6 @@ type Results = {
 };
 
 const events = eventEmitter<UnderScriptCraftEvents>();
-let hooks: Hooks = {};
 let tail: Promise<unknown> = Promise.resolve();
 let knownDust: number | undefined;
 
@@ -73,7 +68,7 @@ async function run<A extends UnderScriptCraftAction>(body: CraftBody & { action:
   switch (outcome.type) {
     case 'ok': {
       const { data } = outcome.response;
-      wrap(() => hooks.apply?.(body.action, data, body), `Craft[apply]: ${body.action}`);
+      wrap(() => display.apply(body.action, data), `Craft[apply]: ${body.action}`);
       const result = announce(body.action, data, body);
       if (!result) throw new Error('Unexpected response, the request may have gone through');
       return result;
@@ -102,7 +97,7 @@ function toBody<A extends 'craft' | 'disenchant'>(
 
 const craft: UnderScriptCraftPlugin = {
   get dust() {
-    return hooks.liveDust?.() ?? knownDust ?? loadDust();
+    return display.liveDust() ?? knownDust ?? loadDust();
   },
   on(event, listener) {
     events.on(event, listener);
@@ -126,10 +121,6 @@ const craft: UnderScriptCraftPlugin = {
     return run({ action: 'auto' });
   },
 };
-
-export function attach(next: Partial<Hooks>): void {
-  hooks = { ...hooks, ...next };
-}
 
 export function report(action: unknown, success: boolean, response: unknown, data: unknown): void {
   if (!isAction(action)) return;

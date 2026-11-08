@@ -1,6 +1,5 @@
 import { global } from 'src/utils/global';
 import onPage from 'src/utils/onPage';
-import { attach } from 'src/structures/deck/write';
 
 function setQuantities(soul, ids, shinies, quantities) {
   const collection = global('deckCollections')[soul] || [];
@@ -40,15 +39,12 @@ function update(action, soul, data) {
   }
 }
 
-onPage('Decks', () => {
-  attach({
-    apply({ action, soul }, data) {
-      if (!global('decks', { throws: false })?.[soul]) return;
-      update(action, soul, data);
-      global('refreshDeckList')();
-      global('updateArtifactSlots')();
-      global('applyFilters')();
-      global('showPage')(global('currentPage'));
-    },
-  });
-});
+export default function apply({ action, soul }, data) {
+  if (!onPage('Decks')) return;
+  if (!global('decks', { throws: false })?.[soul]) return;
+  update(action, soul, data);
+  global('refreshDeckList')();
+  global('updateArtifactSlots')();
+  global('applyFilters')();
+  global('showPage')(global('currentPage'));
+}

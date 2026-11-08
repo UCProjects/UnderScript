@@ -19,11 +19,13 @@ describe('plugin craft', () => {
   let errors;
 
   beforeEach(() => {
+    globalThis.location = { pathname: '/Home' };
     errors = [];
     console.error = (...args) => errors.push(args); // eslint-disable-line no-console
   });
 
   afterEach(() => {
+    delete globalThis.location;
     console.error = originalError; // eslint-disable-line no-console
   });
 

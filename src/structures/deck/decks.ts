@@ -1,7 +1,8 @@
-import eventEmitter from 'src/utils/eventEmitter';
 import { global } from 'src/utils/global';
 import * as http from 'src/utils/http';
 import onPage from 'src/utils/onPage';
+import events from './events';
+import type { DecksEvents } from './events';
 import { getSaved, listSaved, parseDeckCode } from './saved';
 import type { SavedDeck } from './saved';
 import * as writes from './write';
@@ -17,18 +18,7 @@ export type CurrentDeck = {
   readonly artifacts: ReadonlyArray<Id>;
 };
 
-export type DeckChange = {
-  readonly soul: string | undefined;
-  readonly action: string;
-  readonly id?: Id;
-  readonly shiny?: boolean;
-};
-
-export type DecksEvents = {
-  changed: [change: DeckChange];
-};
-
-const events = eventEmitter<DecksEvents>();
+export type { DeckChange, DecksEvents } from './events';
 
 function isRecord(value: unknown): value is Raw {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -114,8 +104,6 @@ function importCode(code: string, options?: { slot?: number; meta?: boolean }): 
   saved.restore(deck, { meta: options?.meta });
   return saved;
 }
-
-writes.attach({ announce: (edit) => events.emit('changed', edit) });
 
 async function currentFor(soul: string): Promise<CurrentDeck | undefined> {
   return (await current())[soul];

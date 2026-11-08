@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { network } from '../../../setup/http';
-import decks from '../../../../src/structures/deck/decks';
+import { network } from '../setup/http';
+import decks from '../../src/structures/deck/decks';
 
 const GLOBALS = [
   'location',
@@ -21,11 +21,6 @@ describe('deck page sync', () => {
   let originalAdapter;
   let respond;
   let calls;
-
-  before(async () => {
-    globalThis.location = { pathname: '/Decks' };
-    await import('../../../../src/base/library/deck/sync');
-  });
 
   beforeEach(() => {
     calls = [];
@@ -123,5 +118,26 @@ describe('deck page sync', () => {
   it('leaves the page alone for a soul it does not know', async () => {
     await decks.addCard('PATIENCE', 5);
     expect(calls).to.deep.equal([]);
+  });
+
+  it('leaves the page alone on other pages', async () => {
+    globalThis.location = { pathname: '/Home' };
+    await decks.addCard('KINDNESS', 5);
+    expect(calls).to.deep.equal([]);
+    expect(globalThis.decks.KINDNESS).to.deep.equal([]);
+  });
+
+  it('still resolves and announces the change when the page update throws', async () => {
+    globalThis.refreshDeckList = () => { throw new Error('no list'); };
+    const changes = [];
+    const listener = (change) => changes.push(change);
+    decks.on('changed', listener);
+    try {
+      const edit = await decks.addCard('KINDNESS', 5);
+      expect(edit).to.include({ soul: 'KINDNESS', action: 'addCard' });
+      expect(changes).to.have.length(1);
+    } finally {
+      decks.off('changed', listener);
+    }
   });
 });

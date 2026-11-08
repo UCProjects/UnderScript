@@ -21,7 +21,7 @@ import checkboxGroup, {
   setChecked,
 } from 'src/utils/checkboxGroup';
 import style from 'src/utils/style';
-import showTotals from './totals';
+import showTotals from 'src/structures/craft/totals';
 import styles from './disenchant.css';
 
 const setting = settings.register({

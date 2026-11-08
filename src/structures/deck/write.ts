@@ -1,8 +1,10 @@
+import wrap from 'src/utils/2.pokemon';
 import { global } from 'src/utils/global';
+import applyToPage from './display';
+import events from './events';
 import { post } from './request';
 import type { DeckBody } from './request';
 
-type Raw = Record<string, unknown>;
 type Id = number | string;
 
 export type DeckEdit = {
@@ -10,11 +12,6 @@ export type DeckEdit = {
   readonly action: DeckBody['action'];
   readonly id?: Id;
   readonly shiny?: boolean;
-};
-
-type Hooks = {
-  apply?(body: DeckBody, data: Raw): void;
-  announce?(edit: DeckEdit): void;
 };
 
 export type DeckTarget = {
@@ -31,12 +28,7 @@ export const MAX_CARDS = 25;
 export const MAX_ARTIFACTS = 2;
 const CLEAR_ALL_AT = 13;
 
-let hooks: Hooks = {};
 let tail: Promise<unknown> = Promise.resolve();
-
-export function attach(next: Hooks): void {
-  hooks = { ...hooks, ...next };
-}
 
 function enqueue<T>(task: () => Promise<T>): Promise<T> {
   const next = tail.then(task, task);
@@ -70,9 +62,9 @@ async function run(body: DeckBody): Promise<DeckEdit> {
   const outcome = await enqueue(() => post(body));
   switch (outcome.type) {
     case 'ok': {
-      hooks.apply?.(body, outcome.data);
+      wrap(() => applyToPage(body, outcome.data), `Decks[apply]: ${body.action}`);
       const edit = editOf(body);
-      hooks.announce?.(edit);
+      events.emit('changed', edit);
       return edit;
     }
     case 'refused':
