@@ -1,6 +1,7 @@
 import eventEmitter from 'src/utils/eventEmitter';
 import * as api from 'src/utils/4.api';
 import { global } from 'src/utils/global';
+import VarStore from 'src/utils/VarStore';
 import ChatChannel, { openRefs, publicName, refFrom, refFromRoom } from './channel';
 import type { ChannelRef, ChannelType } from './channel';
 import { arm, createPending } from './pending';
@@ -15,15 +16,15 @@ type Hooks = {
 
 const events = eventEmitter<UnderScriptChatEvents>();
 const channels = new Map<string, ChatChannel>();
-let hooks: Hooks | undefined;
-let replaced = false;
+const hooks = new VarStore<Hooks>();
+const replaced = new VarStore(false);
 
 const chat: UnderScriptChat = {
   get connected() {
-    return hooks?.connected() ?? false;
+    return hooks.value?.connected() ?? false;
   },
   get replaced() {
-    return replaced;
+    return replaced.value;
   },
   get self() {
     return findUser(global('selfId', { throws: false }));
@@ -47,7 +48,7 @@ const chat: UnderScriptChat = {
     return chat;
   },
   reconnect() {
-    hooks?.reconnect();
+    hooks.value?.reconnect();
   },
   channel(name) {
     return findChannel(name);
@@ -58,29 +59,31 @@ const chat: UnderScriptChat = {
   },
   open(target) {
     const channel = findChannel(target);
-    if (!hooks || !channel) return undefined;
-    return hooks.open(channel) ? channel : undefined;
+    const hook = hooks.value;
+    if (!hook || !channel) return undefined;
+    return hook.open(channel) ? channel : undefined;
   },
   send(channel, text) {
     const target = findChannel(channel);
-    if (!hooks || typeof text !== 'string' || !text || !target) {
+    const hook = hooks.value;
+    if (!hook || typeof text !== 'string' || !text || !target) {
       return Promise.resolve({ status: 'canceled' });
     }
     const pending = createPending();
     arm(target, pending);
-    hooks.send(target, text);
+    hook.send(target, text);
     return pending.promise;
   },
 };
 
 export function getChannel(type: ChannelType, id: string): ChatChannel {
   const room = `chat-${type}-${id}`;
-  let channel = channels.get(room);
-  if (!channel) {
-    channel = new ChatChannel(chat, type, id);
+  if (!channels.has(room)) {
+    const channel = new ChatChannel(chat, type, id);
     channels.set(room, channel);
+    return channel;
   }
-  return channel;
+  return channels.get(room);
 }
 
 function channelOf(ref: ChannelRef | undefined): ChatChannel | undefined {
@@ -109,15 +112,15 @@ export function findChannel(name: unknown): ChatChannel | undefined {
 }
 
 export function attach(next: Hooks): void {
-  hooks = next;
+  hooks.value = next;
 }
 
 export function emit<K extends keyof UnderScriptChatEvents>(
   event: K,
   ...args: UnderScriptChatEvents[K]
 ): void {
-  if (event === 'replaced') replaced = true;
-  if (event === 'connected' || event === 'reconnected') replaced = false;
+  if (event === 'replaced') replaced.value = true;
+  if (event === 'connected' || event === 'reconnected') replaced.value = false;
   events.emit(event, ...args);
 }
 

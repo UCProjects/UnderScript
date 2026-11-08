@@ -249,11 +249,6 @@
       "count": 4
     }
   },
-  "src/structures/chat/chat.ts": {
-    "no-restricted-syntax": {
-      "count": 3
-    }
-  },
   "src/structures/chat/deletion.ts": {
     "no-restricted-syntax": {
       "count": 1
@@ -276,7 +271,7 @@
   },
   "src/structures/craft/craft.ts": {
     "no-restricted-syntax": {
-      "count": 3
+      "count": 2
     }
   },
   "src/structures/deck/decks.ts": {
@@ -291,7 +286,7 @@
   },
   "src/structures/deck/write.ts": {
     "no-restricted-syntax": {
-      "count": 2
+      "count": 1
     }
   },
   "src/structures/packs/results.js": {
