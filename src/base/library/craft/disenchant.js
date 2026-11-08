@@ -96,6 +96,11 @@ onPage('Crafting', function disenchantWrapper() {
       'Smart Disenchant will not disenchant DETERMINATION or Shiny BASE cards. Pick a selection below, then adjust it by hand.',
     );
     const everything = [...calcCards({ shiny: false }), ...calcCards({ shiny: true })];
+    presets.push({
+      label: 'Auto',
+      hint: 'Select what Disenchant Auto would disenchant<br />Note: Counts normal and shiny copies separately',
+      cards: calcAuto(everything),
+    });
     const normal = buildColumn(everything, false);
     const shiny = buildColumn(everything, true);
     const status = $('<div class="sr-only" role="status" aria-live="polite">');
@@ -343,6 +348,13 @@ onPage('Crafting', function disenchantWrapper() {
     }
     debug(extras, undefined, shiny, priority);
     return extras;
+  }
+
+  function calcAuto(entries) {
+    return entries.flatMap((entry) => {
+      const quantity = entry.quantity - cardHelper.max(entry.rarity);
+      return quantity > 0 ? [{ ...entry, quantity }] : [];
+    });
   }
 
   function calcDust(cards) {

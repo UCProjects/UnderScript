@@ -124,6 +124,22 @@ describe('Smart Disenchant', () => {
     clearToasts();
   });
 
+  it('has an Auto preset that selects the extra copies, counting normal and shiny apart', () => {
+    globalThis.collection = [
+      card(1, 5),
+      card(2, 3),
+      card(3, 3, { rarity: 'EPIC' }),
+      card(4, 2, { rarity: 'LEGENDARY' }),
+      card(5, 4, { shiny: true }),
+      card(6, 4, { rarity: 'DETERMINATION' }),
+    ];
+    const { message, confirm } = openDialog();
+    const auto = message.find('.us-disenchant-presets button').filter((_, button) => $(button).text().startsWith('Auto'));
+    expect(auto.text()).to.equal('Auto (+550)');
+    auto.trigger('click');
+    expect(confirm.text()).to.equal('Disenchant (+550)');
+  });
+
   it('sends one request per copy, five at a time', async () => {
     await disenchantEverything();
     expect(open()).to.have.length(5);

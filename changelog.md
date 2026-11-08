@@ -10,6 +10,7 @@
 1. Smart Disenchant now lists every card you can disenchant, so you can choose exactly which cards and copies to disenchant<extended>
     - Cards are grouped as Normal and Shiny, then by rarity, then by card. A group's box selects everything inside it.
     - The Prioritize Normal and Prioritize Shiny buttons select what they would have disenchanted, and you can adjust the selection before confirming.
+    - An Auto button selects what the game's Disenchant Auto would disenchant, so you can check or change it first.
     - Disenchanting shows its progress, can be stopped, and waits and carries on when the game rate limits the requests.</extended>
 1. Smart Disenchant is now turned on by default, and the "Enable at own risk" note is gone from its setting
 1. Added an optional "GitHub token" setting under Updates, for when update checks fail because GitHub's request limit was reached<extended>

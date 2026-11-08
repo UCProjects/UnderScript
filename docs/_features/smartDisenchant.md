@@ -9,10 +9,11 @@ A Smart Disenchant button next to your dust on the Crafting page disenchants car
 
 Open and close a group with the arrow next to it. Expand selected opens every group that has something ticked in it, and Collapse all closes every group. Ticking a group ticks everything inside it, and a bar in the box means only some of it is ticked. To select every normal or shiny card, tick the Normal or Shiny box at the top of its column.
 
-Two buttons at the top fill in the selection for you, each showing how much dust you would get:
+Three buttons at the top fill in the selection for you, each showing how much dust you would get:
 
 * Prioritize Normal counts normal and shiny cards together and selects the extra shiny cards, along with any normal cards above the maximum
 * Prioritize Shiny does the same the other way around, selecting the extra normal cards
+* Auto selects what the game's Disenchant Auto would disenchant: the copies of a card above the maximum for its rarity (3 for common and rare, 2 for epic, 1 for legendary), counting normal and shiny copies separately
 
 Clear unticks everything. Look over the selection, change it by hand if you like, then press Disenchant. The button shows the dust you will get from what is ticked.
 
