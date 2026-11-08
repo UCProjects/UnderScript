@@ -51,7 +51,7 @@ tabManager()
 : Build a page of tabs. `addTab(name, content)` adds one and `render(true)` gives you the element to put on the page. Tabs that don't fit on one row split into pages with arrows. `settings({ labels, tooltip })` changes the text of the arrows' tooltips (`labels.previous(page, total)`, `labels.next(page, total)`), or sets `tooltip` to `underscript.utils.hover` to use UnderScript's hover instead of a plain `title`.
 
 VarStore
-: Holds a value. `consume()` reads it and puts the default back.
+: Holds a value, starting from a default. `get()` and `value` read it, and `set(value)` and `value = ...` change it. `isSet()` says whether it differs from the default, `reset()` puts the default back, and `consume()` reads the value and then puts the default back.
 
 LazyStore(*function*)
 : Holds the result of a function, and only runs it the first time you read it with `get()` or `value`. `isLoaded()` says whether the value is in, which for a promise is once it resolves. A promise that rejects is not kept, so the next read tries again. `reset()` forgets the result so the next read runs the function again.

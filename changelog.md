@@ -22,8 +22,8 @@
 1. When another session of your account takes over chat, this one no longer reconnects on its own and takes it back, which made two sessions kick each other in a loop<extended>
     - A toast tells you chat was opened elsewhere and has a Reconnect button. Switching back to the tab, or sending a message, still reconnects as before.
     - Plugins can listen for it with `plugin.chat.on('replaced', ...)`.</extended>
-1. Chat history now survives page loads: the last 50 public messages of each room come back after a quiet spell instead of vanishing after five minutes<extended>
-    - The game drops stored history older than five minutes when a page loads, so a short break between pages emptied your chat. UnderScript now keeps its own copy and puts it back before the game reads it. There is a setting to turn it off.</extended>
+1. Chat history now survives page loads: the last 50 public messages of each room are still there when you go to another page, even after a break<extended>
+    - UnderScript keeps its own copy of the history and puts it back when a page loads. There is a setting to turn it off.</extended>
 1. The Friendship page now has the dimmed filter icons too, and hides the filter checkboxes when the setting for that is on Always
 1. Right clicking a user in chat now opens a profile card with their avatar, level and division, and their Elo over the division icon for Master and above, above the same options as before, and a Spectate option for users who are in a game<extended>
     - Message and Mute show only for moderators, and Ignore and Mute are hidden, instead of greyed out, for yourself and for moderators.
