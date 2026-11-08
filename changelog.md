@@ -107,6 +107,9 @@
     - `options: ['Complete', 'Partial']` gives a setting whose `value()` is `'Complete' | 'Partial'`. For `[label, value]` options it is the values, and numbers are typed as strings because that is how they are stored.
     - Passing another `type` alongside `options`, or an explicit type like `add<string>(...)`, behaves as before.
     - `transform` now receives the stored value and sets the type of `value()`, `onChange` and `on`. `default`, `converter` and `set()` use the stored value, not the transformed one.</extended>
+1. Select settings accept an option as text, a `[text, value]` pair, a `{ label, value }` object or a function that returns one of those<extended>
+    - An option without a value now uses its text as the value in every kind of setting, so the stored value does not change with the player's language. This also applies to the items of a `list` setting.
+    - In the type definitions, the value of an object option is `value` (or `val`) when it has one, and its `label` (or `text`) when it does not.</extended>
 
 ## Version 0.65.1 (2026-10-10)
 1. Fixed the Craftable cards notice on the Crafting page showing no text

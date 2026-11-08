@@ -1,5 +1,4 @@
-import toArray from 'src/utils/toArray';
-import { translateText } from 'src/utils/translate';
+import getTextValue from 'src/utils/getTextValue';
 import Setting from './text';
 
 export default class Select extends Setting {
@@ -8,8 +7,8 @@ export default class Select extends Setting {
   }
 
   default([data] = []) {
-    const [l, v = l] = toArray(data);
-    return `${v}`;
+    if (data === undefined) return '';
+    return `${getTextValue(data, { allowBlank: true }).value}`;
   }
 
   element(value, update, {
@@ -23,7 +22,7 @@ export default class Select extends Setting {
 
 function options(data = [], current = '') {
   return data.map((o) => {
-    const [l, v = l] = toArray(o);
-    return `<option value="${v}"${`${current}` === `${v}` ? ' selected' : ''}>${translateText(l)}</option>`;
+    const { text, value } = getTextValue(o, { allowBlank: true });
+    return `<option value="${value}"${`${current}` === `${value}` ? ' selected' : ''}>${text}</option>`;
   });
 }

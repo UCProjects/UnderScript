@@ -16,11 +16,28 @@ type UnderScriptBuiltinSettingType =
 
 type UnderScriptSettingType = UnderScriptBuiltinSettingType | `${string}:${string}` | object;
 
-type UnderScriptSelectOption = string | number | readonly [label: string | number, value?: string | number];
+type UnderScriptSelectObject = {
+  readonly label?: string | number;
+  readonly text?: string | number;
+  readonly val?: string | number;
+  readonly value?: string | number;
+};
+
+type UnderScriptSelectOption =
+  | string
+  | number
+  | readonly [label: string | number, value?: string | number]
+  | UnderScriptSelectObject
+  | (() => string | number | readonly [label: string | number, value?: string | number] | UnderScriptSelectObject);
 
 type UnderScriptSelectValue<O> =
   O extends readonly [unknown, infer V extends string | number] ? `${V}`
   : O extends readonly [infer L extends string | number] ? `${L}`
+  : O extends { readonly val: infer V extends string | number } ? `${V}`
+  : O extends { readonly value: infer V extends string | number } ? `${V}`
+  : O extends { readonly label: infer L extends string | number } ? `${L}`
+  : O extends { readonly text: infer L extends string | number } ? `${L}`
+  : O extends () => unknown ? string
   : O extends string | number ? `${O}`
   : never;
 

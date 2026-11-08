@@ -51,6 +51,19 @@ const labeled = settings.add({
 });
 labeled.value() satisfies 'a' | 'b';
 
+const shaped = settings.add({
+  key: 'shaped',
+  options: [{ label: 'First', value: 'a' }, { text: 'Second', val: 'b' }, { label: 'c' }],
+});
+shaped.value() satisfies 'a' | 'b' | 'c';
+// @ts-expect-error the values are a, b and c
+shaped.value() satisfies 'z';
+
+const dynamic = settings.add({ key: 'dynamic', options: [() => 'Soon', 'Later'] });
+dynamic.value() satisfies string;
+// @ts-expect-error a function gives a plain string
+dynamic.value() satisfies number;
+
 const numeric = settings.add({ key: 'numeric', options: [1, 2, 3] });
 numeric.value() satisfies '1' | '2' | '3';
 

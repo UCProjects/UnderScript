@@ -1,5 +1,5 @@
 import clone from 'src/utils/clone';
-import { translateText } from 'src/utils/translate';
+import getTextValue from 'src/utils/getTextValue';
 import Setting from './array';
 
 export default class List extends Setting {
@@ -9,7 +9,7 @@ export default class List extends Setting {
 
   value(val, data = []) {
     const value = super.value(val)
-      .map((o) => data.find((i) => getValue(i) === o)) // Convert value to parent data
+      .map((o) => data.find((i) => getTextValue(i).value === o)) // Convert value to parent data
       .filter((_) => _); // Remove invalid data
 
     // For new additions, add to the end of value list
@@ -29,7 +29,7 @@ export default class List extends Setting {
   }
 
   encode(value = []) {
-    return super.encode(value.map(getValue));
+    return super.encode(value.map((item) => getTextValue(item).value));
   }
 
   element(value, update) {
@@ -65,7 +65,7 @@ export default class List extends Setting {
     function addItem(o) {
       // Create element
       const node = document.createElement('li');
-      node.innerText = translateText(getLabel(o));
+      node.innerText = getTextValue(o).text;
       node.draggable = true;
       if (typeof o.class === 'string') {
         node.classList.add(...o.class.trim().split(/\s+/));
@@ -87,29 +87,4 @@ export default class List extends Setting {
       '.sortedList li { cursor: grab; }',
     ];
   }
-}
-
-function getValue(item) {
-  if (typeof item === 'object') {
-    if (item.val !== undefined) return item.val;
-    if (item.value !== undefined) return item.value;
-    return translateText(getLabel(item)); // Fallback to label should technically be an invalid state... but whatever
-  }
-  return item;
-}
-
-function getLabel(
-  item,
-  // allow only one level of function calls
-  allowed = true,
-) {
-  if (allowed && typeof item === 'function') {
-    return getLabel(item(), false);
-  }
-  if (typeof item === 'object') {
-    return getLabel(item.label || item.text, allowed);
-  }
-  if (!item) throw new Error('Label not provided');
-  if (typeof item !== 'string') throw new Error(`Unknown label: ${typeof item}`);
-  return item;
 }

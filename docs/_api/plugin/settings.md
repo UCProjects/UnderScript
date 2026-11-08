@@ -157,7 +157,7 @@ boolean
 
 select
 : Drop down menu.<br>
-`data`: the items to choose from, each a value or `[label, value]`, like `['Low', ['High', 'h']]`
+`data`: the items to choose from, each its text, a pair of `[text, value]`, an object with `label` (or `text`) and `value` (or `val`), or a function that returns one of those, like `['Low', ['High', 'h'], { label: 'Max', value: 'm' }]`. When there is no separate value, the text is the value, so the stored value does not change with the player's language.
 
 text
 : A text box
