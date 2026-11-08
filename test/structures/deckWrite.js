@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import axios from 'axios';
+import { network } from '../setup/http';
 import decks from '../../src/structures/deck/decks';
 import { plan } from '../../src/structures/deck/write';
 
@@ -105,8 +105,8 @@ describe('deck writes', () => {
     requests = [];
     server = current();
     respond = (body) => accepted[body.action](body);
-    originalAdapter = axios.defaults.adapter;
-    axios.defaults.adapter = (config) => {
+    originalAdapter = network.adapter;
+    network.adapter = (config) => {
       if (config.method === 'get') return reply(config, server);
       const body = JSON.parse(config.data);
       requests.push(body);
@@ -116,7 +116,7 @@ describe('deck writes', () => {
   });
 
   afterEach(() => {
-    axios.defaults.adapter = originalAdapter;
+    network.adapter = originalAdapter;
     delete globalThis.location;
     delete globalThis.translateFromServerJson;
   });
@@ -175,7 +175,7 @@ describe('deck writes', () => {
     });
 
     it('rejects with its own message when the server sends an empty reply', async () => {
-      axios.defaults.adapter = (config) => reply(config, '');
+      network.adapter = (config) => reply(config, '');
       let error;
       try {
         await decks.addCard('KINDNESS', 5);
@@ -186,7 +186,7 @@ describe('deck writes', () => {
     });
 
     it('rejects when the request fails, and when it is rate limited', async () => {
-      axios.defaults.adapter = (config) => reply(config, '', 500);
+      network.adapter = (config) => reply(config, '', 500);
       let error;
       try {
         await decks.clear('KINDNESS');
@@ -194,7 +194,7 @@ describe('deck writes', () => {
         error = e;
       }
       expect(error.message).to.equal('Request failed');
-      axios.defaults.adapter = (config) => reply(config, '', 429);
+      network.adapter = (config) => reply(config, '', 429);
       try {
         await decks.clear('KINDNESS');
       } catch (e) {
@@ -205,7 +205,7 @@ describe('deck writes', () => {
     });
 
     it('says how long to wait when the server asks', async () => {
-      axios.defaults.adapter = (config) => reply(config, '', 429, { 'retry-after': '7' });
+      network.adapter = (config) => reply(config, '', 429, { 'retry-after': '7' });
       let error;
       try {
         await decks.clear('KINDNESS');
@@ -234,7 +234,7 @@ describe('deck writes', () => {
 
     it('sends the changes one at a time, in order', async () => {
       const releases = [];
-      axios.defaults.adapter = (config) => {
+      network.adapter = (config) => {
         const body = JSON.parse(config.data);
         requests.push(body);
         return new Promise((resolve) => {

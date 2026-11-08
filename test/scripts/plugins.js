@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import fs from 'node:fs/promises';
 import axios from 'axios';
+import { network } from '../setup/http';
 import { check, markdown, resolve, validate } from '../../scripts/plugins';
 
 const entry = (extra = {}) => ({
@@ -167,11 +168,16 @@ describe('plugins.json', () => {
         }
         return { data: responses.get(url) };
       };
+      network.adapter = ({ url }) => {
+        if (!responses.has(url)) return { status: 404, data: '' };
+        return { data: responses.get(url) };
+      };
     });
 
     afterEach(() => {
       axios.get = original;
       axios.head = originalHead;
+      network.adapter = undefined;
     });
 
     describe('resolve', () => {

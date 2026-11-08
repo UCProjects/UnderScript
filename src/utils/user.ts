@@ -1,8 +1,8 @@
-import axios from 'axios';
 import type { Nullish } from 'src/types/utility';
 import { global } from './global';
 import * as api from './4.api';
 import eventManager from './eventManager';
+import * as http from './http';
 import sleep from './sleep';
 
 type Self = {
@@ -86,7 +86,7 @@ function getDeckConfig(): Promise<DeckConfig> {
       sleep(500).then(() => res(undefined));
     }).then((res) => {
       if (res) return res;
-      return axios.get<DeckConfig>('DecksConfig').then(({ data }) => {
+      return http.get<DeckConfig>('DecksConfig').then(({ data }) => {
         eventManager.emit({ singleton: true }, 'Deck:Loaded', data);
         return data;
       });
@@ -103,12 +103,12 @@ function parse<T = any>(data: unknown): T {
 }
 
 export function getUCP(): Promise<number> {
-  return axios.get(`CardSkinsConfig?action=profile&time=${Date.now()}`)
+  return http.get<{ ucp?: number }>(`CardSkinsConfig?action=profile&time=${Date.now()}`)
     .then(({ data: { ucp = 0 } }) => ucp);
 }
 
 export function getCardSkins(): Promise<any> {
-  return axios.get('CardSkinsConfig?action=profile')
+  return http.get<{ cardSkins?: string }>('CardSkinsConfig?action=profile')
     .then(({ data: { cardSkins = '' } }) => JSON.parse(cardSkins));
 }
 

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import * as http from '../http';
 import extractMeta from '../extractMeta';
 import { authenticatedGet, isGithubApi } from '../githubAuth';
 
@@ -31,10 +31,10 @@ export default class FileParser {
 
   async getUpdateData(url = this.#updateURL, config = {}) {
     if (isGithubApi(url)) {
-      const { data } = await authenticatedGet(axios.get, url, config);
+      const { data } = await authenticatedGet(http.get, url, config);
       return this.parseData(data);
     }
-    const { data } = await axios.get(url, config);
+    const { data } = await http.get(url, config);
     return this.parseData(data);
   }
 

@@ -1,6 +1,6 @@
 import luxon from 'luxon';
 import showdown from 'showdown';
-import axios from 'axios';
+import * as http from 'src/utils/http';
 import { scriptVersion } from 'src/utils/1.variables';
 import style from 'src/utils/style';
 import { authenticatedGet } from 'src/utils/githubAuth';
@@ -50,7 +50,7 @@ async function getText() {
     const text = GM_getResourceText('changelog.md');
     if (text) return text;
   }
-  const { data } = await axios.get('https://raw.githubusercontent.com/UCProjects/UnderScript/refs/heads/master/changelog.md');
+  const { data } = await http.get('https://raw.githubusercontent.com/UCProjects/UnderScript/refs/heads/master/changelog.md', { responseType: 'text' });
   return data;
 }
 
@@ -67,7 +67,7 @@ export async function get(version = 'latest', short = false) {
   }
 
   if (short) {
-    const { data: { body: text, name, published_at: published } } = await authenticatedGet(axios.get, `https://api.github.com/repos/UCProjects/UnderScript/releases/tags/${version}`);
+    const { data: { body: text, name, published_at: published } } = await authenticatedGet(http.get, `https://api.github.com/repos/UCProjects/UnderScript/releases/tags/${version}`);
     const date = luxon.DateTime.fromISO(published).toLocaleString(luxon.DateTime.DATE_MED);
     return getHtml(`## ${name} (${date})\n${text}`);
   }

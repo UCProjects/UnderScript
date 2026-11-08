@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import axios from 'axios';
+import { network } from '../setup/http';
 import { forgetGames, loadGames, parseGames } from '../../src/structures/chat/games';
 import { findUser, syncFriends, updateUser } from '../../src/structures/chat/user';
 
@@ -54,19 +54,19 @@ describe('chat games list', () => {
 
     before(() => {
       globalThis.DOMParser ??= window.DOMParser;
-      originalAdapter = axios.defaults.adapter;
-      axios.defaults.adapter = answer;
+      originalAdapter = network.adapter;
+      network.adapter = answer;
     });
 
     beforeEach(() => {
-      axios.defaults.adapter = answer;
+      network.adapter = answer;
       requests = [];
       html = page([cell(5, 501) + cell(5, 502)]);
       forgetGames();
     });
 
     after(() => {
-      axios.defaults.adapter = originalAdapter;
+      network.adapter = originalAdapter;
       forgetGames();
     });
 
@@ -106,7 +106,7 @@ describe('chat games list', () => {
     });
 
     it('does not keep a failed request', async () => {
-      axios.defaults.adapter = () => Promise.reject(new Error('offline'));
+      network.adapter = () => Promise.reject(new Error('offline'));
       let failed;
       try {
         await loadGames();
@@ -114,7 +114,7 @@ describe('chat games list', () => {
         failed = e;
       }
       expect(failed).to.be.instanceOf(Error);
-      axios.defaults.adapter = answer;
+      network.adapter = answer;
       await loadGames();
       expect(requests).to.have.length(1);
     });

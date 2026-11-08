@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import axios from 'axios';
+import { network } from '../../setup/http';
 
 describe('chat profile card', () => {
   let eventManager;
@@ -79,8 +79,8 @@ describe('chat profile card', () => {
     globalThis.isFriend = () => false;
     globalThis.$.i18n = (key) => key;
     globalThis.DOMParser ??= window.DOMParser;
-    originalAdapter = axios.defaults.adapter;
-    axios.defaults.adapter = (config) => {
+    originalAdapter = network.adapter;
+    network.adapter = (config) => {
       requests += 1;
       return Promise.resolve({ data: home(), status: 200, statusText: '', headers: {}, config });
     };
@@ -112,7 +112,7 @@ describe('chat profile card', () => {
   });
 
   after(() => {
-    axios.defaults.adapter = originalAdapter;
+    network.adapter = originalAdapter;
     delete globalThis.selfId;
     delete globalThis.selfUsername;
     delete globalThis.selfMainGroup;
@@ -246,15 +246,15 @@ describe('chat profile card', () => {
   });
 
   it('keeps what the message said when the games list cannot be loaded', async () => {
-    const adapter = axios.defaults.adapter;
-    axios.defaults.adapter = () => Promise.reject(new Error('offline'));
+    const adapter = network.adapter;
+    network.adapter = () => Promise.reject(new Error('offline'));
     try {
       updateUser(raw(29));
       rightClick(post(20, 29, 42));
       await settle();
       expect(spectate().hidden).to.equal(false);
     } finally {
-      axios.defaults.adapter = adapter;
+      network.adapter = adapter;
     }
   });
 

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import axios from 'axios';
+import { network } from '../../../setup/http';
 import decks from '../../../../src/structures/deck/decks';
 
 const GLOBALS = [
@@ -62,8 +62,8 @@ describe('deck page sync', () => {
       cardsShiny: '[false,false]',
       cardsQuantity: '[3,1]',
     });
-    originalAdapter = axios.defaults.adapter;
-    axios.defaults.adapter = (config) => {
+    originalAdapter = network.adapter;
+    network.adapter = (config) => {
       const body = JSON.parse(config.data);
       const data = body.action === 'removeCard' || body.action === 'removeAllCards' ?
         (({ status, ...rest }) => rest)(respond(body)) :
@@ -73,7 +73,7 @@ describe('deck page sync', () => {
   });
 
   afterEach(() => {
-    axios.defaults.adapter = originalAdapter;
+    network.adapter = originalAdapter;
     GLOBALS.forEach((key) => delete globalThis[key]);
   });
 

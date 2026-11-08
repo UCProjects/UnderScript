@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import axios from 'axios';
+import { network } from '../../setup/http';
 import 'src/base/plugin/logger';
 import 'src/base/api/constants';
 import 'src/base/plugin/decks';
@@ -123,8 +123,8 @@ describe('plugin decks', () => {
     beforeEach(() => {
       requests = [];
       globalThis.location = { pathname: '/' };
-      originalAdapter = axios.defaults.adapter;
-      axios.defaults.adapter = (config) => {
+      originalAdapter = network.adapter;
+      network.adapter = (config) => {
         const data = config.method === 'get' ?
           { decks: JSON.stringify([{ soul: { name: 'KINDNESS' }, cardsList: [{ id: 1, shiny: false }], artifacts: [] }]) } :
           { status: 'success', card: '{}', action: 'getArtifactAdded', soul: 'KINDNESS' };
@@ -134,7 +134,7 @@ describe('plugin decks', () => {
     });
 
     afterEach(() => {
-      axios.defaults.adapter = originalAdapter;
+      network.adapter = originalAdapter;
       delete globalThis.location;
     });
 
@@ -275,8 +275,8 @@ describe('plugin decks', () => {
     beforeEach(() => {
       requests = [];
       globalThis.location = { pathname: '/' };
-      originalAdapter = axios.defaults.adapter;
-      axios.defaults.adapter = (config) => {
+      originalAdapter = network.adapter;
+      network.adapter = (config) => {
         requests.push(config);
         const decks = [
           { soul: { name: 'KINDNESS' }, cardsList: [{ id: 5, shiny: true, name: 'x' }, { id: 6 }], artifacts: [{ id: 2 }, { id: 4 }] },
@@ -287,7 +287,7 @@ describe('plugin decks', () => {
     });
 
     afterEach(() => {
-      axios.defaults.adapter = originalAdapter;
+      network.adapter = originalAdapter;
       delete globalThis.location;
       delete globalThis.decks;
       delete globalThis.decksArtifacts;
@@ -322,7 +322,7 @@ describe('plugin decks', () => {
     });
 
     it('gives nothing for a reply it cannot read', async () => {
-      axios.defaults.adapter = (config) => Promise.resolve({ data: 'oops', status: 200, statusText: 'OK', headers: {}, config });
+      network.adapter = (config) => Promise.resolve({ data: 'oops', status: 200, statusText: 'OK', headers: {}, config });
       expect(await setup().decks.current()).to.deep.equal({});
     });
   });

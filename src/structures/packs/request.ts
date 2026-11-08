@@ -1,7 +1,7 @@
-import axios from 'axios';
-import type { AxiosResponse } from 'axios';
 import { debug } from 'src/utils/debug';
 import { packs as packsFlag } from 'src/utils/debugFlags';
+import * as http from 'src/utils/http';
+import type { HttpResponse } from 'src/utils/http';
 import { isRateLimited, retryAfter } from 'src/utils/rateLimit';
 import type { Attempt } from 'src/utils/workQueue';
 
@@ -17,16 +17,12 @@ export type PacksResponse = {
 
 export type Refusal = { refused: string };
 
-function log({ status, headers }: Pick<AxiosResponse, 'status' | 'headers'>, action: string) {
+function log({ status, headers }: Pick<HttpResponse, 'status' | 'headers'>, action: string) {
   debug(`PacksConfig ${status}`, packsFlag, action, headers);
 }
 
 export function attempt(action: string, expected: string): Promise<Attempt<PacksResponse | Refusal>> {
-  return axios.post<PacksResponse>('PacksConfig', { action }, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  }).then((response): Attempt<PacksResponse | Refusal> => {
+  return http.post<PacksResponse>('PacksConfig', { action }).then((response): Attempt<PacksResponse | Refusal> => {
     log(response, action);
     const { data } = response;
     if (!data || typeof data !== 'object') return { type: 'retry' };
@@ -36,7 +32,7 @@ export function attempt(action: string, expected: string): Promise<Attempt<Packs
     if (data.action !== expected) return { type: 'retry' };
     return { type: 'ok', value: data };
   }).catch((error): Attempt<PacksResponse | Refusal> => {
-    const response = error?.response as AxiosResponse | undefined;
+    const response = error?.response as HttpResponse | undefined;
     if (!response) {
       debug(`PacksConfig failed: ${error?.message}`, packsFlag, action);
       return { type: 'retry' };

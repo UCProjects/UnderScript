@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import axios from 'axios';
 import GithubRaw from '../../src/utils/parser/GithubRaw';
 import { setTokenSource } from '../../src/utils/githubAuth';
+import { network } from '../setup/http';
 
 const META = '// ==UserScript==\n// @version 1.2.3\n// ==/UserScript==';
 
@@ -32,13 +32,12 @@ describe('GithubRaw', () => {
   });
 
   describe('getUpdateData', () => {
-    const original = axios.get;
     let calls;
 
     function respond(handler) {
-      axios.get = async (url, config) => {
-        calls.push({ url, config });
-        return handler(url, config);
+      network.adapter = ({ url, headers }) => {
+        calls.push({ url, config: { headers } });
+        return handler(url, { headers });
       };
     }
 
@@ -47,7 +46,7 @@ describe('GithubRaw', () => {
     });
 
     afterEach(() => {
-      axios.get = original;
+      network.adapter = undefined;
       setTokenSource();
     });
 

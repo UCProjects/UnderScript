@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import axios from 'axios';
+import { network } from '../../../setup/http';
 import eventManager from '../../../../src/utils/eventManager';
 import craftEvents from '../../../../src/structures/craft/craft';
 import installClock from '../../../setup/clock';
@@ -81,8 +81,8 @@ describe('Smart Disenchant', () => {
     globalThis.applyFilters = () => {};
     globalThis.showPage = () => { refreshed += 1; };
     globalThis.currentPage = 0;
-    originalAdapter = axios.defaults.adapter;
-    axios.defaults.adapter = (config) => new Promise((resolve, reject) => {
+    originalAdapter = network.adapter;
+    network.adapter = (config) => new Promise((resolve, reject) => {
       requests.push({ config, resolve, reject });
     });
     await import('../../../../src/base/library/craft/disenchant');
@@ -91,7 +91,7 @@ describe('Smart Disenchant', () => {
 
   after(() => {
     craftEvents.off('smartDisenchanted', onRun);
-    axios.defaults.adapter = originalAdapter;
+    network.adapter = originalAdapter;
     localStorage.removeItem('underscript.disable.disenchant');
     ['location', 'Element', 'HTMLElement', 'BootstrapDialog', 'updateQuantity', 'applyFilters', 'showPage', 'currentPage']
       .forEach((key) => delete globalThis[key]);
@@ -298,7 +298,7 @@ describe('Smart Disenchant', () => {
       expect(entry, 'a CraftConfig 429 line').to.not.equal(undefined);
       expect(entry[1]).to.equal('CraftConfig 429');
       expect(entry[2]).to.deep.equal({ action: 'disenchant', idCard: 1, isShiny: false });
-      expect(entry[3]).to.deep.equal({ 'retry-after': '7' });
+      expect(entry[3]).to.include({ 'retry-after': '7' });
     });
 
     it('says nothing when the flag is off', async () => {

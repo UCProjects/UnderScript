@@ -1,4 +1,4 @@
-import axios from 'axios';
+import * as http from 'src/utils/http';
 import * as settings from 'src/utils/settings/index';
 import { infoToast } from 'src/utils/2.toasts';
 import debugToast from 'src/utils/debugToast';
@@ -32,7 +32,7 @@ function refresh() {
   clear();
   if (refreshing || document.visibilityState === 'hidden' || setting.value()) return;
   refreshing = true;
-  axios.get('/').then((response) => {
+  http.get('/').then((response) => {
     const data = decrypt($(response.data));
     const list = data.find('#liste');
     const live = $('#liste');

@@ -1,5 +1,5 @@
 /* eslint-disable no-multi-assign */
-import axios from 'axios';
+import * as http from 'src/utils/http';
 import eventManager from 'src/utils/eventManager';
 import * as settings from 'src/utils/settings/index';
 import { global, globalSet } from 'src/utils/global';
@@ -112,7 +112,7 @@ function updateCacheCard(id, xp) {
     return Promise.resolve(cached);
   }
 
-  return axios.get(`${URI}${id}`).then((response) => {
+  return http.get(`${URI}${id}`).then((response) => {
     if (response.data) {
       const data = JSON.parse(response.data.leaderboard);
       const base = data[data.length - 1].xp;

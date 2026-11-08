@@ -1,4 +1,4 @@
-import axios from 'axios';
+import * as http from 'src/utils/http';
 import Quest, { getId } from 'src/structures/quests/Quest';
 import eventManager from './eventManager';
 
@@ -43,7 +43,7 @@ function update(data, { callback, event = true }) {
 export function fetch(callback, event = true) {
   if (fetching) return;
   fetching = true;
-  axios.get('/Quests').then((response) => {
+  http.get('/Quests').then((response) => {
     fetching = false;
     update(response.data, { callback, event });
   }).catch((error) => {

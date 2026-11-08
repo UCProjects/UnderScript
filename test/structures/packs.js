@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import axios from 'axios';
+import { network } from '../setup/http';
 import eventManager from '../../src/utils/eventManager';
 import packs from '../../src/structures/packs/packs';
 import { clearToasts } from '../setup/simpletoast';
@@ -54,8 +54,8 @@ describe('packs object', () => {
   };
 
   before(async () => {
-    originalAdapter = axios.defaults.adapter;
-    axios.defaults.adapter = (config) => new Promise((resolve, reject) => {
+    originalAdapter = network.adapter;
+    network.adapter = (config) => new Promise((resolve, reject) => {
       requests.push({ config, resolve, reject });
     });
     eventManager.emit({ singleton: true }, 'Deck:Loaded', { collection: '[]' });
@@ -63,7 +63,7 @@ describe('packs object', () => {
   });
 
   after(() => {
-    axios.defaults.adapter = originalAdapter;
+    network.adapter = originalAdapter;
   });
 
   beforeEach(() => {

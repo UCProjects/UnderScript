@@ -1,4 +1,4 @@
-import axios from 'axios';
+import * as http from 'src/utils/http';
 import * as settings from 'src/utils/settings/index';
 import eventManager from 'src/utils/eventManager';
 import wrap from 'src/utils/2.pokemon';
@@ -44,7 +44,7 @@ wrap(() => {
     if (pending.has(questId)) return;
     pending.add(questId);
     const reward = form.closest('tr')?.querySelector('td:nth-last-child(2)');
-    axios.post(form.action, new URLSearchParams(body)).then(() => {
+    http.post(form.action, new URLSearchParams(body)).then(() => {
       notify(questId, reward);
       markClaimed(questId);
       fetch();

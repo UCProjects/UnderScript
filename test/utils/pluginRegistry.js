@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import axios from 'axios';
 import * as registry from 'src/utils/pluginRegistry';
+import { network } from '../setup/http';
 
 const LIST = 'underscript.registry.list';
 const script = (version, download) => [
@@ -11,12 +11,11 @@ const script = (version, download) => [
 ].join('\n');
 
 describe('pluginRegistry', () => {
-  const original = axios.get;
   let responses;
 
   beforeEach(() => {
     responses = new Map();
-    axios.get = async (url) => {
+    network.adapter = ({ url }) => {
       if (!responses.has(url)) throw new Error(`Unexpected request: ${url}`);
       const value = responses.get(url);
       if (value instanceof Error) throw value;
@@ -25,7 +24,7 @@ describe('pluginRegistry', () => {
   });
 
   afterEach(() => {
-    axios.get = original;
+    network.adapter = undefined;
   });
 
   function serve(entries) {

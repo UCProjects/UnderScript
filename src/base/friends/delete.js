@@ -1,4 +1,4 @@
-import axios from 'axios';
+import * as http from 'src/utils/http';
 import eventManager from 'src/utils/eventManager';
 import * as settings from 'src/utils/settings/index';
 import { globalSet } from 'src/utils/global';
@@ -28,7 +28,7 @@ function process(btn) {
   const parent = btn.parent();
   btn.detach();
   const link = btn.attr('href');
-  axios.get(link).then((response) => {
+  http.get(link).then((response) => {
     const onlineFriends = $(response.data).find(`#onlineFriends`);
     if (!onlineFriends.length) {
       errorToast(Translation.Toast('login'));

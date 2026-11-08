@@ -1,4 +1,4 @@
-import axios from 'axios';
+import * as http from './http';
 import { HOUR } from './1.variables';
 import { debug } from './debug';
 import { pluginRegistry } from './debugFlags';
@@ -75,7 +75,7 @@ function localList() {
 }
 
 async function fetchList() {
-  const { data } = await axios.get(URL);
+  const { data } = await http.get(URL);
   const entries = clean(data);
   write(LIST, { time: Date.now(), plugins: entries });
   return entries;
@@ -124,7 +124,7 @@ async function loadDates(force = false) {
     return;
   }
   try {
-    const { data } = await axios.get(META_URL);
+    const { data } = await http.get(META_URL);
     const fresh = cleanDates(data);
     dates.value = fresh;
     write(DATES, { time: Date.now(), dates: fresh });

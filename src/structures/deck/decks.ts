@@ -1,6 +1,6 @@
-import axios from 'axios';
 import eventEmitter from 'src/utils/eventEmitter';
 import { global } from 'src/utils/global';
+import * as http from 'src/utils/http';
 import onPage from 'src/utils/onPage';
 import { getSaved, listSaved, parseDeckCode } from './saved';
 import type { SavedDeck } from './saved';
@@ -86,7 +86,7 @@ async function current(): Promise<Record<string, CurrentDeck>> {
     const page = fromPage();
     if (Object.keys(page).length) return page;
   }
-  const { data } = await axios.get<unknown>('DecksConfig', { params: { time: Date.now() } });
+  const { data } = await http.get<unknown>('DecksConfig', { params: { time: Date.now() } });
   return fromConfig(data);
 }
 

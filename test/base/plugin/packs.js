@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import axios from 'axios';
+import { network } from '../../setup/http';
 import 'src/base/plugin/logger';
 import 'src/base/plugin/packs';
 import { switchOff, switchOn } from '../../setup/inactive';
@@ -34,8 +34,8 @@ describe('plugin packs', () => {
   }
 
   before(() => {
-    originalAdapter = axios.defaults.adapter;
-    axios.defaults.adapter = (config) => Promise.resolve({
+    originalAdapter = network.adapter;
+    network.adapter = (config) => Promise.resolve({
       status: 200,
       data: { action: 'getPackAdded', type: 'pack' },
       headers: {},
@@ -44,7 +44,7 @@ describe('plugin packs', () => {
   });
 
   after(() => {
-    axios.defaults.adapter = originalAdapter;
+    network.adapter = originalAdapter;
   });
 
   beforeEach(() => {

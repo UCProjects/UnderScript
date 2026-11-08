@@ -1,4 +1,4 @@
-import axios from 'axios';
+import * as http from 'src/utils/http';
 import eventManager from 'src/utils/eventManager';
 import * as settings from 'src/utils/settings/index';
 import { toast } from 'src/utils/2.toasts';
@@ -31,7 +31,7 @@ onPage('Friends', function addFriend() {
       const params = new URLSearchParams();
       params.append('username', name);
       params.append('addFriend', 'Add friend');
-      axios.post('/Friends', params).then((results) => {
+      http.post('/Friends', params).then((results) => {
         const page = new DOMParser().parseFromString(results.data, 'text/html').querySelector('div.mainContent');
         const result = page.querySelector('form[action="Friends"] + p');
         if (result) {

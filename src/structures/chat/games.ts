@@ -1,4 +1,4 @@
-import axios from 'axios';
+import * as http from 'src/utils/http';
 import { syncGames } from './user';
 
 type Games = ReadonlyMap<string, number>;
@@ -23,7 +23,7 @@ export function forgetGames(): void {
 export function loadGames(): Promise<Games> {
   if (loading && Date.now() - loadedAt < maxAge) return loading;
   loadedAt = Date.now();
-  const request = axios.get<string>('/', { responseType: 'text' }).then(({ data }) => {
+  const request = http.get<string>('/', { responseType: 'text' }).then(({ data }) => {
     const games = parseGames(new DOMParser().parseFromString(data, 'text/html'));
     syncGames(games);
     return games;

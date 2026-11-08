@@ -1,5 +1,7 @@
 import fs from 'node:fs/promises';
 import axios from 'axios';
+import { setTokenSource } from '../src/utils/githubAuth.js';
+import * as http from '../src/utils/http.js';
 import createParser from '../src/utils/parser/index.js';
 import { isMain, writeFile } from './utils.js';
 
@@ -128,7 +130,7 @@ const HINTS = {
 
 function describe(error) {
   const status = error.response?.status;
-  if (status) return `${error.config?.url ?? 'The request'} answered ${status}`;
+  if (status) return `${error.url ?? error.config?.url ?? 'The request'} answered ${status}`;
   return HINTS[error.message] ?? error.message;
 }
 
@@ -169,6 +171,7 @@ export async function check(text, { network = true } = {}) {
 }
 
 export function authenticate(token) {
+  setTokenSource((url) => (url?.startsWith('https://api.github.com/gists/') ? '' : token));
   axios.interceptors.request.use((config) => {
     if (config.url?.startsWith('https://api.github.com/') && !config.url.startsWith('https://api.github.com/gists/')) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -214,6 +217,7 @@ export default async function main(args = process.argv.slice(2)) {
   const file = args.find((arg) => !arg.startsWith('-')) ?? REGISTRY;
   if (process.env.GITHUB_TOKEN) authenticate(process.env.GITHUB_TOKEN);
   axios.defaults.timeout = TIMEOUT;
+  http.defaults.timeout = TIMEOUT;
 
   const problems = await check(await fs.readFile(file, 'utf8'), { network });
   if (output) await writeFile(output, markdown(problems, { network }));

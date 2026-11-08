@@ -1,4 +1,4 @@
-import axios from 'axios';
+import * as http from 'src/utils/http';
 import eventManager from 'src/utils/eventManager';
 import * as settings from 'src/utils/settings/index';
 import { toast } from 'src/utils/2.toasts';
@@ -49,7 +49,7 @@ const request = {
 
 function post(id, accept = true) {
   const action = accept ? 'accept' : 'delete';
-  axios.get(`/Friends?${action}=${id}`).then(() => {
+  http.get(`/Friends?${action}=${id}`).then(() => {
     const key = `underscript.request.${id}`;
     const name = sessionStorage.getItem(key);
     sessionStorage.removeItem(key);

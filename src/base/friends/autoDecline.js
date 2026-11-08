@@ -1,4 +1,4 @@
-import axios from 'axios';
+import * as http from 'src/utils/http';
 import eventManager from 'src/utils/eventManager';
 import * as settings from 'src/utils/settings/index';
 import { toast } from 'src/utils/2.toasts';
@@ -51,7 +51,7 @@ function register(key, name, set = false) {
 }
 
 function post(id, name) {
-  axios.get(`/Friends?delete=${id}`).then(() => {
+  http.get(`/Friends?delete=${id}`).then(() => {
     if (!name) return;
     const message = Translation.Toast('friend.request.auto').translate(name);
     debug(message);

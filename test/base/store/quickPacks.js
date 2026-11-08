@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import axios from 'axios';
+import { network } from '../../setup/http';
 import eventManager from '../../../src/utils/eventManager';
 import { clearToasts } from '../../setup/simpletoast';
 
@@ -38,8 +38,8 @@ describe('quick packs', () => {
     globalThis.Element = window.Element;
     globalThis.HTMLElement = window.HTMLElement;
     window.history.pushState({}, '', '/Packs');
-    originalAdapter = axios.defaults.adapter;
-    axios.defaults.adapter = (config) => new Promise((resolve, reject) => {
+    originalAdapter = network.adapter;
+    network.adapter = (config) => new Promise((resolve, reject) => {
       requests.push({ config, resolve, reject });
     });
     eventManager.emit({ singleton: true }, 'Deck:Loaded', { collection: '[]' });
@@ -49,7 +49,7 @@ describe('quick packs', () => {
   });
 
   after(() => {
-    axios.defaults.adapter = originalAdapter;
+    network.adapter = originalAdapter;
   });
 
   beforeEach(() => {

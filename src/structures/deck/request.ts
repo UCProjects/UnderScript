@@ -1,6 +1,6 @@
-import axios from 'axios';
-import type { AxiosResponse } from 'axios';
 import type { Nullish } from 'src/types/utility';
+import * as http from 'src/utils/http';
+import type { HttpResponse } from 'src/utils/http';
 import { isRateLimited, retryAfter } from 'src/utils/rateLimit';
 
 type Raw = Record<string, unknown>;
@@ -31,14 +31,12 @@ function isRecord(value: unknown): value is Raw {
 
 export async function post(body: DeckBody): Promise<Outcome> {
   try {
-    const { data } = await axios.post<unknown>('DecksConfig', body, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const { data } = await http.post<unknown>('DecksConfig', body);
     if (data === '' || data === null || data === undefined) return { type: 'empty' };
     if (!isRecord(data)) return { type: 'failed' };
     return accepts[body.action](data) ? { type: 'ok', data } : { type: 'refused', data };
   } catch (error) {
-    const response = (error as { response?: AxiosResponse } | undefined)?.response;
+    const response = (error as { response?: HttpResponse } | undefined)?.response;
     const header = (name: string) => response?.headers?.[name.toLowerCase()];
     if (response && isRateLimited(response.status, header)) {
       return { type: 'limited', retryAfter: retryAfter(header) };

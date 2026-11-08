@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import axios from 'axios';
+import { network } from '../setup/http';
 import craft, { attach, report, reportSmartDisenchant } from '../../src/structures/craft/craft';
 
 const flush = () => new Promise((resolve) => { setImmediate(resolve); });
@@ -29,14 +29,14 @@ describe('craft object', () => {
   const body = (request) => JSON.parse(request.config.data);
 
   before(() => {
-    originalAdapter = axios.defaults.adapter;
-    axios.defaults.adapter = (config) => new Promise((resolve, reject) => {
+    originalAdapter = network.adapter;
+    network.adapter = (config) => new Promise((resolve, reject) => {
       requests.push({ config, resolve, reject });
     });
   });
 
   after(() => {
-    axios.defaults.adapter = originalAdapter;
+    network.adapter = originalAdapter;
   });
 
   beforeEach(() => {

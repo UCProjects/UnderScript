@@ -1,4 +1,4 @@
-import axios from 'axios';
+import * as http from 'src/utils/http';
 import eventManager from 'src/utils/eventManager';
 import decrypt from 'src/utils/decrypt.emails';
 import debug from 'src/utils/debugToast';
@@ -18,7 +18,7 @@ let validated = 0;
 
 function loadFriends(validate) {
   if (typeof window.jQuery === 'undefined') return undefined;
-  return axios.get('/Friends').then((response) => {
+  return http.get('/Friends').then((response) => {
     const data = decrypt($(response.data));
     if (data.find(`span[data-i18n="[html]error-not-allowed"]`).length) {
       eventManager.emit({ singleton: true }, ':GuestMode');

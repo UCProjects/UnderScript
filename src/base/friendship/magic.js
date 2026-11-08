@@ -1,4 +1,4 @@
-import axios from 'axios';
+import * as http from 'src/utils/http';
 import eventManager from 'src/utils/eventManager';
 import * as settings from 'src/utils/settings/index';
 import { toast } from 'src/utils/2.toasts';
@@ -16,7 +16,7 @@ const max = 200 / 5; // Limit level 200
 
 function getFriendship() {
   if (setting.value()) return;
-  axios.get('/FriendshipConfig').then((resp) => {
+  http.get('/FriendshipConfig').then((resp) => {
     const items = JSON.parse(resp.data.friendshipItems)
       .filter((item) => {
         const lvl = getLevel(item.xp);

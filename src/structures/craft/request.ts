@@ -1,7 +1,7 @@
-import axios from 'axios';
-import type { AxiosResponse } from 'axios';
 import { debug } from 'src/utils/debug';
 import { craft as craftFlag } from 'src/utils/debugFlags';
+import * as http from 'src/utils/http';
+import type { HttpResponse } from 'src/utils/http';
 import { isRateLimited, retryAfter } from 'src/utils/rateLimit';
 import type { Attempt } from 'src/utils/workQueue';
 import type { Nullish } from 'src/types/utility';
@@ -11,28 +11,24 @@ export type CraftBody =
   | { action: 'auto' };
 
 export type Outcome =
-  | { type: 'ok'; response: AxiosResponse }
+  | { type: 'ok'; response: HttpResponse }
   | { type: 'refused'; data: unknown }
   | { type: 'retry' }
   | { type: 'limited'; retryAfter?: Nullish<number> };
 
-function log({ status, headers }: Pick<AxiosResponse, 'status' | 'headers'>, body: CraftBody) {
+function log({ status, headers }: Pick<HttpResponse, 'status' | 'headers'>, body: CraftBody) {
   debug(`CraftConfig ${status}`, craftFlag, body, headers);
 }
 
 export function post(body: CraftBody): Promise<Outcome> {
-  return axios.post('CraftConfig', body, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  }).then((response): Outcome => {
+  return http.post<any>('CraftConfig', body).then((response): Outcome => {
     log(response, body);
     debug(response);
     if (response.data === '' || response.data == null) return { type: 'retry' };
     if (response.data.status !== 'success') return { type: 'refused', data: response.data };
     return { type: 'ok', response };
   }).catch((error): Outcome => {
-    const response = error?.response as AxiosResponse | undefined;
+    const response = error?.response as HttpResponse | undefined;
     if (!response) {
       debug(`CraftConfig failed: ${error?.message}`, craftFlag, body);
       return { type: 'retry' };
@@ -46,8 +42,8 @@ export function post(body: CraftBody): Promise<Outcome> {
   });
 }
 
-export function attempt(body: CraftBody): Promise<Attempt<AxiosResponse>> {
-  return post(body).then((outcome): Attempt<AxiosResponse> => {
+export function attempt(body: CraftBody): Promise<Attempt<HttpResponse>> {
+  return post(body).then((outcome): Attempt<HttpResponse> => {
     switch (outcome.type) {
       case 'ok':
         return { type: 'ok', value: outcome.response };
