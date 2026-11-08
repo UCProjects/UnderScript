@@ -193,6 +193,18 @@ describe('craft object', () => {
       expect(order).to.deep.equal([['apply', 'craft', 40, 5], ['event']]);
     });
 
+    it('still resolves and emits when the page update throws', async () => {
+      attach({ apply: () => { throw new Error('no table'); } });
+      const heard = [];
+      listen('crafted', (card) => heard.push(card.dust));
+      const pending = craft.craft(5);
+      await flush();
+      await answer(requests[0], { data: dog() });
+      const result = await pending;
+      expect(result.dust).to.equal(40);
+      expect(heard).to.deep.equal([40]);
+    });
+
     it('is not used for a refusal', async () => {
       let applied = false;
       attach({ apply: () => { applied = true; } });

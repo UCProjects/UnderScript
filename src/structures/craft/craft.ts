@@ -1,4 +1,5 @@
 import * as api from 'src/utils/4.api';
+import wrap from 'src/utils/2.pokemon';
 import { cardName } from 'src/utils/cardHelper';
 import eventEmitter from 'src/utils/eventEmitter';
 import { global } from 'src/utils/global';
@@ -72,7 +73,7 @@ async function run<A extends UnderScriptCraftAction>(body: CraftBody & { action:
   switch (outcome.type) {
     case 'ok': {
       const { data } = outcome.response;
-      hooks.apply?.(body.action, data, body);
+      wrap(() => hooks.apply?.(body.action, data, body), `Craft[apply]: ${body.action}`);
       const result = announce(body.action, data, body);
       if (!result) throw new Error('Unexpected response');
       return result;
