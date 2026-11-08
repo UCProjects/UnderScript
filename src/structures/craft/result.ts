@@ -42,9 +42,9 @@ export function parseCard(
   if (!isRecord(response)) return undefined;
   const parsed = parseJson(response.card);
   const card: Raw = isRecord(parsed) ? parsed : {};
-  const id = toId(card.id) ?? toId(response.cardId);
-  if (id === undefined) return undefined;
   const asked = isRecord(data) ? data : {};
+  const id = toId(card.id) ?? toId(response.cardId) ?? toId(asked.idCard);
+  if (id === undefined) return undefined;
   const fallback = typeof response.cardName === 'string' ? response.cardName : '';
   return {
     id,

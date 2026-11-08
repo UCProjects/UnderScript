@@ -132,8 +132,17 @@ describe('craft object', () => {
       const pending = craft.craft(5).catch((e) => e);
       await flush();
       await answer(requests[0], { status: 429, headers: { 'retry-after': '3' } });
-      expect((await pending).message).to.equal('Rate limited');
+      const error = await pending;
+      expect(error.message).to.equal('Rate limited');
+      expect(error.retryAfter).to.equal(3);
       expect(seen).to.have.length(0);
+    });
+
+    it('has no retryAfter when the server did not say', async () => {
+      const pending = craft.craft(5).catch((e) => e);
+      await flush();
+      await answer(requests[0], { status: 429 });
+      expect((await pending).retryAfter).to.equal(undefined);
     });
 
     it('rejects when the answer is empty or the request fails', async () => {
@@ -147,11 +156,21 @@ describe('craft object', () => {
       expect((await failed).message).to.equal('Request failed');
     });
 
-    it('rejects when a success has no card in it', async () => {
-      const pending = craft.craft(5).catch((e) => e);
+    it('uses the requested card when a success has no card in it', async () => {
+      const result = await (async () => {
+        const pending = craft.craft(5);
+        await flush();
+        await answer(requests[0], { data: { status: 'success', dust: 4 } });
+        return pending;
+      })();
+      expect(result).to.include({ id: 5, dust: 4 });
+    });
+
+    it('rejects when an auto success has no cards in it', async () => {
+      const pending = craft.autoDisenchant().catch((e) => e);
       await flush();
       await answer(requests[0], { data: { status: 'success', dust: 4 } });
-      expect((await pending).message).to.equal('Unexpected response');
+      expect((await pending).message).to.contain('Unexpected response');
       expect(seen).to.have.length(0);
     });
   });

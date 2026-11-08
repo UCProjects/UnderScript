@@ -27,7 +27,7 @@ on(*event*, *listener*), once(*event*, *listener*)
 off(*event*, *listener*)
 : Stop listening
 
-The methods go one at a time, in the order you called them, and they do not show the game's dialog. If the server refuses, or the request fails, the promise rejects with an `Error` whose message is what the server said, already translated. On the Crafting page, the cards and dust shown there are updated to match.
+The methods go one at a time, in the order you called them, and they do not show the game's dialog. If the server refuses, or the request fails, the promise rejects with an `Error` whose message is what the server said, already translated. When the server rate limits the request, the `Error` has a `retryAfter` property, the seconds the server asked you to wait, or `undefined` if it did not say. On the Crafting page, the cards and dust shown there are updated to match.
 
 ## Properties
 dust: `number` or `undefined`

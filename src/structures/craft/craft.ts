@@ -75,7 +75,7 @@ async function run<A extends UnderScriptCraftAction>(body: CraftBody & { action:
       const { data } = outcome.response;
       wrap(() => hooks.apply?.(body.action, data, body), `Craft[apply]: ${body.action}`);
       const result = announce(body.action, data, body);
-      if (!result) throw new Error('Unexpected response');
+      if (!result) throw new Error('Unexpected response, the request may have gone through');
       return result;
     }
     case 'refused': {
@@ -84,7 +84,7 @@ async function run<A extends UnderScriptCraftAction>(body: CraftBody & { action:
       throw new Error(rejection.message || rejection.status);
     }
     case 'limited':
-      throw new Error('Rate limited');
+      throw Object.assign(new Error('Rate limited'), { retryAfter: outcome.retryAfter ?? undefined });
     default:
       throw new Error('Request failed');
   }
