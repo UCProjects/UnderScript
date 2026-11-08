@@ -7,7 +7,7 @@ version: 0.64.0
 
 Browse plugins made by the community from the UnderScript menu, and install them from there.
 
-The list is sorted by name, with each plugin's author under its name, and has a search bar that looks through names and authors. Buttons next to it hide the plugins you don't want to see, based on their status.
+The list is sorted by name, with each plugin's author under its name, and has a search bar that looks through names and authors. Buttons next to it hide the plugins you don't want to see, based on their status, and remember what you hid, also after you reload the page.
 
 For each plugin it shows the version you have, the latest version, and when that latest version was last updated. The date is looked up once a day, and it is only shown while it belongs to the latest version, so a brand new version has no date until the next lookup.
 

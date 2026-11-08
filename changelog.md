@@ -31,7 +31,8 @@
     - "Disable Chat Context (right click)" turns the right click card off, and "Open the profile card on click" in the Chat settings turns the click card off.
     - The Note button keeps a note about a user on your computer. Hover it to read the note, click it to edit, and Ctrl+Enter, or clicking away, saves. Escape drops the change.</extended>
 1. The community plugins list now shows when each plugin was last updated<extended>
-    - The date is looked up once a day and only shown while it belongs to the plugin's latest version, so a brand new version has no date until the next lookup.</extended>
+    - The date is looked up once a day and only shown while it belongs to the plugin's latest version, so a brand new version has no date until the next lookup.
+    - The buttons that hide plugins by status now remember your choice, also after you reload the page.</extended>
 1. Added a Leaderboard+ link to the Leaderboards menu in the footer
 1. The Card Editor link is back in the footer, in the Community menu next to the Wiki
 1. Chat command suggestions now show where each command comes from, on the right of the suggestion<extended>

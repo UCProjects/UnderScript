@@ -1,5 +1,7 @@
 import Translation from 'src/structures/constants/translation';
 import compound from 'src/utils/compoundEvent';
+import { debug } from 'src/utils/debug';
+import { pluginRegistry } from 'src/utils/debugFlags';
 import DialogHelper from 'src/utils/DialogHelper';
 import eventManager from 'src/utils/eventManager';
 import * as menu from 'src/utils/menu';
@@ -38,13 +40,35 @@ const STATUSES = [
   { id: 'available', label: keys.available },
 ];
 
+const HIDDEN = 'underscript.registry.hidden';
+
+function loadHidden() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(HIDDEN));
+    const ids = STATUSES.map(({ id }) => id);
+    return new Set(Array.isArray(stored) ? stored.filter((id) => ids.includes(id)) : []);
+  } catch (e) {
+    debug(e, pluginRegistry);
+    return new Set();
+  }
+}
+
+const hidden = loadHidden();
+
+function saveHidden() {
+  try {
+    localStorage.setItem(HIDDEN, JSON.stringify([...hidden]));
+  } catch (e) {
+    debug(e, pluginRegistry);
+  }
+}
+
 const dialog = new DialogHelper();
 let container;
 let tableHolder;
 let refreshed;
 let complete;
 let query = '';
-const hidden = new Set();
 
 dialog.onClose(() => {
   container = null;
@@ -52,7 +76,6 @@ dialog.onClose(() => {
   refreshed = false;
   complete = false;
   query = '';
-  hidden.clear();
 });
 
 function addRefresh() {
@@ -102,6 +125,7 @@ function toolbar() {
         .text(`${label}`)
         .on('click', () => {
           if (!hidden.delete(id)) hidden.add(id);
+          saveHidden();
           button.toggleClass('btn-primary', !hidden.has(id)).toggleClass('btn-stale', hidden.has(id));
           render();
         });
