@@ -5,6 +5,7 @@
 
   .modal-body {
     padding-top: 0;
+    user-select: text;
   }
 
   .plugin-toolbar {
