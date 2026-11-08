@@ -1,5 +1,4 @@
 import fs from 'node:fs/promises';
-import axios from 'axios';
 import { setTokenSource } from '../src/utils/githubAuth.js';
 import * as http from '../src/utils/http.js';
 import createParser from '../src/utils/parser/index.js';
@@ -99,13 +98,17 @@ export async function resolve(entry) {
 }
 
 const HEAD_UNSUPPORTED = [403, 405];
-const PROBE = { maxRedirects: 5, validateStatus: () => true };
+function probe(url, init) {
+  return fetch(url, { ...init, signal: AbortSignal.timeout(TIMEOUT) }).catch((error) => {
+    throw error.cause instanceof Error ? error.cause : error;
+  });
+}
 
 async function reach(url) {
-  const response = await axios.head(url, PROBE);
+  const response = await probe(url, { method: 'HEAD' });
   if (!HEAD_UNSUPPORTED.includes(response.status)) return response;
-  const ranged = await axios.get(url, { ...PROBE, headers: { Range: 'bytes=0-0' }, responseType: 'stream' });
-  ranged.data?.destroy?.();
+  const ranged = await probe(url, { headers: { Range: 'bytes=0-0' } });
+  await ranged.body?.cancel();
   return ranged;
 }
 
@@ -117,7 +120,7 @@ async function reach(url) {
 export async function verify(url) {
   const { status, headers } = await reach(url);
   if (status >= 400) throw new Error(`${url} answered ${status}`);
-  if (/text\/html/i.test(headers?.['content-type'] ?? '')) {
+  if (/text\/html/i.test(headers.get('content-type') ?? '')) {
     throw new Error(`${url} is a web page, not a script`);
   }
 }
@@ -130,7 +133,7 @@ const HINTS = {
 
 function describe(error) {
   const status = error.response?.status;
-  if (status) return `${error.url ?? error.config?.url ?? 'The request'} answered ${status}`;
+  if (status) return `${error.url ?? 'The request'} answered ${status}`;
   return HINTS[error.message] ?? error.message;
 }
 
@@ -172,12 +175,6 @@ export async function check(text, { network = true } = {}) {
 
 export function authenticate(token) {
   setTokenSource((url) => (url?.startsWith('https://api.github.com/gists/') ? '' : token));
-  axios.interceptors.request.use((config) => {
-    if (config.url?.startsWith('https://api.github.com/') && !config.url.startsWith('https://api.github.com/gists/')) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  });
 }
 
 function label({ index, name }) {
@@ -216,7 +213,6 @@ export default async function main(args = process.argv.slice(2)) {
   const output = args.find((arg) => arg.startsWith(REPORT))?.slice(REPORT.length);
   const file = args.find((arg) => !arg.startsWith('-')) ?? REGISTRY;
   if (process.env.GITHUB_TOKEN) authenticate(process.env.GITHUB_TOKEN);
-  axios.defaults.timeout = TIMEOUT;
   http.defaults.timeout = TIMEOUT;
 
   const problems = await check(await fs.readFile(file, 'utf8'), { network });

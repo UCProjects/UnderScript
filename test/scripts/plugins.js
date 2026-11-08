@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import fs from 'node:fs/promises';
-import axios from 'axios';
 import { network } from '../setup/http';
 import { check, markdown, resolve, validate } from '../../scripts/plugins';
 
@@ -146,37 +145,24 @@ describe('plugins.json', () => {
   });
 
   describe('network', () => {
-    const original = axios.get;
-    const originalHead = axios.head;
     let responses;
     let heads;
 
     beforeEach(() => {
       responses = new Map();
       heads = new Map();
-      axios.head = async (url) => {
-        const answer = heads.get(url) ?? { status: 200, headers: { 'content-type': 'text/plain' } };
-        if (answer instanceof Error) throw answer;
-        return answer;
-      };
-      axios.get = async (url) => {
-        if (!responses.has(url)) {
-          const error = new Error('Request failed with status code 404');
-          error.response = { status: 404 };
-          error.config = { url };
-          throw error;
+      network.adapter = ({ url, method }) => {
+        if (method === 'head') {
+          const answer = heads.get(url) ?? { status: 200, headers: { 'content-type': 'text/plain' } };
+          if (answer instanceof Error) throw answer;
+          return answer;
         }
-        return { data: responses.get(url) };
-      };
-      network.adapter = ({ url }) => {
         if (!responses.has(url)) return { status: 404, data: '' };
         return { data: responses.get(url) };
       };
     });
 
     afterEach(() => {
-      axios.get = original;
-      axios.head = originalHead;
       network.adapter = undefined;
     });
 
