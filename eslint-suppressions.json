@@ -54,11 +54,6 @@
       "count": 1
     }
   },
-  "src/base/friendship/collect.js": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
   "src/base/friendship/ranking.js": {
     "no-restricted-syntax": {
       "count": 1

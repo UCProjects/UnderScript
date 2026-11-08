@@ -9,6 +9,7 @@ import clear from 'src/utils/clear';
 import Counter from 'src/utils/Counter';
 import Item from 'src/structures/constants/item';
 import Translation from 'src/structures/constants/translation';
+import VarStore from 'src/utils/VarStore';
 
 const setting = settings.register({
   name: Translation.Setting('friendship'),
@@ -18,8 +19,8 @@ const setting = settings.register({
 });
 
 const maxClaim = 200 / 5; // Current level limit, no way to dynamically figure this out if he ever adds more rewards
-let button;
-let collecting = false;
+const buttonRef = new VarStore();
+const collecting = new VarStore(false);
 const rewards = {};
 const pending = new Counter();
 
@@ -39,8 +40,8 @@ function claimReward(data) {
 }
 
 function collect() {
-  if (!canCollect() || collecting) return;
-  collecting = true;
+  if (!canCollect() || collecting.value) return;
+  collecting.set(true);
   pending.reset();
   clear(rewards);
   each(global('friendshipItems'), claimReward);
@@ -59,10 +60,11 @@ function getLabel(type = '') {
 }
 
 function updateButton(enabled = canCollect()) {
-  button.prop('disabled', !enabled);
+  buttonRef.value.prop('disabled', !enabled);
 }
 
 function setupButton(disabled) {
+  const button = buttonRef.value;
   if (disabled) {
     button.addClass('hidden');
     updateButton(false);
@@ -75,7 +77,7 @@ function setupButton(disabled) {
 eventManager.on('Friendship:claim', ({
   data, reward, quantity, error,
 }) => {
-  if (!pending.value || !collecting) return;
+  if (!pending.value || !collecting.value) return;
   pending.remove();
 
   if (!error) {
@@ -103,7 +105,7 @@ eventManager.on('Friendship:results', (error) => {
     text: lines.join('<br>'),
   });
   updateButton();
-  collecting = false;
+  collecting.reset();
 });
 
 eventManager.on('Friendship:loaded', () => {
@@ -111,7 +113,8 @@ eventManager.on('Friendship:loaded', () => {
 });
 
 eventManager.on(':preload:Friendship', () => {
-  button = $('<button class="btn btn-info">Collect All</button>');
+  const button = $('<button class="btn btn-info">Collect All</button>');
+  buttonRef.set(button);
   setting.on(setupButton);
   button.on('click.script', collect)
     .hover(hover.show(Translation.General('collect.note')));
