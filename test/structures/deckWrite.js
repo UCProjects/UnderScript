@@ -76,8 +76,8 @@ describe('deck writes', () => {
   let respond;
   let server;
 
-  const reply = (config, data, status = 200) => {
-    const response = { data, status, statusText: '', headers: {}, config };
+  const reply = (config, data, status = 200, headers = {}) => {
+    const response = { data, status, statusText: '', headers, config };
     if (status < 400) return Promise.resolve(response);
     return Promise.reject(Object.assign(new Error(`status ${status}`), { response }));
   };
@@ -201,6 +201,19 @@ describe('deck writes', () => {
         error = e;
       }
       expect(error.message).to.equal('Rate limited');
+      expect(error.retryAfter).to.equal(undefined);
+    });
+
+    it('says how long to wait when the server asks', async () => {
+      axios.defaults.adapter = (config) => reply(config, '', 429, { 'retry-after': '7' });
+      let error;
+      try {
+        await decks.clear('KINDNESS');
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).to.equal('Rate limited');
+      expect(error.retryAfter).to.equal(7);
     });
 
     it('asks for a soul and an id before sending anything', async () => {

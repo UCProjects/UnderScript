@@ -80,7 +80,7 @@ async function run(body: DeckBody): Promise<DeckEdit> {
     case 'empty':
       throw new Error('The server sent an empty reply');
     case 'limited':
-      throw new Error('Rate limited');
+      throw Object.assign(new Error('Rate limited'), { retryAfter: outcome.retryAfter ?? undefined });
     default:
       throw new Error('Request failed');
   }

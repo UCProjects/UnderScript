@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { AxiosResponse } from 'axios';
-import { isRateLimited } from 'src/utils/rateLimit';
+import type { Nullish } from 'src/types/utility';
+import { isRateLimited, retryAfter } from 'src/utils/rateLimit';
 
 type Raw = Record<string, unknown>;
 
@@ -13,7 +14,7 @@ export type Outcome =
   | { type: 'ok'; data: Raw }
   | { type: 'refused'; data: Raw }
   | { type: 'empty' }
-  | { type: 'limited' }
+  | { type: 'limited'; retryAfter?: Nullish<number> }
   | { type: 'failed' };
 
 const accepts: Record<DeckBody['action'], (data: Raw) => boolean> = {
@@ -38,8 +39,9 @@ export async function post(body: DeckBody): Promise<Outcome> {
     return accepts[body.action](data) ? { type: 'ok', data } : { type: 'refused', data };
   } catch (error) {
     const response = (error as { response?: AxiosResponse } | undefined)?.response;
-    if (response && isRateLimited(response.status, (name) => response.headers?.[name.toLowerCase()])) {
-      return { type: 'limited' };
+    const header = (name: string) => response?.headers?.[name.toLowerCase()];
+    if (response && isRateLimited(response.status, header)) {
+      return { type: 'limited', retryAfter: retryAfter(header) };
     }
     return { type: 'failed' };
   }
