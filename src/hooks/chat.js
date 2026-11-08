@@ -34,8 +34,6 @@ import {
 } from 'src/utils/chatReconnect';
 import { isActive, updateIfActive } from './session';
 
-// TODO: Use Message object
-// TODO: Better history management
 const reconnectAttempts = new Counter();
 const policy = createPolicy(isApp, SOCKET_SCRIPT_CLOSED);
 const flaps = createFlapGuard();
