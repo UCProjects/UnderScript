@@ -35,7 +35,7 @@ globalSet(*key*, *value*)
 : Replace a variable or function on the game's page. A replaced function can call the original with `this.super()`.
 
 hover
-: Tooltips. `hover.tip(text, target, options)` adds a tooltip to elements, `hover.show(data)` and `hover.hide()` show or hide one by hand.
+: Tooltips. `hover.tip(text, target, options)` adds a tooltip to elements, `hover.show(data)` and `hover.hide()` show or hide one by hand. You can also do it from the markup: an element with `data-us-note="translation.key"` shows that text as a tooltip while the pointer is over it, and `data-us-note-fallback="Some text"` gives the text to show if the key is not translated, for example before translations have loaded. Inside an open popover the tooltip is put in the popover, so it is not hidden behind it.
 
 ## Building things
 eventEmitter()

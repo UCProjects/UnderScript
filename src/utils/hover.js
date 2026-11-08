@@ -4,6 +4,7 @@ import eventManager from './eventManager';
 import { footer, footer2, window } from './1.variables';
 import { debug } from './debug';
 import tooltipPosition from './tooltipPosition';
+import { translateText } from './translate';
 
 let e;
 let x;
@@ -26,6 +27,12 @@ eventManager.on('jQuery', () => {
     x = event.pageX - window.pageXOffset;
     y = event.pageY - window.pageYOffset;
     update();
+  });
+  $(document).on('mouseenter.script mouseleave.script', '[data-us-note]', function note(event) {
+    const { usNote, usNoteFallback } = this.dataset;
+    if (!usNote) return;
+    const text = translateText(usNote, { fallback: usNoteFallback });
+    showIn(this.closest('[popover]') ?? 'body', text)(event);
   });
 });
 /** @returns {void} */

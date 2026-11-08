@@ -110,6 +110,7 @@
 1. Select settings accept an option as text, a `[text, value]` pair, a `{ label, value }` object or a function that returns one of those<extended>
     - An option without a value now uses its text as the value in every kind of setting, so the stored value does not change with the player's language. This also applies to the items of a `list` setting.
     - In the type definitions, the value of an object option is `value` (or `val`) when it has one, and its `label` (or `text`) when it does not.</extended>
+1. Elements with a `data-us-note` attribute show a tooltip when hovered, with the translation of the key in the attribute, or the text in `data-us-note-fallback` when it is not translated (before translations have loaded, for example)
 
 ## Version 0.65.1 (2026-10-10)
 1. Fixed the Craftable cards notice on the Crafting page showing no text
