@@ -1,4 +1,5 @@
 import css from './checkboxGroup.css';
+import Counter from './Counter';
 import styles from './style';
 import toArray from './toArray';
 
@@ -6,12 +7,11 @@ styles.add(css);
 
 const KEY = 'checkboxGroup';
 
-let uid = 0;
+const uid = new Counter();
 
 function ensureId(element) {
   if (!element.attr('id')) {
-    uid += 1;
-    element.attr('id', `checkboxGroup-${uid}`);
+    element.attr('id', `checkboxGroup-${uid.next()}`);
   }
   return element.attr('id');
 }

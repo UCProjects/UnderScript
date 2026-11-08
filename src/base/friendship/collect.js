@@ -6,6 +6,7 @@ import * as hover from 'src/utils/hover';
 import each from 'src/utils/each';
 import some from 'src/utils/some';
 import clear from 'src/utils/clear';
+import Counter from 'src/utils/Counter';
 import Item from 'src/structures/constants/item';
 import Translation from 'src/structures/constants/translation';
 
@@ -20,7 +21,7 @@ const maxClaim = 200 / 5; // Current level limit, no way to dynamically figure t
 let button;
 let collecting = false;
 const rewards = {};
-let pending = 0;
+const pending = new Counter();
 
 function canClaim({ notClaimed, claim }) {
   return notClaimed && claim < maxClaim;
@@ -33,14 +34,14 @@ function canCollect() {
 function claimReward(data) {
   if (canClaim(data)) {
     global('claim')(data.idCard);
-    pending += 1;
+    pending.next();
   }
 }
 
 function collect() {
   if (!canCollect() || collecting) return;
   collecting = true;
-  pending = 0;
+  pending.reset();
   clear(rewards);
   each(global('friendshipItems'), claimReward);
 }
@@ -74,8 +75,8 @@ function setupButton(disabled) {
 eventManager.on('Friendship:claim', ({
   data, reward, quantity, error,
 }) => {
-  if (!pending || !collecting) return;
-  pending -= 1;
+  if (!pending.value || !collecting) return;
+  pending.remove();
 
   if (!error) {
     rewards[reward] = (rewards[reward] || 0) + quantity;
@@ -84,7 +85,7 @@ eventManager.on('Friendship:claim', ({
     claimReward(data);
   }
 
-  if (pending) return;
+  if (pending.value) return;
 
   eventManager.emit('Friendship:results', error);
 });

@@ -1,3 +1,5 @@
+import Counter from './Counter';
+
 export const SESSION_REPLACED = 'Session replaced';
 
 export function isSessionReplaced(reason: unknown): boolean {
@@ -57,22 +59,23 @@ export function createFlapGuard({
   penalty = 60 * SECOND,
 } = {}): FlapGuard {
   let connectedAt: number | null = null;
-  let flaps = 0;
+  const flaps = new Counter();
   return {
     connected(now) {
       connectedAt = now;
     },
     closed(now) {
       if (connectedAt === null) return;
-      flaps = now - connectedAt < shortMs ? flaps + 1 : 0;
+      if (now - connectedAt < shortMs) flaps.next();
+      else flaps.reset();
       connectedAt = null;
     },
     penalty() {
-      return flaps >= limit ? penalty : 0;
+      return flaps.value >= limit ? penalty : 0;
     },
     reset() {
       connectedAt = null;
-      flaps = 0;
+      flaps.reset();
     },
   };
 }

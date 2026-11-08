@@ -1,3 +1,5 @@
+import Counter from 'src/utils/Counter';
+
 export default function parseDeletion(frame: unknown): UnderScriptChatDeletion | undefined {
   if (!frame || typeof frame !== 'object') return undefined;
   const { action, idUser } = frame as Record<string, unknown>;
@@ -14,12 +16,11 @@ export default function parseDeletion(frame: unknown): UnderScriptChatDeletion |
   return undefined;
 }
 
-let clock = 0;
+const clock = new Counter();
 const removed = new Map<string, number>();
 
 export function stamp(): number {
-  clock += 1;
-  return clock;
+  return clock.next();
 }
 
 export function recordDeletion(userId: number | string): void {

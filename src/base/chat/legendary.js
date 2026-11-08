@@ -1,6 +1,7 @@
 import eventManager from 'src/utils/eventManager';
 import * as settings from 'src/utils/settings/index';
 import { global } from 'src/utils/global';
+import Counter from 'src/utils/Counter';
 import { toast as SimpleToast } from 'src/utils/2.toasts';
 import { self, name } from 'src/utils/user';
 import Translation from 'src/structures/constants/translation';
@@ -26,7 +27,7 @@ const ignoreSelf = settings.register({
 });
 
 const toasts = [];
-let toastIndex = 0;
+const toastIndex = new Counter();
 function getToast(user) {
   const now = Date.now();
   return toasts.find(({ exists, owner, time }) => exists() && owner === user && time + 1000 > now);
@@ -55,8 +56,8 @@ eventManager.on('preChat:getMessageAuto', function drawAnnouncement(data) {
       last.time = Date.now(); // This toast is still relevant!
       return;
     }
-    if (toasts[toastIndex]) { // Close any old toast
-      toasts[toastIndex].close();
+    if (toasts[toastIndex.value]) { // Close any old toast
+      toasts[toastIndex.value].close();
     }
 
     const toast = SimpleToast({
@@ -66,7 +67,7 @@ eventManager.on('preChat:getMessageAuto', function drawAnnouncement(data) {
     toast.cards = [card];
     toast.owner = user;
     toast.time = Date.now();
-    toasts[toastIndex] = toast;
-    toastIndex = (toastIndex + 1) % 3;
+    toasts[toastIndex.value] = toast;
+    toastIndex.value = (toastIndex.value + 1) % 3;
   }
 });

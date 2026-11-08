@@ -14,11 +14,6 @@
       "count": 1
     }
   },
-  "src/base/chat/legendary.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/base/chat/notify.new.js": {
     "no-restricted-syntax": {
       "count": 2
@@ -61,7 +56,7 @@
   },
   "src/base/friendship/collect.js": {
     "no-restricted-syntax": {
-      "count": 3
+      "count": 2
     }
   },
   "src/base/friendship/ranking.js": {
@@ -126,7 +121,7 @@
   },
   "src/base/leaderboard/friends.js": {
     "no-restricted-syntax": {
-      "count": 4
+      "count": 3
     }
   },
   "src/base/leaderboard/goto.js": {
@@ -189,11 +184,6 @@
       "count": 1
     }
   },
-  "src/base/plugin/addFilter.ts": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/base/plugin/commands.ts": {
     "no-restricted-syntax": {
       "count": 2
@@ -241,7 +231,7 @@
   },
   "src/hooks/chat.js": {
     "no-restricted-syntax": {
-      "count": 2
+      "count": 1
     }
   },
   "src/hooks/friends.js": {
@@ -271,7 +261,7 @@
   },
   "src/structures/chat/deletion.ts": {
     "no-restricted-syntax": {
-      "count": 2
+      "count": 1
     }
   },
   "src/structures/chat/games.ts": {
@@ -335,16 +325,6 @@
     }
   },
   "src/utils/chatReconnect.ts": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/utils/checkboxGroup.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/utils/compoundEvent.ts": {
     "no-restricted-syntax": {
       "count": 1
     }
@@ -416,7 +396,7 @@
   },
   "src/utils/rateLimit.ts": {
     "no-restricted-syntax": {
-      "count": 2
+      "count": 1
     }
   },
   "src/utils/season.ts": {
@@ -466,7 +446,7 @@
   },
   "src/utils/tabbedView.js": {
     "no-restricted-syntax": {
-      "count": 10
+      "count": 9
     }
   },
   "src/utils/toastCss.js": {
@@ -481,7 +461,7 @@
   },
   "src/utils/workQueue.ts": {
     "no-restricted-syntax": {
-      "count": 9
+      "count": 5
     }
   }
 }

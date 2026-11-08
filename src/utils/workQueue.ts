@@ -1,4 +1,5 @@
 import type { Nullish } from 'src/types/utility';
+import Counter from './Counter';
 import { createRateLimiter } from './rateLimit';
 
 export type Attempt<R> =
@@ -53,10 +54,10 @@ export default function runQueue<T, R>({
   const limiter = createRateLimiter();
   const queue = items.map((item) => ({ item, failures: 0 }));
   const total = queue.length;
-  let inFlight = 0;
-  let done = 0;
-  let skipped = 0;
-  let failed = 0;
+  const inFlight = new Counter();
+  const done = new Counter();
+  const skipped = new Counter();
+  const failed = new Counter();
   let stopped = false;
   let finished = false;
   let lastActivity = Date.now();
@@ -70,11 +71,11 @@ export default function runQueue<T, R>({
   function state(): QueueState {
     return {
       total,
-      done,
-      skipped,
-      failed,
+      done: done.value,
+      skipped: skipped.value,
+      failed: failed.value,
       queued: queue.length,
-      inFlight,
+      inFlight: inFlight.value,
       waitSeconds: limiter.secondsLeft(),
       stopping: stopped,
     };
@@ -88,7 +89,7 @@ export default function runQueue<T, R>({
     if (finished) return;
     finished = true;
     clearTimeout(timer);
-    resolve({ ...state(), stopped, abandoned: inFlight });
+    resolve({ ...state(), stopped, abandoned: inFlight.value });
   }
 
   function schedule(ms: number) {
@@ -97,11 +98,11 @@ export default function runQueue<T, R>({
   }
 
   function settle(entry: { item: T; failures: number }, outcome: Attempt<R>) {
-    inFlight -= 1;
+    inFlight.remove();
     lastActivity = Date.now();
     if (outcome.type === 'ok') {
       limiter.ok();
-      done += 1;
+      done.next();
       try {
         onOk?.(entry.item, outcome.value);
       } catch (e) {
@@ -111,7 +112,7 @@ export default function runQueue<T, R>({
     if (finished) return;
     switch (outcome.type) {
       case 'skip':
-        skipped += 1;
+        skipped.next();
         break;
       case 'limited':
         limiter.hit(outcome.retryAfter);
@@ -120,7 +121,7 @@ export default function runQueue<T, R>({
       case 'retry':
         entry.failures += 1;
         if (entry.failures > retries) {
-          failed += 1;
+          failed.next();
         } else {
           queue.push(entry);
         }
@@ -132,7 +133,7 @@ export default function runQueue<T, R>({
   }
 
   function start(entry: { item: T; failures: number }) {
-    inFlight += 1;
+    inFlight.next();
     Promise.resolve()
       .then(() => attempt(entry.item))
       .catch((): Attempt<R> => ({ type: 'retry' }))
@@ -142,7 +143,7 @@ export default function runQueue<T, R>({
   function pump() {
     if (finished) return;
     if (stopped) {
-      if (!inFlight || Date.now() - lastActivity >= silence) {
+      if (!inFlight.value || Date.now() - lastActivity >= silence) {
         finish();
         return;
       }
@@ -150,7 +151,7 @@ export default function runQueue<T, R>({
       schedule(TICK);
       return;
     }
-    if (!queue.length && !inFlight) {
+    if (!queue.length && !inFlight.value) {
       finish();
       return;
     }
@@ -159,10 +160,10 @@ export default function runQueue<T, R>({
       schedule(Math.min(1000, limiter.msLeft()));
       return;
     }
-    while (inFlight < concurrency && queue.length && !limiter.active()) {
+    while (inFlight.value < concurrency && queue.length && !limiter.active()) {
       start(queue.shift() as { item: T; failures: number });
     }
-    if (queue.length || inFlight) emit();
+    if (queue.length || inFlight.value) emit();
   }
 
   function stop() {

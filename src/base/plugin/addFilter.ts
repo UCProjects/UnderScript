@@ -1,4 +1,5 @@
 import wrap from 'src/utils/2.pokemon';
+import Counter from 'src/utils/Counter';
 import { registerModule } from 'src/utils/plugin';
 import Priority from 'src/structures/constants/priority';
 import { crafting, decks, filters } from '../library/filter';
@@ -8,7 +9,7 @@ type PluginFilter = UnderScriptFilter & { displayName?: string };
 wrap(() => {
   if (!(crafting || decks)) return;
   const name = 'addFilter';
-  let counter = 0;
+  const counter = new Counter();
   function mod(plugin: UnderScriptPlugin) {
     return (
       filter: PluginFilter,
@@ -17,8 +18,7 @@ wrap(() => {
       const fixedPriority = Priority.get(priority);
       if (!fixedPriority) throw new Error('Must pass a valid priority');
       if (typeof filter !== 'function') throw new Error('Must pass a function');
-      counter += 1;
-      const functionName = filter.displayName || filter.name || `filter${counter}`;
+      const functionName = filter.displayName || filter.name || `filter${counter.next()}`;
       function customFilter(this: unknown, ...args: Parameters<UnderScriptFilter>) {
         if (!plugin.isActive) return undefined;
         try {

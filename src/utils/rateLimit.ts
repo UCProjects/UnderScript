@@ -1,4 +1,5 @@
 import type { Nullish } from 'src/types/utility';
+import Counter from './Counter';
 
 const BASE_WAIT = 10;
 const MAX_WAIT = 120;
@@ -37,7 +38,7 @@ export type RateLimiter = {
 
 export function createRateLimiter(): RateLimiter {
   let until = 0;
-  let hits = 0;
+  const hits = new Counter();
 
   const msLeft = () => Math.max(until - Date.now(), 0);
 
@@ -46,15 +47,15 @@ export function createRateLimiter(): RateLimiter {
     msLeft,
     secondsLeft: () => Math.ceil(msLeft() / 1000),
     hit(requested) {
-      if (msLeft() === 0) hits += 1;
-      until = Math.max(until, Date.now() + waitSeconds(requested, hits) * 1000);
+      if (msLeft() === 0) hits.next();
+      until = Math.max(until, Date.now() + waitSeconds(requested, hits.value) * 1000);
     },
     ok() {
-      hits = 0;
+      hits.reset();
     },
     reset() {
       until = 0;
-      hits = 0;
+      hits.reset();
     },
   };
 }

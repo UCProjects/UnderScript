@@ -4,6 +4,7 @@ import { debug } from 'src/utils/debug';
 import { rawChat } from 'src/utils/debugFlags';
 import { global, globalSet } from 'src/utils/global';
 import VarStore from 'src/utils/VarStore';
+import Counter from 'src/utils/Counter';
 import { attach } from 'src/utils/autocomplete';
 import { toast as Toast } from 'src/utils/2.toasts';
 import chat, {
@@ -35,7 +36,7 @@ import { isActive, updateIfActive } from './session';
 
 // TODO: Use Message object
 // TODO: Better history management
-let reconnectAttempts = 0;
+const reconnectAttempts = new Counter();
 const policy = createPolicy(isApp, SOCKET_SCRIPT_CLOSED);
 const flaps = createFlapGuard();
 const guestMode = new VarStore(false);
@@ -48,7 +49,7 @@ function handleClose(event) {
   flaps.closed(Date.now());
   if (isSessionReplaced(event.reason)) emitChat('replaced');
   if (!policy.retries(event.code, event.reason)) return;
-  setTimeout(reconnect, Math.max(policy.delay(reconnectAttempts), isApp ? flaps.penalty() : 0));
+  setTimeout(reconnect, Math.max(policy.delay(reconnectAttempts.value), isApp ? flaps.penalty() : 0));
 }
 
 const parsed = new WeakMap();
@@ -170,10 +171,10 @@ export default function reconnect(force = false) {
   if (!force && !canReconnect(policy, {
     active: isActive(),
     guest: guestMode.isSet(),
-    attempts: reconnectAttempts,
+    attempts: reconnectAttempts.value,
     closed: global('socketChat', { throws: false })?.readyState === WebSocket.CLOSED,
   })) return;
-  reconnectAttempts += 1;
+  reconnectAttempts.next();
   const socket = new WebSocket(`wss://${location.hostname}/chat`);
   globalSet('socketChat', socket);
   socket.onmessage = (event) => {
@@ -200,7 +201,7 @@ export default function reconnect(force = false) {
 
         eventManager.emit('Chat:Reconnected');
         emitChat('reconnected');
-        reconnectAttempts = 0;
+        reconnectAttempts.reset();
         break;
       }
       default: {
@@ -228,7 +229,7 @@ function getMessages({ discussionHistory, otherHistory }) {
 function manualReconnect() {
   const state = global('socketChat', { throws: false })?.readyState;
   if (state === WebSocket.OPEN || state === WebSocket.CONNECTING) return;
-  reconnectAttempts = 0;
+  reconnectAttempts.reset();
   flaps.reset();
   reconnect(true);
 }
@@ -282,7 +283,7 @@ eventManager.on(':preload', () => {
     document.addEventListener('visibilitychange', () => reconnect());
     if (isApp) {
       window.addEventListener('online', () => {
-        reconnectAttempts = 0;
+        reconnectAttempts.reset();
         flaps.reset();
         reconnect();
       });

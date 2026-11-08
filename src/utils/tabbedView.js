@@ -1,3 +1,4 @@
+import Counter from './Counter';
 import style from './style';
 import styles from './tabbedView.css';
 
@@ -8,12 +9,11 @@ const defaultLabels = {
   next: (page, total) => `Next tab (${page} of ${total})`,
 };
 
-let groupID = 0;
+const groupID = new Counter();
 
 /** @returns {UnderScriptTabManager} */
 export default function TabManager() {
-  const group = groupID;
-  groupID += 1;
+  const group = groupID.next();
   const tabs = [];
   const tabSettings = {
     left: false,

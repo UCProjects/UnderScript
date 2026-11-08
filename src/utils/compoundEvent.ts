@@ -1,5 +1,6 @@
 import eventManager from './eventManager';
 import wrap from './2.pokemon';
+import Counter from './Counter';
 
 type Callback = (...args: any[]) => unknown;
 
@@ -8,21 +9,21 @@ export default function compound(...args: [...events: string[], callback: Callba
   if (typeof callback !== 'function') throw new Error('Callback not provided');
   const events = args as string[];
   const cache: Record<string, { triggered: boolean | 'singleton' }> = {};
-  let triggered = 0;
+  const triggered = new Counter();
   // TODO: cache data
   function trigger(this: UnderScriptEventMeta, event: string, ...data: unknown[]) {
     if (!cache[event].triggered) {
       cache[event].triggered = this.singleton ? 'singleton' : true;
-      triggered += 1;
+      triggered.next();
     }
 
-    if (triggered >= events.length) {
+    if (triggered.value >= events.length) {
       events.forEach((ev) => {
         const e = cache[ev];
         // Only reset if not singleton
         if (e.triggered !== true) return;
         e.triggered = false;
-        triggered -= 1;
+        triggered.remove();
       });
       wrap(callback as Callback);
     }

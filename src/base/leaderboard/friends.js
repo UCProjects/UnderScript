@@ -3,9 +3,10 @@ import { global, globalSet } from 'src/utils/global';
 import style from 'src/utils/style';
 import onPage from 'src/utils/onPage';
 import * as hover from 'src/utils/hover';
+import Counter from 'src/utils/Counter';
 
 let showFriends = false;
-let ready = 0;
+const ready = new Counter();
 const friendRanks = [];
 let pageNumber = -1;
 let btn;
@@ -25,10 +26,9 @@ function toggle() {
 }
 
 function init() {
-  if (ready === -1) return;
-  ready += 1;
-  if (ready !== 2) return;
-  ready = -1;
+  if (ready.value === -1) return;
+  if (ready.next() !== 2) return;
+  ready.set(-1);
 
   style.add('#navButtons > .active > .glyphicon-user { color: orange; }');
 
