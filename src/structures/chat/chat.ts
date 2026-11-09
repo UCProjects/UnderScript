@@ -16,7 +16,7 @@ type Hooks = {
 
 const events = eventEmitter<UnderScriptChatEvents>();
 const channels = new Map<string, ChatChannel>();
-const hooks = new VarStore<Hooks>();
+const hooks = new VarStore<Hooks | undefined>();
 const replaced = new VarStore(false);
 
 const chat: UnderScriptChat = {
@@ -83,7 +83,7 @@ export function getChannel(type: ChannelType, id: string): ChatChannel {
     channels.set(room, channel);
     return channel;
   }
-  return channels.get(room);
+  return channels.get(room)!;
 }
 
 function channelOf(ref: ChannelRef | undefined): ChatChannel | undefined {
