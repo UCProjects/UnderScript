@@ -136,7 +136,7 @@ export default function eventEmitter<
           const singleton = singletonEvents[e];
           if (singleton) {
             sleep().then(() => {
-              emit({ async: singleton.async }, e, [fn], ...singleton.data);
+              emit({ async: singleton.async, singleton: true }, e, [fn], ...singleton.data);
             });
           } else {
             if (!Array.isArray(events[e])) {

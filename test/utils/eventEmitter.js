@@ -302,6 +302,18 @@ describe('EventEmitter', () => {
         }, 1);
       });
 
+      it('should tell late listeners it was a singleton', (done) => {
+        emitter.singleton.emit('test');
+        emitter.on('test', function late() {
+          expect(this.singleton).to.be.true;
+          expect(this.delayed).to.be.true.and.inc();
+        });
+        setTimeout(() => {
+          assertInc(1);
+          done();
+        }, 1);
+      });
+
       it.skip('should call again if reset');
     });
 
