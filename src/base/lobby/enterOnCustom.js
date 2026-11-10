@@ -4,12 +4,8 @@ import { window } from 'src/utils/1.variables';
 import Translation from 'src/structures/constants/translation';
 
 eventManager.on(':load:GamesList', () => {
-  let toast = infoToast({
+  const toast = infoToast({
     text: Translation.Toast('custom.enter'),
-    onClose: (reason) => {
-      toast = null;
-      // return reason !== 'processed';
-    },
   }, 'underscript.notice.customGame', '1');
 
   $('#state1 button:contains(Create)').on('mouseup.script', () => {
