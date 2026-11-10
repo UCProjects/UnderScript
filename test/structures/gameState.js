@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import eventManager from '../../src/utils/eventManager';
 import GameState from '../../src/structures/game/state';
 
 const ME = 10;
@@ -230,15 +231,53 @@ describe('game state', () => {
     expect(game.result.won).to.equal(false);
   });
 
+  it('repeats every frame under its action name, after the state has been updated', () => {
+    const turns = [];
+    const sounds = [];
+    game.on('getTurnStart', (frame) => turns.push([frame.numTurn, game.turn, game.myTurn]));
+    game.on('getPlaySound getPlayJingle', (frame) => sounds.push(frame.action));
+    const start = { action: 'getTurnStart', idPlayer: ME, numTurn: 5 };
+    game.apply(connect());
+    game.apply(start);
+    game.apply({ action: 'getPlaySound', sound: 'x' });
+    game.apply({ action: 'getPlayJingle', jingle: 'y' });
+    expect(turns).to.deep.equal([[5, 5, true]]);
+    expect(sounds).to.deep.equal(['getPlaySound', 'getPlayJingle']);
+  });
+
+  it('passes the frame itself, including actions that change nothing', () => {
+    const frames = [];
+    game.on('connect', (frame) => frames.push(frame));
+    const first = connect();
+    game.apply(first);
+    expect(frames[0]).to.equal(first);
+  });
+
   it('ignores actions it does not know', () => {
     game.apply(connect());
-    game.apply({ action: 'getPlaySound', sound: 'x' });
+    game.apply({ action: 'getNothing' });
     expect(seen).to.have.length(1);
   });
 
   it('lets the owner emit an event', () => {
     game.emit('turn', 4, true);
     expect(seen).to.deep.equal([['turn', 4, true]]);
+  });
+
+  it('announces :playing when the page starts a game, and replays it to late listeners', async () => {
+    eventManager.emit('PlayingGame');
+    const late = [];
+    game.on(':playing', () => late.push('playing'));
+    await new Promise((resolve) => { setTimeout(resolve, 20); });
+    expect(late).to.deep.equal(['playing']);
+  });
+
+  it('emits with options and returns the result', () => {
+    game.on('player:endTurn', function cancel() {
+      this.canceled = true;
+    });
+    expect(game.emit({ cancelable: true }, 'player:endTurn').canceled).to.equal(true);
+    expect(game.emit('player:endTurn').canceled).to.equal(false);
   });
 
   it('forgets everything on reset', () => {

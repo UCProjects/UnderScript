@@ -1,6 +1,6 @@
-import eventManager from 'src/utils/eventManager';
 import * as settings from 'src/utils/settings/index';
 import { global } from 'src/utils/global';
+import game from 'src/structures/game/game';
 import { infoToast } from 'src/utils/2.toasts';
 import Hotkey from 'src/utils/hotkey.class';
 import { hotkeys } from 'src/utils/1.variables';
@@ -34,12 +34,12 @@ const mouseDisable = settings.register({
   category: Translation.CATEGORY_HOTKEYS,
 });
 
-eventManager.on('PlayingGame', function bindHotkeys() {
+game.on(':playing', function bindHotkeys() {
   const hotkey = new Hotkey('End turn', (e) => {
     if (fullDisable.value()) return;
     const disabled = e instanceof KeyboardEvent ? spaceDisable.value() : mouseDisable.value();
     if (disabled) return;
-    if (!$(e.target).is('#endTurnBtn') && global('userTurn') === global('userId')) global('endTurn')();
+    if (!$(e.target).is('#endTurnBtn') && game.myTurn) global('endTurn')();
   }, {
     keys: ' ',
     clicks: MOUSE_BUTTON.Middle,

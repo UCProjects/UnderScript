@@ -1,7 +1,7 @@
-import eventManager from 'src/utils/eventManager';
+import game from 'src/structures/game/game';
 import { debug } from 'src/utils/debug';
 
-eventManager.on('getTurnEnd getTurnStart getPlayableCards', function hideSpells() {
+game.on('getTurnEnd getTurnStart getPlayableCards', function hideSpells() {
   // Remove stale cards
   const spells = $('.spellPlayed');
   if (spells.length) {

@@ -1,7 +1,6 @@
-import eventManager from 'src/utils/eventManager';
 import chat from 'src/structures/chat/chat';
+import game from 'src/structures/game/game';
 import * as settings from 'src/utils/settings/index';
-import { global } from 'src/utils/global';
 import style from 'src/utils/style';
 import { infoToast } from 'src/utils/2.toasts';
 import Translation from 'src/structures/constants/translation';
@@ -15,12 +14,12 @@ const tag = settings.register({
 
 style.add('.opponent { color: #d94f41 !important; }');
 
-eventManager.on('PlayingGame', function tagOpponent() {
+game.on(':playing', function tagOpponent() {
   let toast;
   /** @param {UnderScriptChatMessage} message */
   function processMessage(message) {
     const room = message.channel.room;
-    if (message.author.id === global('opponentId') && tag.value()) {
+    if (message.author.id === game.opponent?.id && tag.value()) {
       if (!toast) {
         toast = infoToast('<span class="opponent">Opponents</span> are now highlighted in chat.', 'underscript.notice.highlighting.opponent', '1');
       }

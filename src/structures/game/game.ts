@@ -1,9 +1,10 @@
 import GameState from './state';
-import type { GameStateEvents } from './state';
 
 export type {
   GameCardState,
+  GameDerivedEvents,
   GameEndReason,
+  GameFrameEvents,
   GamePlayerState,
   GameResult,
   GameResultFrame,
@@ -13,8 +14,6 @@ export type {
 
 const game = new GameState();
 
-export function emit<K extends keyof GameStateEvents>(event: K, ...args: GameStateEvents[K]): void {
-  game.emit(event, ...args);
-}
+export const emit = game.emit;
 
 export default game;

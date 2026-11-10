@@ -1,19 +1,21 @@
 import eventManager from 'src/utils/eventManager';
-import { global, globalSet } from 'src/utils/global';
+import { globalSet } from 'src/utils/global';
+import game from 'src/structures/game/game';
+import compound from 'src/utils/compoundEvent';
+import VarStore from 'src/utils/VarStore';
 
-eventManager.on('PlayingGame', function fixEndTurn() {
-  eventManager.on(':load', () => {
-    let endedTurn = false;
-    globalSet('endTurn', function endTurn() {
-      if (endedTurn || $('#endTurnBtn').prop('disabled')) return;
-      if (eventManager.emit({ cancelable: true }, 'player:endTurn').canceled) return;
-      endedTurn = true;
-      this.super();
-    });
+compound([game, ':playing'], ':load', function fixEndTurn() {
+  const endedTurn = new VarStore(false);
+  globalSet('endTurn', function endTurn() {
+    if (endedTurn.value || $('#endTurnBtn').prop('disabled')) return;
+    const canceled = eventManager.emit({ cancelable: true }, 'player:endTurn').canceled;
+    if (game.emit({ cancelable: true, canceled }, 'player:endTurn').canceled) return;
+    endedTurn.value = true;
+    this.super();
+  });
 
-    eventManager.on('getTurnStart', function turnStarted() {
-      if (global('userTurn') !== global('userId')) return;
-      endedTurn = false;
-    });
+  game.on('turn', (_, mine) => {
+    if (!mine) return;
+    endedTurn.value = false;
   });
 });

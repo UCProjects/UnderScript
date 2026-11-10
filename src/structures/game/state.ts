@@ -1,8 +1,9 @@
 import eventEmitter from 'src/utils/eventEmitter';
+import eventManager from 'src/utils/eventManager';
 import { translateText } from 'src/utils/translate';
 import type { GameCard, GamePlayer, GameSlot } from 'src/types/game/entities';
 import type { GameEvent, GameEvents } from 'src/types/game/events';
-import type { GameEventsUnseen } from 'src/types/game/events.unseen';
+import type { GameEventUnseen, GameEventsUnseen } from 'src/types/game/events.unseen';
 import type { Parsed } from 'src/types/game/wire';
 
 export type GameCardState = Parsed<GameCard>;
@@ -37,13 +38,23 @@ export type GameResult = {
   readonly data: GameResultFrame;
 };
 
-export type GameStateEvents = {
+type GameFrames = GameEvents & GameEventsUnseen;
+
+export type GameFrameEvents = {
+  [K in keyof GameFrames]: [data: { action: K } & GameFrames[K]];
+};
+
+export type GameDerivedEvents = {
+  ':playing': [];
+  'player:endTurn': [];
   started: [];
   turn: [turn: number, mine: boolean];
   played: [card: GameCardState, mine: boolean];
   died: [card: GameCardState];
   finished: [result: GameResult];
 };
+
+export type GameStateEvents = GameDerivedEvents & GameFrameEvents;
 
 const REASON_FALLBACKS: Record<string, string> = {
   'game-end-lethal': 'Lethal',
@@ -128,15 +139,17 @@ export default class GameState {
     getResult: (data: GameResultFrame) => this.finish(data),
   } as Handlers;
 
+  constructor() {
+    eventManager.on('PlayingGame', () => this.emit({ singleton: true }, ':playing'));
+  }
+
   readonly on = this.events.on;
 
   readonly once = this.events.once;
 
   readonly off = this.events.off;
 
-  emit<K extends keyof GameStateEvents>(event: K, ...args: GameStateEvents[K]): void {
-    this.events.emit(event, ...args);
-  }
+  readonly emit = this.events.emit;
 
   get active(): boolean {
     return this.current !== undefined && this.outcome === undefined;
@@ -186,9 +199,10 @@ export default class GameState {
     return this.targets;
   }
 
-  apply(data: GameEvent): void {
-    const handler = this.handlers[data.action] as ((frame: GameEvent) => void) | undefined;
+  apply(data: GameEvent | GameEventUnseen): void {
+    const handler = this.handlers[data.action as GameEvent['action']] as ((frame: unknown) => void) | undefined;
     handler?.call(this, data);
+    (this.emit as (event: string, frame: unknown) => unknown)(data.action, data);
   }
 
   reset(): void {
