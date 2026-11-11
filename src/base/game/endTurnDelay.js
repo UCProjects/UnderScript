@@ -1,6 +1,6 @@
-import eventManager from 'src/utils/eventManager';
+import compound from 'src/utils/compoundEvent';
 import * as settings from 'src/utils/settings/index';
-import { global } from 'src/utils/global';
+import game from 'src/structures/game/game';
 import { debug } from 'src/utils/debug';
 import sleep from 'src/utils/sleep';
 import Translation from 'src/structures/constants/translation';
@@ -21,10 +21,10 @@ settings.register({
   page: 'Game',
 });
 
-eventManager.on('PlayingGame', function endTurnDelay() {
-  eventManager.on('getTurnStart', function checkDelay() {
-    if (global('userTurn') !== global('userId')) return;
-    if (global('turn') > 3 && !setting.value()) {
+compound([game, ':playing'], ':load', () => {
+  game.on('turn', function endTurnDelay(turn, mine) {
+    if (!mine) return;
+    if (turn > 3 && !setting.value()) {
       debug('Waiting');
       $('#endTurnBtn').prop('disabled', true);
       sleep(3000).then(() => {
