@@ -22,6 +22,8 @@ import checkboxGroup, {
 } from 'src/utils/checkboxGroup';
 import style from 'src/utils/style';
 import showTotals from 'src/structures/craft/totals';
+import Toggle from 'src/utils/Toggle';
+import VarStore from 'src/utils/VarStore';
 import styles from './disenchant.css';
 
 const setting = settings.register({
@@ -37,7 +39,7 @@ style.add(styles);
 // TODO: More translations
 onPage('Crafting', function disenchantWrapper() {
   if (setting.disabled || setting.value()) return;
-  let processing = false;
+  const processing = new Toggle();
 
   eventManager.on('jQuery', () => {
     const button = $('<button class="btn btn-info">Smart Disenchant</button>');
@@ -104,7 +106,7 @@ onPage('Crafting', function disenchantWrapper() {
     const normal = buildColumn(everything, false);
     const shiny = buildColumn(everything, true);
     const status = $('<div class="sr-only" role="status" aria-live="polite">');
-    let confirm;
+    const confirm = new VarStore();
 
     function selected() {
       const counts = new Map();
@@ -118,7 +120,7 @@ onPage('Crafting', function disenchantWrapper() {
       const cards = selected();
       const dust = calcDust(cards);
       const copies = cards.reduce((total, { quantity }) => total + quantity, 0);
-      confirm.text(`Disenchant (+${dust})`).prop('disabled', !cards.length);
+      confirm.value.text(`Disenchant (+${dust})`).prop('disabled', !cards.length);
       if (announce) status.text(`${copies} ${copies === 1 ? 'copy' : 'copies'} selected, +${dust} dust`);
     }
 
@@ -173,7 +175,7 @@ onPage('Crafting', function disenchantWrapper() {
         dialog.getModal().on('keypress', (e) => {
           if (e.key === 'Enter') e.stopPropagation();
         });
-        confirm = dialog.getButton(CONFIRM);
+        confirm.value = dialog.getButton(CONFIRM);
         update(false);
       },
       onhide: hover.hide,
@@ -216,12 +218,12 @@ onPage('Crafting', function disenchantWrapper() {
   }
 
   function disenchant(cards) {
-    if (!cards.length || processing) return;
-    processing = true;
+    if (!cards.length || processing.value) return;
+    processing.on();
     const copies = expand(cards.splice(0));
     const startDust = parseInt($('#dust').text(), 10);
-    let latest = null;
-    let run;
+    const latest = new VarStore(null);
+    const run = new VarStore();
     const disenchanted = new Map();
     const total = copies.length;
     // TODO: translation
@@ -231,11 +233,11 @@ onPage('Crafting', function disenchantWrapper() {
       buttons: {
         text: 'Stop',
         dismiss: false,
-        onClick: () => run?.stop(),
+        onClick: () => run.value?.stop(),
       },
     });
     debug(copies.length);
-    run = runQueue({
+    run.value = runQueue({
       items: copies,
       concurrency: 5,
       attempt: attemptDisenchant,
@@ -244,8 +246,8 @@ onPage('Crafting', function disenchantWrapper() {
         disenchanted.set(key, { id: copy.id, shiny: copy.shiny, quantity: (disenchanted.get(key)?.quantity ?? 0) + 1 });
         global('updateQuantity')(JSON.parse(response.data.card), -1);
         // There's no guarantee these are in order
-        if (!latest || response.data.dust > latest.data.dust) {
-          latest = response;
+        if (!latest.value || response.data.dust > latest.value.data.dust) {
+          latest.value = response;
           showTotals(response.data);
         }
       },
@@ -253,18 +255,18 @@ onPage('Crafting', function disenchantWrapper() {
         if (toast.exists()) toast.setText(progress(state));
       },
     });
-    run.promise.then((result) => {
+    run.value.promise.then((result) => {
       toast.close('finished');
-      if (latest) {
+      if (latest.value) {
         global('applyFilters')();
         global('showPage')(global('currentPage'));
       }
-      const gained = latest ? latest.data.dust - startDust : 0;
+      const gained = latest.value ? latest.value.data.dust - startDust : 0;
       fnToast(summary(result, gained));
-      if (latest) {
+      if (latest.value) {
         reportSmartDisenchant({
           cards: [...disenchanted.values()],
-          dust: latest.data.dust,
+          dust: latest.value.data.dust,
           gained,
           stopped: result.stopped,
         });
@@ -275,7 +277,7 @@ onPage('Crafting', function disenchantWrapper() {
       // TODO: translation
       fnToast('Could not complete disenchanting.');
     }).finally(() => {
-      processing = false;
+      processing.off();
     });
   }
 
@@ -358,11 +360,7 @@ onPage('Crafting', function disenchantWrapper() {
   }
 
   function calcDust(cards) {
-    let total = 0;
-    cards.forEach((card) => {
-      total += cardHelper.dustGain(card.rarity, card.shiny) * card.quantity;
-    });
-    return total;
+    return cards.reduce((total, card) => total + cardHelper.dustGain(card.rarity, card.shiny) * card.quantity, 0);
   }
 
   function include(rarity) {

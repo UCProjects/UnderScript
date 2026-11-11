@@ -8,6 +8,7 @@ import rand from 'src/utils/rand';
 import * as deckLoader from 'src/utils/loadDeck';
 import { getTranslationArray } from 'src/base/underscript/translation';
 import Rarity from 'src/structures/constants/rarity';
+import Toggle from 'src/utils/Toggle';
 
 function buildPool(shinyFilter) {
   const cards = [{ id: 0, shiny: false, rarity: '' }];
@@ -49,14 +50,14 @@ function fillDeck(e) {
 
   const counts = new Map();
   const cards = [];
-  let dtFlag = false;
+  const dtFlag = new Toggle();
 
   function addCard(card) {
     const amt = counts.get(card.id) || 0;
     if (amt === cardHelper.max(card.rarity)) return;
     if (Rarity.DETERMINATION.equals(card.rarity)) {
-      if (dtFlag) return;
-      dtFlag = true;
+      if (dtFlag.value) return;
+      dtFlag.on();
     }
     cards.push(card);
     counts.set(card.id, amt + 1);

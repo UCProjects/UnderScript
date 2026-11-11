@@ -24,9 +24,8 @@ eventManager.on(':preload:Decks', () => {
   }
 
   function count() {
-    let val = 0;
     const list = global('decks')[global('soul')];
-    list.forEach(({ cost }) => val += cost); // eslint-disable-line no-return-assign
+    const val = list.reduce((sum, { cost }) => sum + cost, 0);
     avg.text(`(${round(list.length ? val / list.length : val)})`);
   }
 

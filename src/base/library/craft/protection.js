@@ -1,21 +1,22 @@
 import * as api from 'src/utils/4.api';
 import eventManager from 'src/utils/eventManager';
 import { globalSet } from 'src/utils/global';
+import Toggle from 'src/utils/Toggle';
 
-let locked = false;
-let bypass = false;
+const locked = new Toggle();
+const bypass = new Toggle();
 
 const craft = api.mod.craft;
 
 craft.bypassProtection = setBypass;
 
 export default function setBypass(value) {
-  bypass = value === true;
+  bypass.value = value === true;
 }
 
 function override(...args) {
-  if (locked && !bypass) return;
-  locked = true;
+  if (locked.value && !bypass.value) return;
+  locked.on();
   this.super(...args);
 }
 
@@ -26,5 +27,5 @@ eventManager.on(':preload:Crafting', () => {
 });
 
 eventManager.on('Craft:auto Craft:disenchant craftcard crafterrror', () => {
-  locked = false;
+  locked.off();
 });

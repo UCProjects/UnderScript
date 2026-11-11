@@ -1,49 +1,4 @@
 {
-  "src/base/library/craft/disenchant.js": {
-    "no-restricted-syntax": {
-      "count": 5
-    }
-  },
-  "src/base/library/craft/max.js": {
-    "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/base/library/craft/protection.js": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/base/library/deck/average.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/library/deck/random.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/library/deck/storage.js": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/base/underscript/plugins.js": {
-    "no-restricted-syntax": {
-      "count": 5
-    }
-  },
-  "src/base/underscript/settings/advanced.local.js": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/base/underscript/updates.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/hooks/BootstrapDialog.js": {
     "no-restricted-syntax": {
       "count": 1

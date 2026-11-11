@@ -8,6 +8,7 @@ import * as cardHelper from 'src/utils/cardHelper';
 import Translation from 'src/structures/constants/translation';
 import isCtrl from 'src/utils/isCtrl';
 import Rarity from 'src/structures/constants/rarity';
+import Toggle from 'src/utils/Toggle';
 import setBypass from './protection';
 
 const setting = settings.register({
@@ -63,22 +64,17 @@ onPage('Crafting', function craftMax() {
     });
   }
 
-  let crafting = false;
+  const crafting = new Toggle();
   function craftCards(id, shiny, count, cost, total) {
-    if (crafting) return;
-    crafting = true;
+    if (crafting.value) return;
+    crafting.on();
     setBypass(true);
     const craft = global('craft');
-    let dust = total;
-    let remaining = count;
-    do {
-      dust -= cost;
-      craft(id, shiny);
-      remaining -= 1;
-    } while (remaining && dust >= cost);
+    const times = cost > 0 ? Math.min(count, Math.max(1, Math.floor(total / cost))) : count;
+    Array.from({ length: times }).forEach(() => craft(id, shiny));
     sleep(1000).then(() => { // Wait a second before allowing crafting again
       calculate(); // Re-calculate after crafting
-      crafting = false;
+      crafting.off();
       setBypass(false);
     });
   }

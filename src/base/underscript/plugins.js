@@ -7,6 +7,8 @@ import eventManager from 'src/utils/eventManager';
 import * as menu from 'src/utils/menu';
 import * as registry from 'src/utils/pluginRegistry';
 import style from 'src/utils/style';
+import Toggle from 'src/utils/Toggle';
+import VarStore from 'src/utils/VarStore';
 import css from './plugins.css';
 
 const keys = {
@@ -64,23 +66,21 @@ function saveHidden() {
 }
 
 const dialog = new DialogHelper();
-let container;
-let tableHolder;
-let refreshed;
-let complete;
-let query = '';
+const tableHolder = new VarStore();
+const refreshed = new Toggle();
+const complete = new Toggle();
+const query = new VarStore('');
 
 dialog.onClose(() => {
-  container = null;
-  tableHolder = null;
-  refreshed = false;
-  complete = false;
-  query = '';
+  tableHolder.reset();
+  refreshed.off();
+  complete.off();
+  query.reset();
 });
 
 function addRefresh() {
-  if (refreshed) return;
-  refreshed = true;
+  if (refreshed.value) return;
+  refreshed.on();
   dialog.prependButton({
     label: `${keys.refresh}`,
     cssClass: 'btn-success',
@@ -100,13 +100,13 @@ function open() {
 }
 
 function update() {
-  if (complete) return;
+  if (complete.value) return;
   render();
 }
 
 function build() {
-  tableHolder = $('<div>');
-  container = $('<div>').append(toolbar(), tableHolder);
+  tableHolder.value = $('<div>');
+  const container = $('<div>').append(toolbar(), tableHolder.value);
   render();
   return container;
 }
@@ -114,9 +114,9 @@ function build() {
 function toolbar() {
   const search = $('<input type="search" class="form-control plugin-search">')
     .attr('placeholder', `${keys.search}`)
-    .val(query)
+    .val(query.value)
     .on('input', () => {
-      query = search.val().trim().toLowerCase();
+      query.value = search.val().trim().toLowerCase();
       render();
     });
   const filters = $('<div class="plugin-filters">').append(
@@ -142,12 +142,12 @@ function statusOf(name) {
 
 function matches({ name, author }) {
   if (hidden.has(statusOf(name))) return false;
-  if (!query) return true;
-  return `${name} ${author || ''}`.toLowerCase().includes(query);
+  if (!query.value) return true;
+  return `${name} ${author || ''}`.toLowerCase().includes(query.value);
 }
 
 function render() {
-  if (!tableHolder) return;
+  if (!tableHolder.value) return;
   const plugins = registry.plugins();
   const visible = plugins.filter(matches);
   const body = $('<tbody>');
@@ -160,8 +160,8 @@ function render() {
       ({ name: nameA }, { name: nameB }) => nameA.localeCompare(nameB),
     ).forEach((entry) => body.append(row(entry)));
   }
-  complete = registry.datesLoaded() && plugins.length > 0 && plugins.every(({ name }) => registry.info(name));
-  tableHolder.empty().append($('<table class="table">').append(header(), body));
+  complete.value = registry.datesLoaded() && plugins.length > 0 && plugins.every(({ name }) => registry.info(name));
+  tableHolder.value.empty().append($('<table class="table">').append(header(), body));
 }
 
 function header() {

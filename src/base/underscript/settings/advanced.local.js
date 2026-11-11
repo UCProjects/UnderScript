@@ -1,5 +1,6 @@
 import * as settings from 'src/utils/settings/index';
 import debugMode from 'src/base/underscript/debugMode';
+import VarStore from 'src/utils/VarStore';
 import html from './advanced.html';
 
 const page = document.createElement('div');
@@ -9,9 +10,9 @@ const file = page.querySelector('#underscriptImportFile');
 const status = page.querySelector('#underscriptAdvancedStatus');
 const debugButton = page.querySelector('#underscriptDebugButton');
 const MAX_LISTED = 10;
-let pending;
+const pending = new VarStore();
 text.addEventListener('input', () => {
-  pending = undefined;
+  pending.reset();
   show();
 });
 page.querySelector('#underscriptExportButton').addEventListener('click', () => save());
@@ -75,16 +76,22 @@ function show(message = '', skipped = []) {
   status.replaceChildren(...children);
 }
 
+function parse(data) {
+  try {
+    return settings.parseSettings(data);
+  } catch {
+    return undefined;
+  }
+}
+
 function load(data) {
-  if (data === pending) {
+  if (data === pending.value) {
     settings.importSettings(data);
     location.reload();
     return;
   }
-  let result;
-  try {
-    result = settings.parseSettings(data);
-  } catch {
+  const result = parse(data);
+  if (!result) {
     show('That is not a valid settings export.');
     return;
   }
@@ -97,5 +104,5 @@ function load(data) {
     `Ready to import ${count} settings. This overwrites your current values and reloads the page. Click Import again to continue.`,
     result.skipped,
   );
-  pending = data;
+  pending.value = data;
 }

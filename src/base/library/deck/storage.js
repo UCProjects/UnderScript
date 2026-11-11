@@ -146,11 +146,12 @@ onPage('Decks', function deckStorage() {
       const names = [];
       list.forEach((card) => {
         // TODO: Filter out cards with insufficient quantity
-        let data = getCardData(card.id, card.shiny);
+        const data = getCardData(card.id, card.shiny);
+        const missing = data ? undefined : getFromLibrary(card.id, global('allCards'));
         const name = data ?
           `<span class="${data.rarity}">${cardName(data)}</span>` :
           // TODO: translation
-          `<span style="color: orange;">${(data = getFromLibrary(card.id, global('allCards'))) && cardName(data) || 'Deleted'} (Missing)</span>`;
+          `<span style="color: orange;">${missing && cardName(missing) || 'Deleted'} (Missing)</span>`;
         names.push(`- ${card.shiny ? '<span style="color: yellow;">S</span> ' : ''}${name}`);
       });
       return names.join('<br />');
@@ -192,14 +193,14 @@ onPage('Decks', function deckStorage() {
           .toggleClass('btn-primary', loaded);
       }
       function hoverButton(e) {
-        let text = '';
-        if (e.type === 'mouseenter') {
+        const text = (() => {
+          if (e.type !== 'mouseenter') return '';
           const deck = getDeck(i);
           fixClass(!!deck);
           const SOUL = `${Translation.Vanilla(`soul-${soul}`)}-${i + 1}`;
           if (deck) {
             const note = Translation.General('storage.note').key;
-            text = `
+            return `
               <div id="deckName">${localStorage.getItem(nameKey) || SOUL}</div>
               <div><input id="deckNameInput" maxlength="28" style="border: 0; border-bottom: 2px solid #00617c; background: #000; width: 100%; display: none;" type="text" placeholder="${SOUL}" value="${localStorage.getItem(nameKey) || ''}"></div>
               <div style="font-size: 13px;">${artifacts(i)}</div>
@@ -209,12 +210,11 @@ onPage('Decks', function deckStorage() {
                 ${getTranslationArray(note).join('<br>')}
               </div>
             `;
-          } else {
-            text = `
+          }
+          return `
               <div id="name">${SOUL}</div>
               <div>${Translation.General('storage.save')}</div>`;
-          }
-        }
+        })();
         hover.show(text)(e);
       }
       fixClass(!!localStorage.getItem(deckKey))

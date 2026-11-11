@@ -14,6 +14,7 @@ import {
 } from 'src/hooks/updates';
 import plugin from 'src/utils/underscript';
 import Translation from 'src/structures/constants/translation';
+import VarStore from 'src/utils/VarStore';
 import styles from './updates.css';
 
 // Check for script updates
@@ -21,7 +22,7 @@ wrap(() => {
   style.add(styles);
   const checker = createParser({ updateURL: 'UCProjects/UnderScript' });
   const DEBUG = 'underscript.update.debug';
-  let updateToast;
+  const updateToast = new VarStore();
   function isNewer(data) {
     const version = scriptVersion;
     if (version === 'L' && !localStorage.getItem(DEBUG)) return false;
@@ -30,13 +31,13 @@ wrap(() => {
   }
   function compareAndToast(data) {
     if (!data || !isNewer(data)) {
-      updateToast?.close('invalid');
+      updateToast.value?.close('invalid');
       return false;
     }
     eventManager.once(':update:finished :update:force', () => {
-      updateToast?.close('stale');
+      updateToast.value?.close('stale');
       if (data.announce) return;
-      updateToast = Toast({
+      updateToast.value = Toast({
         title: Translation.Toast('update.title'),
         text: Translation.Toast('update.text').withArgs(data.newVersion),
         className: 'dismissable',
