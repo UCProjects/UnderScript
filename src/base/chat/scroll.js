@@ -1,5 +1,6 @@
 import eventManager from 'src/utils/eventManager';
 import { global, globalSet } from 'src/utils/global';
+import Toggle from 'src/utils/Toggle';
 
 eventManager.on('ChatDetected', function override() {
   // eslint-disable-next-line consistent-return
@@ -18,10 +19,10 @@ function scrollToBottom(room) {
 eventManager.on('Chat:getHistory', ({ room }) => scrollToBottom(room));
 
 // See if we should scroll this message
-let force = false;
+const force = new Toggle();
 eventManager.on('preChat:getMessage', function preProcess({ room }) {
   if (this.canceled) return;
   const container = $(`#${room} .chat-messages`);
-  force = container.scrollTop() + 100 > container.prop('scrollHeight') - container.height();
+  force.value = container.scrollTop() + 100 > container.prop('scrollHeight') - container.height();
 });
-eventManager.on('Chat:getMessage', ({ room }) => force && scrollToBottom(room));
+eventManager.on('Chat:getMessage', ({ room }) => force.value && scrollToBottom(room));

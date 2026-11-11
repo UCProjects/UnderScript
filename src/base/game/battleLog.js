@@ -15,6 +15,7 @@ import { cardName } from 'src/utils/cardHelper';
 import extractImageName from 'src/utils/extractImageName';
 import { translateText } from 'src/utils/translate';
 import Translation from 'src/structures/constants/translation';
+import VarStore from 'src/utils/VarStore';
 import styles from './battleLog.css';
 
 const sizeSetting = settings.register({
@@ -135,23 +136,23 @@ eventManager.on('GameStart', function battleLogger() {
   const turnText = '>>> Turn';
   const surrendered = 'surrendered';
   const overwhelmed = 'was overwhelmed';
-  let baseLives = 1;
-  let turn = 0;
-  let currentTurn = 0;
+  const baseLives = new VarStore(1);
+  const turn = new VarStore(0);
+  const currentTurn = new VarStore(0);
   const players = {};
-  let monsters = {};
-  let lastEffect;
+  const monsters = {};
+  const lastEffect = new VarStore();
   const other = {};
-  let yourDust;
-  let enemyDust;
-  let lastSP;
+  const yourDust = new VarStore();
+  const enemyDust = new VarStore();
+  const lastSP = new VarStore();
   function getDust(id) {
     return global('dustpile').filter(({ ownerId }) => ownerId === id).length;
   }
   function addDust(player, dust = getDust(player)) {
     if (!player || !players[player]) return;
     const display = player === global('userId') ? yourDust : enemyDust;
-    display.html(dust);
+    display.value.html(dust);
   }
   const make = {
     player: function makePlayer(player, title = false) {
@@ -222,17 +223,17 @@ eventManager.on('GameStart', function battleLogger() {
     enemy.rank = data.enemyRank;
     // yourArtifacts, yourAvatar {id, image, name, rarity, ucpCost}, division, oldDivision, profileSkin {id, name, image, ucpCost}
     debug({ you, enemy }, flags.game);
-    turn = data.turn || 0;
+    turn.value = data.turn || 0;
     players[you.id] = you;
     players[enemy.id] = enemy;
     // Display Dust
     const disableDust = settings.value('underscript.disable.dust');
-    yourDust = $('<span class="stats-value dust-counter">');
-    enemyDust = $('<span class="stats-value dust-counter">');
+    yourDust.value = $('<span class="stats-value dust-counter">');
+    enemyDust.value = $('<span class="stats-value dust-counter">');
     if (disableDust === 'never' || (disableDust !== 'always' && disableDust !== (this.event === 'getAllGameInfos' ? 'spectating' : 'playing'))) {
       $('.btn-dustpile').wrap('<span class="stats-group">');
-      $(`#user${global('opponentId')} .btn-dustpile`).after(enemyDust);
-      $(`#user${global('userId')} .btn-dustpile`).after(yourDust);
+      $(`#user${global('opponentId')} .btn-dustpile`).after(enemyDust.value);
+      $(`#user${global('userId')} .btn-dustpile`).after(yourDust.value);
     }
     // Set lives
     if (data.lives) {
@@ -240,7 +241,7 @@ eventManager.on('GameStart', function battleLogger() {
       you.lives = lives[you.id];
       enemy.lives = lives[enemy.id];
     } else {
-      baseLives = 0;
+      baseLives.value = 0;
       updateSoul({
         idPlayer: you.id,
         soul: you.soul,
@@ -260,9 +261,9 @@ eventManager.on('GameStart', function battleLogger() {
       $('#history').hide();
     }
     $('div#history div.handle .title').html('').append(`[${data.gameType}] `, make.player(you), ' vs ', make.player(enemy));
-    log.add(`${turnText} ${turn}`);
+    log.add(`${turnText} ${turn.value}`);
     if (data.userTurn) {
-      currentTurn = data.userTurn;
+      currentTurn.value = data.userTurn;
       log.add(make.player(players[data.userTurn]), '\'s turn');
     }
   });
@@ -287,7 +288,7 @@ eventManager.on('GameStart', function battleLogger() {
       log.add(make.player(player), ` ${hp < 0 ? 'lost' : 'gained'} ${Math.abs(hp)} hp`);
     }
     // eslint-disable-next-line no-prototype-builtins
-    if (data.hp === 0 && player.lives > baseLives && player.lostLife !== true) { // If they have extra lives, and they didn't lose a life already
+    if (data.hp === 0 && player.lives > baseLives.value && player.lostLife !== true) { // If they have extra lives, and they didn't lose a life already
       log.add(make.player(player), ' lost a life');
       player.lostLife = true;
     }
@@ -303,8 +304,8 @@ eventManager.on('GameStart', function battleLogger() {
     // playerAffected1: id; player affected
     // playerAffected2: id; player affected
     // TODO: Figure out how to do this better
-    if (lastEffect === `m${data.monsterId}`) return;
-    lastEffect = `m${data.monsterId}`;
+    if (lastEffect.value === `m${data.monsterId}`) return;
+    lastEffect.value = `m${data.monsterId}`;
     log.add(make.card(monsters[data.monsterId]), '\'s effect activated');
   });
   eventManager.on('Log:ARTIFACT_EFFECT', ({ artifactActor: artifact, playerId, targetCards = [], targetPlayers = [] }) => {
@@ -337,14 +338,14 @@ eventManager.on('GameStart', function battleLogger() {
   }
   eventManager.on('getTurnStart', function turnStart(data) {
     debug(data, flags.rawTurnStart);
-    lastEffect = 0;
-    if (data.numTurn !== turn) {
-      turn = data.numTurn;
-      log.add(`${turnText} ${turn}`);
+    lastEffect.reset();
+    if (data.numTurn !== turn.value) {
+      turn.value = data.numTurn;
+      log.add(`${turnText} ${turn.value}`);
     }
-    if (currentTurn !== data.idPlayer) {
-      currentTurn = data.idPlayer; // It would (kindof) help to actually update who's turn it is
-      log.add(make.player(players[currentTurn]), '\'s turn');
+    if (currentTurn.value !== data.idPlayer) {
+      currentTurn.value = data.idPlayer; // It would (kindof) help to actually update who's turn it is
+      log.add(make.player(players[currentTurn.value]), '\'s turn');
     }
   });
   eventManager.on('getTurnEnd', function turnEnd(data) {
@@ -355,13 +356,13 @@ eventManager.on('GameStart', function battleLogger() {
     }
     delete players[data.idPlayer].lostLife;
     delete players[other[data.idPlayer]].lostLife;
-    lastEffect = 0;
-    lastSP = 0;
+    lastEffect.reset();
+    lastSP.reset();
   });
   eventManager.on('getUpdateBoard', function updateGame(data) {
     debug(data, flags.rawBoardUpdate);
     // const oldMonsters = monsters;
-    monsters = {};
+    Object.keys(monsters).forEach((id) => delete monsters[id]);
     // TOOD: stuff....
     JSON.parse(data.board).forEach((card, i) => {
       if (card === null) return;
@@ -392,8 +393,8 @@ eventManager.on('GameStart', function battleLogger() {
     debug(data, flags.rawSpell);
     // immediately calls "getDoingEffect" and "getUpdateBoard"
     const card = JSON.parse(data.card);
-    if (lastSP === card.id) return;
-    lastSP = card.id;
+    if (lastSP.value === card.id) return;
+    lastSP.value = card.id;
     card.owner = data.idPlayer;
     monsters[card.id] = card;
     log.add(make.player(players[data.idPlayer]), ' used ', make.card(card));
@@ -410,26 +411,25 @@ eventManager.on('GameStart', function battleLogger() {
   });
   eventManager.on('getPlayersStats', function updatePlayer(data) { // TODO: When does this get called?
     debug(data, flags.rawStats);
-    let temp = JSON.parse(data.handsSize);
-    Object.keys(temp).forEach((key) => {
+    const hands = JSON.parse(data.handsSize);
+    Object.keys(hands).forEach((key) => {
       // TODO: hand size monitoring
       // players[key].hand
     });
     // TODO: deck monitoring (decksSize)
-    temp = JSON.parse(data.golds);
-    Object.keys(temp).forEach((key) => {
-      players[key].gold = temp[key];
+    const golds = JSON.parse(data.golds);
+    Object.keys(golds).forEach((key) => {
+      players[key].gold = golds[key];
     });
     if (data.lives) {
-      temp = JSON.parse(data.lives);
-      Object.keys(temp).forEach((key) => {
-        players[key].lives = temp[key];
+      const lives = JSON.parse(data.lives);
+      Object.keys(lives).forEach((key) => {
+        players[key].lives = lives[key];
       });
     }
     // data.artifacts
     if (data.artifacts) {
-      temp = JSON.parse(data.artifacts);
-      each(temp, (array = [], user = 0) => {
+      each(JSON.parse(data.artifacts), (array = [], user = 0) => {
         players[user].overwhelmed = array.some((art) => art.id === 34 && art.custom === 0);
       });
     }
@@ -462,14 +462,11 @@ eventManager.on('GameStart', function battleLogger() {
   eventManager.on('getResult', function endSpectating(data) {
     debug(data, flags.rawEnd);
     const loser = lookupPlayer(data.looser);
-    let loseReason = '';
-    if (data.cause === 'game-end-surrender') {
-      loseReason = surrendered;
-    } else if (data.cause === 'game-end-disconnection') {
-      loseReason = 'left the game';
-    } else if (loser.overwhelmed) {
-      loseReason = overwhelmed;
-    }
+    const loseReason = (() => {
+      if (data.cause === 'game-end-surrender') return surrendered;
+      if (data.cause === 'game-end-disconnection') return 'left the game';
+      return loser.overwhelmed ? overwhelmed : '';
+    })();
     const lost = make.player(loser);
     if (loseReason) {
       log.add(lost.clone(), ` ${loseReason}.`);

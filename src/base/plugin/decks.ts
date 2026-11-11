@@ -44,52 +44,55 @@ wrap(() => {
       return listener;
     }
 
+    function create(deck: SavedDeck): UnderScriptSavedDeck {
+      const meta: UnderScriptDeckMeta = Object.freeze({
+        get: (key) => deck.getMeta(plugin.name, key),
+        set: (key, value) => deck.setMeta(plugin.name, key, value),
+        remove: (key) => deck.removeMeta(plugin.name, key),
+        all: () => deck.allMeta(),
+        of: (other) => deck.metaOf(other),
+      });
+      return Object.freeze({
+        get soul() {
+          return deck.soul;
+        },
+        get index() {
+          return deck.index;
+        },
+        get exists() {
+          return deck.exists;
+        },
+        get cards() {
+          return deck.cards;
+        },
+        get artifacts() {
+          return deck.artifacts;
+        },
+        get name() {
+          return deck.name;
+        },
+        set name(value) {
+          deck.name = value;
+        },
+        get description() {
+          return deck.description;
+        },
+        set description(value) {
+          deck.description = value;
+        },
+        meta,
+        load: () => decks.load(deck.soul, { cards: deck.cards, artifacts: deck.artifacts }),
+        remove: () => deck.erase(),
+        export: (options) => deck.export(options),
+      });
+    }
+
     function view(deck: SavedDeck): UnderScriptSavedDeck {
-      let existing = views.get(deck);
-      if (!existing) {
-        const meta: UnderScriptDeckMeta = Object.freeze({
-          get: (key) => deck.getMeta(plugin.name, key),
-          set: (key, value) => deck.setMeta(plugin.name, key, value),
-          remove: (key) => deck.removeMeta(plugin.name, key),
-          all: () => deck.allMeta(),
-          of: (other) => deck.metaOf(other),
-        });
-        existing = Object.freeze({
-          get soul() {
-            return deck.soul;
-          },
-          get index() {
-            return deck.index;
-          },
-          get exists() {
-            return deck.exists;
-          },
-          get cards() {
-            return deck.cards;
-          },
-          get artifacts() {
-            return deck.artifacts;
-          },
-          get name() {
-            return deck.name;
-          },
-          set name(value) {
-            deck.name = value;
-          },
-          get description() {
-            return deck.description;
-          },
-          set description(value) {
-            deck.description = value;
-          },
-          meta,
-          load: () => decks.load(deck.soul, { cards: deck.cards, artifacts: deck.artifacts }),
-          remove: () => deck.erase(),
-          export: (options) => deck.export(options),
-        });
-        views.set(deck, existing);
-      }
-      return existing;
+      const existing = views.get(deck);
+      if (existing) return existing;
+      const created = create(deck);
+      views.set(deck, created);
+      return created;
     }
 
     const obj: UnderScriptDecksPlugin = {

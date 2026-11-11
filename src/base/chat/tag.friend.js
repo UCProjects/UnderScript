@@ -4,6 +4,7 @@ import { global } from 'src/utils/global';
 import { infoToast } from 'src/utils/2.toasts';
 import style from 'src/utils/style';
 import Translation from 'src/structures/constants/translation';
+import VarStore from 'src/utils/VarStore';
 import styles from './tag.friend.css';
 
 const tag = settings.register({
@@ -26,14 +27,14 @@ const color = settings.register({
 style.add(styles);
 setColor(color.value());
 
-let toast;
+const toast = new VarStore();
 /** @param {UnderScriptChatMessage} message */
 function processMessage(message) {
   if (!tag.value()) return;
   const room = message.channel.room;
   if (global('isFriend')(message.author.id)) {
-    if (!toast) {
-      toast = infoToast('<span class="friend">Friends</span> are now highlighted in chat.', 'underscript.notice.highlighting', '1');
+    if (!toast.value) {
+      toast.value = infoToast('<span class="friend">Friends</span> are now highlighted in chat.', 'underscript.notice.highlighting', '1');
     }
     $(`#${room} #message-${message.id} .chat-user`).addClass('friend');
     if (message.emote) { // emotes

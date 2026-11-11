@@ -4,12 +4,14 @@ import style from 'src/utils/style';
 import onPage from 'src/utils/onPage';
 import * as hover from 'src/utils/hover';
 import Counter from 'src/utils/Counter';
+import Toggle from 'src/utils/Toggle';
+import VarStore from 'src/utils/VarStore';
 
-let showFriends = false;
+const showFriends = new Toggle();
 const ready = new Counter();
 const friendRanks = [];
-let pageNumber = -1;
-let btn;
+const pageNumber = new VarStore(-1);
+const btn = new VarStore();
 
 eventManager.once('Rankings:init', init);
 eventManager.once('Chat:Connected', () => {
@@ -17,12 +19,10 @@ eventManager.once('Chat:Connected', () => {
 });
 
 function toggle() {
-  showFriends = !showFriends;
+  showFriends.flip();
   localStorage.removeItem('rankedLeaderboardPage');
   global('setupLeaderboard')();
-  if (btn) {
-    btn.classList.toggle('active', showFriends);
-  }
+  btn.value?.classList.toggle('active', showFriends.value);
 }
 
 function init() {
@@ -33,39 +33,40 @@ function init() {
   style.add('#navButtons > .active > .glyphicon-user { color: orange; }');
 
   globalSet('getMaxPage', function getMaxPage() {
-    if (showFriends) return Math.floor((friendRanks.length - 1) / global('maxDisplayPage'));
+    if (showFriends.value) return Math.floor((friendRanks.length - 1) / global('maxDisplayPage'));
     return this.super();
   });
 
   eventManager.on('preShowPage', function showPage(page) {
-    if (showFriends) {
+    if (showFriends.value) {
       show(page);
       this.canceled = true;
     }
   });
 
   globalSet('getUserPageNum', function getUserPageNum() {
-    if (showFriends) return pageNumber;
+    if (showFriends.value) return pageNumber.value;
     return this.super();
   });
 
-  btn = document.createElement('button');
-  btn.classList.add('btn', 'btn-primary');
-  btn.addEventListener('click', toggle);
-  btn.innerHTML = '<span class="glyphicon glyphicon-user green"></span>';
+  const button = document.createElement('button');
+  btn.value = button;
+  button.classList.add('btn', 'btn-primary');
+  button.addEventListener('click', toggle);
+  button.innerHTML = '<span class="glyphicon glyphicon-user green"></span>';
 
   document.querySelectorAll('button.btn-lg').forEach((el) => el.classList.remove('btn-lg'));
-  document.querySelector('#navButtons').append(btn);
+  document.querySelector('#navButtons').append(button);
   // TODO: translation
-  hover.tip('Toggle friend rankings', btn);
+  hover.tip('Toggle friend rankings', button);
 
   const leaderboard = global('leaderboard');
   const selfId = global('sessionIdUser');
 
   const selfIndex = leaderboard.findIndex(({ id }) => id === selfId);
   if (selfIndex >= 0) {
-    pageNumber = Math.floor(selfIndex / global('maxDisplayPage'));
-    global('userPageNumbers').push(pageNumber);
+    pageNumber.value = Math.floor(selfIndex / global('maxDisplayPage'));
+    global('userPageNumbers').push(pageNumber.value);
   }
 
   const friends = global('selfFriends');

@@ -4,6 +4,7 @@ import * as settings from 'src/utils/settings/index';
 import style from 'src/utils/style';
 import { infoToast } from 'src/utils/2.toasts';
 import Translation from 'src/structures/constants/translation';
+import VarStore from 'src/utils/VarStore';
 
 const tag = settings.register({
   name: Translation.Setting('tag.opponent'),
@@ -15,13 +16,13 @@ const tag = settings.register({
 style.add('.opponent { color: #d94f41 !important; }');
 
 game.on(':playing', function tagOpponent() {
-  let toast;
+  const toast = new VarStore();
   /** @param {UnderScriptChatMessage} message */
   function processMessage(message) {
     const room = message.channel.room;
     if (message.author.id === game.opponent?.id && tag.value()) {
-      if (!toast) {
-        toast = infoToast('<span class="opponent">Opponents</span> are now highlighted in chat.', 'underscript.notice.highlighting.opponent', '1');
+      if (!toast.value) {
+        toast.value = infoToast('<span class="opponent">Opponents</span> are now highlighted in chat.', 'underscript.notice.highlighting.opponent', '1');
       }
       $(`#${room} #message-${message.id} .chat-user`).addClass('opponent');
       if (message.emote) { // emotes

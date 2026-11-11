@@ -58,8 +58,7 @@ function toast(type) {
   const sType = selector(type);
   [...document.querySelectorAll(`td a[href="${sType}"] img, p a[href="${sType}"] img, p img[class*="${sType}"]`)].forEach((el) => {
     names.push(imageName(el.src));
-    let a = el.parentElement;
-    while (a.parentElement !== a && a.nodeName !== 'TD' && a.nodeName !== 'P') a = a.parentElement;
+    const a = el.parentElement.closest('td, p');
     links.push(a.innerHTML);
     a.remove();
   });

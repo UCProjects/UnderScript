@@ -6,6 +6,8 @@ import pingRegex from 'src/utils/pingRegex';
 import { infoToast } from 'src/utils/2.toasts';
 import Translation from 'src/structures/constants/translation';
 import style from 'src/utils/style';
+import Toggle from 'src/utils/Toggle';
+import VarStore from 'src/utils/VarStore';
 
 import { pingExtras } from './toast';
 
@@ -19,17 +21,17 @@ const setting = settings.register({
 
 const mask = '<span class="us-ping">$1</span>';
 
-let disabled = false;
-let notified = false;
+const disabled = new VarStore(false);
+const notified = new Toggle();
 
 eventManager.on('preChat:getHistory Chat:getHistory', function enable(data) {
-  if (disabled || global('soundsEnabled')) {
-    if (disabled !== 'history') {
+  if (disabled.value || global('soundsEnabled')) {
+    if (disabled.value !== 'history') {
       globalSet('soundsEnabled', this.event === 'Chat:getHistory');
     }
-    disabled = !disabled;
+    disabled.value = !disabled.value;
   } else {
-    disabled = 'history';
+    disabled.value = 'history';
   }
 });
 
@@ -54,8 +56,8 @@ eventManager.on('ChatDetected', () => {
 });
 
 function notify() {
-  if (disabled || notified) return;
-  notified = true;
+  if (disabled.value || notified.value) return;
+  notified.on();
   if (!pingExtras.value().includes('@underscript')) return;
   infoToast({
     text: Translation.Toast('ping'),

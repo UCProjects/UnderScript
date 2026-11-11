@@ -2,6 +2,7 @@ import wrap from 'src/utils/2.pokemon';
 import { registerModule } from 'src/utils/plugin';
 import { register } from 'src/utils/chatCommands';
 import { commandView } from 'src/structures/chat/outgoing';
+import Toggle from 'src/utils/Toggle';
 
 type RawCommand = { command: string; text: string; [key: string]: any };
 
@@ -39,7 +40,7 @@ wrap(() => {
         checkFunction(enabled, 'enabled');
         checkFunction(handler, 'handler');
 
-        let reported = false;
+        const reported = new Toggle();
         const handle = register({
           command,
           owner: plugin.name,
@@ -52,8 +53,8 @@ wrap(() => {
             try {
               return enabled() !== false;
             } catch (e) {
-              if (!reported) log(e, command);
-              reported = true;
+              if (!reported.value) log(e, command);
+              reported.on();
               return false;
             }
           },
@@ -71,11 +72,11 @@ wrap(() => {
         });
         names.add(command);
 
-        let removed = false;
+        const removed = new Toggle();
         return Object.freeze({
           remove() {
-            if (removed) return false;
-            removed = true;
+            if (removed.value) return false;
+            removed.on();
             names.delete(command);
             handle.remove();
             return true;

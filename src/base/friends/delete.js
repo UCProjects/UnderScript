@@ -7,6 +7,7 @@ import decrypt from 'src/utils/decrypt.emails';
 import style from 'src/utils/style';
 import { debug } from 'src/utils/debug';
 import Translation from 'src/structures/constants/translation';
+import Toggle from 'src/utils/Toggle';
 
 const setting = settings.register({
   name: Translation.Setting('friend.background'),
@@ -15,7 +16,7 @@ const setting = settings.register({
   page: 'Friends',
 });
 
-let reminded = false;
+const reminded = new Toggle();
 const failed = Translation.Toast('friend.delete.failed', 1);
 
 function remove(e) {
@@ -40,12 +41,12 @@ function process(btn) {
       toast(failed.withArgs(name));
       btn.appendTo(parent);
     } else {
-      if (!reminded) {
+      if (!reminded.value) {
         toast({
           title: Translation.Toast('note'),
           text: Translation.Toast('friend.delete'),
         });
-        reminded = true;
+        reminded.on();
       }
       parent.addClass('deleted');
     }

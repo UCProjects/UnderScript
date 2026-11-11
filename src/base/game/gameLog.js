@@ -2,23 +2,24 @@ import eventManager from 'src/utils/eventManager';
 import * as settings from 'src/utils/settings/index';
 import style from 'src/utils/style';
 import Translation from 'src/structures/constants/translation';
+import Toggle from 'src/utils/Toggle';
 import styles from './gameLog.css';
 
 style.add(styles);
 
-let gameActive = false;
+const gameActive = new Toggle();
 const BattleLogSetting = 'underscript.disable.logger';
 const setting = settings.register({
   name: Translation.Setting('disable.gamelog'),
   key: 'underscript.disable.gamelog',
   page: 'Game',
   onChange: (to) => {
-    if (gameActive) toggle(to);
+    if (gameActive.value) toggle(to);
   },
 });
 
 eventManager.on('GameStart', () => {
-  gameActive = true;
+  gameActive.on();
   eventManager.on(':load', () => {
     if (setting.value()) toggle(true);
     if (!settings.value(BattleLogSetting)) {

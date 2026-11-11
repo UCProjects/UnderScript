@@ -7,6 +7,7 @@ import style from 'src/utils/style';
 import each from 'src/utils/each';
 import { HOUR } from 'src/utils/1.variables';
 import Translation from 'src/structures/constants/translation';
+import Toggle from 'src/utils/Toggle';
 import styles from './ranking.css';
 
 // Add setting to disable, or use top 500 (simple mode)
@@ -139,10 +140,10 @@ eventManager.on(':preload:Friendship', () => {
   style.add(styles);
 
   const pending = [];
-  let loaded = false;
+  const loaded = new Toggle();
 
   function pendingUpdate(id, xp) {
-    if (loaded) {
+    if (loaded.value) {
       return updateCacheCard(id, xp);
     }
 
@@ -152,7 +153,7 @@ eventManager.on(':preload:Friendship', () => {
   }
 
   eventManager.on('Chat:Connected', () => {
-    loaded = true;
+    loaded.on();
   });
 
   eventManager.on('Friendship:page', () => {

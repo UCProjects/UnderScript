@@ -5,9 +5,10 @@ import { debug } from 'src/utils/debug';
 import onPage from 'src/utils/onPage';
 import compound from 'src/utils/compoundEvent';
 import Translation from 'src/structures/constants/translation';
+import VarStore from 'src/utils/VarStore';
 
 // let live = false;
-let self;
+const self = new VarStore();
 const spectating = onPage('Spectate');
 const spectate = settings.register({
   name: Translation.Setting('emote.spectate'),
@@ -30,7 +31,7 @@ const enemy = settings.register({
 });
 
 compound('GameStart', ':preload', () => {
-  self = global('selfId', { throws: false });
+  self.value = global('selfId', { throws: false });
   // live = true;
   if (disableSpectating()) {
     globalSet('gameEmotesEnabled', false);
@@ -59,5 +60,5 @@ function disableSpectating() {
 }
 
 function friendsOnly(id) {
-  return self && friends.value() && id !== self && !global('isFriend')(id);
+  return self.value && friends.value() && id !== self.value && !global('isFriend')(id);
 }

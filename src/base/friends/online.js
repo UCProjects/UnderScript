@@ -5,6 +5,7 @@ import * as hover from 'src/utils/hover';
 import style from 'src/utils/style';
 import { name } from 'src/utils/user';
 import Translation from 'src/structures/constants/translation';
+import VarStore from 'src/utils/VarStore';
 
 const setting = settings.register({
   name: Translation.Setting('friend.online'),
@@ -12,10 +13,10 @@ const setting = settings.register({
   default: true,
   page: 'Friends',
 });
-let popper;
+const popper = new VarStore();
 export default function updateTip() {
-  if (!popper) return;
-  popper.querySelector('.onlineFriends').innerHTML = global('selfFriends').filter(({ online }) => online).map((user) => name(user)).join('<br>') || 'None';
+  if (!popper.value) return;
+  popper.value.querySelector('.onlineFriends').innerHTML = global('selfFriends').filter(({ online }) => online).map((user) => name(user)).join('<br>') || 'None';
 }
 eventManager.on(':preload', () => {
   const px = 12;
@@ -39,9 +40,9 @@ eventManager.on(':preload', () => {
     onShow: () => setting.value(),
   });
   // eslint-disable-next-line no-underscore-dangle
-  popper = el.parentElement._tippy.popper;
+  popper.value = el.parentElement._tippy.popper;
   eventManager.on('Chat:Connected', updateTip);
   eventManager.on('underscript:ready', () => {
-    popper.querySelector('.onlineFriends').textContent = Translation.General('loading');
+    popper.value.querySelector('.onlineFriends').textContent = Translation.General('loading');
   });
 });

@@ -5,9 +5,10 @@ import * as hover from 'src/utils/hover';
 import * as api from 'src/utils/4.api';
 import isCtrl from 'src/utils/isCtrl';
 import packs, { checkOpen } from 'src/structures/packs/packs';
+import Toggle from 'src/utils/Toggle';
 
 onPage('Packs', function quickOpenPack() {
-  let autoOpen = false;
+  const autoOpen = new Toggle();
 
   function showCards() {
     const show = global('revealCard', 'show');
@@ -27,7 +28,7 @@ onPage('Packs', function quickOpenPack() {
       return;
     }
     const type = button.id.substring(7);
-    autoOpen = isCtrl(event);
+    autoOpen.value = isCtrl(event);
     if (event.shiftKey) {
       event.stopPropagation();
       event.preventDefault();
@@ -36,7 +37,7 @@ onPage('Packs', function quickOpenPack() {
         packs.open(count, type);
         hover.hide();
       }
-    } else if (autoOpen || available(type) === 1) {
+    } else if (autoOpen.value || available(type) === 1) {
       hover.hide();
     }
   }
@@ -45,7 +46,7 @@ onPage('Packs', function quickOpenPack() {
 
   eventManager.on('jQuery', () => {
     $(document).ajaxComplete((event, xhr, s) => {
-      if (s.url !== 'PacksConfig' || !s.data || !autoOpen) return;
+      if (s.url !== 'PacksConfig' || !s.data || !autoOpen.value) return;
       const data = xhr.responseJSON;
       if (data?.action === 'getCards' && data.cards && !data.status) showCards();
     });

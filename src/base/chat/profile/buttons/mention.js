@@ -10,10 +10,9 @@ class Mention extends ProfileButton {
   getLink(user, element, reference) {
     return () => {
       const input = $(reference).closest('.chat-box').find('.chat-text');
-      let text = input.val();
-      if (text.length !== 0 && !text.endsWith(' ')) text += ' ';
-      text += `@${decode(user.name)} `;
-      input.val(text).focus();
+      const text = input.val();
+      const separator = text.length !== 0 && !text.endsWith(' ') ? ' ' : '';
+      input.val(`${text}${separator}@${decode(user.name)} `).focus();
     };
   }
 

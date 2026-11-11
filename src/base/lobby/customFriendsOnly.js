@@ -5,6 +5,7 @@ import { errorToast } from 'src/utils/2.toasts';
 import { debug } from 'src/utils/debug';
 import isFriend from 'src/utils/isFriend';
 import Translation from 'src/structures/constants/translation';
+import Toggle from 'src/utils/Toggle';
 
 const name = Translation.Setting('custom.friends');
 const setting = settings.register({
@@ -15,12 +16,12 @@ const setting = settings.register({
   category: Translation.CATEGORY_CUSTOM,
 });
 const container = document.createElement('span');
-let flag = setting.value();
+const flag = new Toggle(!!setting.value());
 
 function init() {
   $(container)
-    .append($(`<input id="friends" type="checkbox">`).prop('checked', flag).on('change', () => {
-      flag = !flag;
+    .append($(`<input id="friends" type="checkbox">`).prop('checked', flag.value).on('change', () => {
+      flag.flip();
     }))
     .append(' ', $('<label for="friends">').text('Friends only'));
   // .hover(hover.show('Only allow friends to join'))
@@ -32,7 +33,7 @@ function init() {
 }
 
 function joined({ username }) {
-  if (this.canceled || !flag || isFriend(username)) return;
+  if (this.canceled || !flag.value || isFriend(username)) return;
   debug(`Kicked: ${username}`);
   errorToast({
     title: Translation.Toast('custom.ban'),

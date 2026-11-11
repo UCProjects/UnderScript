@@ -5,6 +5,7 @@ import onPage from 'src/utils/onPage';
 import eventManager from 'src/utils/eventManager';
 import { fetch } from 'src/utils/quests';
 import Translation from 'src/structures/constants/translation';
+import Toggle from 'src/utils/Toggle';
 
 const setting = settings.register({
   name: Translation.Setting('disable.questNotifications'),
@@ -39,12 +40,12 @@ onPage('Game', () => {
 
       const message = (() => {
         const lines = [];
-        let completed = true;
+        const completed = new Toggle(true);
         changes.forEach((e, i) => {
           if (!i && e.claimable) {
             lines.push('### Completed');
-          } else if (completed && !e.claimable) {
-            completed = false;
+          } else if (completed.value && !e.claimable) {
+            completed.off();
             if (i) lines.push('\n'); // Separate completed from progress
             lines.push('### Progression');
           }

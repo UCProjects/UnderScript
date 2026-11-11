@@ -1,5 +1,6 @@
 import { showIn } from 'src/utils/hover';
 import Translation from 'src/structures/constants/translation';
+import Toggle from 'src/utils/Toggle';
 import { ProfileButton, register } from '../index';
 import { getNote, setNote } from '../notes';
 import isSelf from './self';
@@ -29,11 +30,11 @@ function edit(element, user) {
   field.rows = 4;
   field.placeholder = `${Translation.General('note.placeholder', 'Notes about this user')}`;
   field.value = getNote(user.id);
-  let done = false;
+  const done = new Toggle();
 
   function finish(save) {
-    if (done) return;
-    done = true;
+    if (done.value) return;
+    done.on();
     if (save) {
       setNote(user.id, field.value);
       tint(element, getNote(user.id));

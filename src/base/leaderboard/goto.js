@@ -5,6 +5,7 @@ import onPage from 'src/utils/onPage';
 import VarStore from 'src/utils/VarStore';
 import hasOwn from 'src/utils/hasOwn';
 import { window } from 'src/utils/1.variables';
+import Toggle from 'src/utils/Toggle';
 import changePage from '../vanilla/pageSelect';
 
 function set(type, value, replace = true) {
@@ -37,8 +38,8 @@ function userLast() {
 if (onPage('leaderboard')) {
   const data = getData();
   const skip = new VarStore(false);
-  let ready = false;
-  let replacePage;
+  const ready = new Toggle();
+  const replacePage = new VarStore();
 
   window.addEventListener('popstate', () => {
     if (!history.state) return;
@@ -47,18 +48,18 @@ if (onPage('leaderboard')) {
   });
 
   eventManager.on('Rankings:selectPage', () => {
-    replacePage = false;
+    replacePage.value = false;
   });
   eventManager.on('Rankings:init', () => {
     load(data);
-    ready = true;
+    ready.on();
   });
 
   eventManager.on(':preload', () => {
     eventManager.on('ShowPage', function showPage(page) {
-      if (skip.consume() || !ready) return;
-      set('page', page, replacePage);
-      replacePage = undefined;
+      if (skip.consume() || !ready.value) return;
+      set('page', page, replacePage.value);
+      replacePage.reset();
     });
 
     globalSet('findUserRow', function findUserRow(user) {
@@ -70,6 +71,6 @@ if (onPage('leaderboard')) {
   });
 
   eventManager.on('Rankings:selectPage', () => {
-    replacePage = false;
+    replacePage.value = false;
   });
 }

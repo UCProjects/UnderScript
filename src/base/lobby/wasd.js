@@ -3,6 +3,7 @@ import * as settings from 'src/utils/settings/index';
 import { global, globalSet } from 'src/utils/global';
 import onPage from 'src/utils/onPage';
 import Translation from 'src/structures/constants/translation';
+import Toggle from 'src/utils/Toggle';
 
 const setting = settings.register({
   name: Translation.Setting('minigame.wasd'),
@@ -21,12 +22,12 @@ function onCreate() {
 }
 
 onPage('Play', () => {
-  let bound = false;
+  const bound = new Toggle();
   eventManager.on('pre:getJoinedQueue', () => {
-    if (bound) return;
+    if (bound.value) return;
     const create = global('create', { throws: false });
     if (!create) return;
     globalSet('create', onCreate);
-    bound = true;
+    bound.on();
   });
 });

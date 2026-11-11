@@ -4,6 +4,7 @@ import Item from 'src/structures/constants/item';
 import Priority from 'src/structures/constants/priority';
 import Rarity from 'src/structures/constants/rarity';
 import Soul from 'src/structures/constants/soul';
+import Toggle from 'src/utils/Toggle';
 
 const constants = api.mod.constants;
 
@@ -12,11 +13,11 @@ Object.entries({ item: Item, priority: Priority, rarity: Rarity, soul: Soul }).f
 });
 
 ['item', 'priority', 'rarity'].forEach((name) => {
-  let warned = false;
+  const warned = new Toggle();
   api.mod[name] = new Proxy(constants[name], {
     get(target, key, receiver) {
-      if (!warned) {
-        warned = true;
+      if (!warned.value) {
+        warned.on();
         console.warn(`'underscript.${name}' is deprecated, use 'underscript.constants.${name}' instead.`);
       }
       return Reflect.get(target, key, receiver);

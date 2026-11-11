@@ -7,6 +7,8 @@ import decrypt from 'src/utils/decrypt.emails';
 import translate from 'src/utils/translate';
 import eventManager from 'src/utils/eventManager';
 import Translation from 'src/structures/constants/translation';
+import Toggle from 'src/utils/Toggle';
+import VarStore from 'src/utils/VarStore';
 
 const setting = settings.register({
   name: Translation.Setting('gamelist.refresh'),
@@ -18,20 +20,20 @@ const setting = settings.register({
   },
 });
 
-let id;
-let refreshing = false;
+const id = new VarStore();
+const refreshing = new Toggle();
 
 function clear() {
-  if (id) {
-    clearTimeout(id);
-    id = null;
+  if (id.value) {
+    clearTimeout(id.value);
+    id.reset();
   }
 }
 
 function refresh() {
   clear();
-  if (refreshing || document.visibilityState === 'hidden' || setting.value()) return;
-  refreshing = true;
+  if (refreshing.value || document.visibilityState === 'hidden' || setting.value()) return;
+  refreshing.on();
   http.get('/').then((response) => {
     const data = decrypt($(response.data));
     const list = data.find('#liste');
@@ -42,14 +44,14 @@ function refresh() {
   }).catch((e) => {
     debugToast(`Index: ${e.message}`);
   }).then(() => {
-    refreshing = false;
+    refreshing.off();
     setup();
   });
 }
 
 function setup(delay = 10000) {
   clear();
-  id = setTimeout(refresh, delay);
+  id.value = setTimeout(refresh, delay);
 }
 
 onPage('', function refreshGameList() {

@@ -1,129 +1,4 @@
 {
-  "src/base/api/constants.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/chat/ignore.js": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/base/chat/isFocused.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/chat/notify.new.js": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/base/chat/profile/buttons/mention.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/chat/profile/buttons/note.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/chat/profile/index.js": {
-    "no-restricted-syntax": {
-      "count": 4
-    }
-  },
-  "src/base/chat/scroll.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/chat/tag.friend.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/friends/delete.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/friends/online.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/friendship/ranking.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/game/@opponent.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/game/battleLog.js": {
-    "no-restricted-syntax": {
-      "count": 10
-    }
-  },
-  "src/base/game/commands/spectate.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/game/emotes.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/game/endTurnSafety.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/game/gameLog.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/game/questProgress.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/game/restoreSound.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/game/tag.opponent.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/home/index.refresh.js": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/base/home/newContent.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/leaderboard/friends.js": {
-    "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/base/leaderboard/goto.js": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
   "src/base/library/craft/disenchant.js": {
     "no-restricted-syntax": {
       "count": 5
@@ -154,51 +29,6 @@
       "count": 2
     }
   },
-  "src/base/lobby/customFriendsOnly.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/lobby/disconnected.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/lobby/enterOnCustom.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/lobby/playQueueButton.js": {
-    "no-restricted-syntax": {
-      "count": 3
-    }
-  },
-  "src/base/lobby/wasd.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/plugin/commands.ts": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
-  "src/base/plugin/decks.ts": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/plugin/updater.ts": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/base/store/quickPacks.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
   "src/base/underscript/plugins.js": {
     "no-restricted-syntax": {
       "count": 5
@@ -214,11 +44,6 @@
       "count": 1
     }
   },
-  "src/base/vanilla/card.append.js": {
-    "no-restricted-syntax": {
-      "count": 2
-    }
-  },
   "src/hooks/BootstrapDialog.js": {
     "no-restricted-syntax": {
       "count": 1
@@ -230,11 +55,6 @@
     }
   },
   "src/hooks/friends.js": {
-    "no-restricted-syntax": {
-      "count": 1
-    }
-  },
-  "src/hooks/game.event.js": {
     "no-restricted-syntax": {
       "count": 1
     }

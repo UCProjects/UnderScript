@@ -1,16 +1,15 @@
 import eventManager from 'src/utils/eventManager';
 import { infoToast } from 'src/utils/2.toasts';
 import onPage from 'src/utils/onPage';
+import VarStore from 'src/utils/VarStore';
 
 onPage('Game', () => {
   const regex = /(^| )@o\b/gi;
-  let toast = infoToast('You can mention opponents with @o', 'underscript.notice.mention', '1');
+  const toast = new VarStore();
+  toast.value = infoToast('You can mention opponents with @o', 'underscript.notice.mention', '1');
 
   function convert({ input }) {
-    if (toast) {
-      toast.close('processed');
-      toast = null;
-    }
+    toast.consume()?.close('processed');
     $(input).val($(input).val()
       .replace(regex, `$1@${$('#enemyUsername').text()}`));
   }

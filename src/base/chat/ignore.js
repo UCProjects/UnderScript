@@ -7,6 +7,7 @@ import pendingIgnore from 'src/utils/pendingIgnore';
 import { debug } from 'src/utils/debug';
 import { chat, chatMessage } from 'src/utils/debugFlags';
 import Translation from 'src/structures/constants/translation';
+import Counter from 'src/utils/Counter';
 
 const setting = settings.register({
   name: Translation.Setting('ignore'),
@@ -28,6 +29,8 @@ const how = settings.register({
   category: Translation.CATEGORY_CHAT_IGNORED,
 });
 
+const count = new Counter();
+
 // This isn't really the best name to call this function
 export default function shouldIgnore(message, self = false) {
   // Ignoring is disabled?
@@ -42,7 +45,19 @@ export default function shouldIgnore(message, self = false) {
   return !!settings.value(`underscript.ignore.${id}`);
 }
 
-let count;
+function createContainer(room, msg, history) {
+  count.value = 1;
+  const container = $('<li class="ignored-chat">');
+  if (history) {
+    msg.after(container);
+    msg.remove();
+  } else {
+    $(`#${room} .chat-messages`).append(container);
+    global('scroll')($(`#${room}`), true);
+  }
+  $(`#${room}`).data('container', container);
+  return container;
+}
 
 function processMessage(message, room, history = false) {
   debug(message, chatMessage);
@@ -63,24 +78,11 @@ function processMessage(message, room, history = false) {
       .removeClass().addClass('chat-message');
   } else if (type === 'remove') {
     debug(`removed ${fnUser.name(message.user)}`, chat);
-    let container = $(`#${room}`).data('container');
-    if (!container) {
-      count = 1;
-      container = $('<li class="ignored-chat">');
-      if (history) {
-        msg.after(container);
-        msg.remove();
-      } else {
-        const messages = $(`#${room} .chat-messages`);
-        messages.append(container);
-        global('scroll')($(`#${room}`), true);
-      }
-      $(`#${room}`).data('container', container);
-    } else if (history) {
-      msg.remove();
-    }
-    container.text(Translation.General('message.removed').translate(count));
-    count += 1;
+    const existing = $(`#${room}`).data('container');
+    const container = existing || createContainer(room, msg, history);
+    if (existing && history) msg.remove();
+    container.text(Translation.General('message.removed').translate(count.value));
+    count.next();
     return true;
   } else if (type === 'none') {
     if (history) msg.remove();

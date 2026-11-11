@@ -7,6 +7,8 @@ import { infoToast } from 'src/utils/2.toasts';
 import { window } from 'src/utils/1.variables';
 import { hide as hideNote } from 'src/utils/hover';
 import { findUser } from 'src/structures/chat/user';
+import Toggle from 'src/utils/Toggle';
+import VarStore from 'src/utils/VarStore';
 import Translation from 'src/structures/constants/translation';
 import ProfileButton, { WEIGHT } from './button';
 import createCard, { useNotes } from './card';
@@ -31,9 +33,9 @@ export const clickSetting = settings.register({
 
 const attribute = 'data-underscript-user';
 const buttons = [];
-let popup;
-let visible = false;
-let toast;
+const popup = new VarStore();
+const visible = new Toggle();
+const toast = new VarStore();
 
 export function register(button) {
   if (!(button instanceof ProfileButton)) throw new Error('Expected a ProfileButton');
@@ -46,7 +48,7 @@ function native() {
 }
 
 function outside(event) {
-  if (popup && !popup.contains(event.target)) close();
+  if (popup.value && !popup.value.contains(event.target)) close();
 }
 
 function escape(event) {
@@ -54,41 +56,42 @@ function escape(event) {
 }
 
 function getPopup() {
-  if (popup?.isConnected) return popup;
-  popup = document.createElement('div');
-  popup.id = 'underscript-profile';
-  visible = false;
+  if (popup.value?.isConnected) return popup.value;
+  const el = document.createElement('div');
+  popup.value = el;
+  el.id = 'underscript-profile';
+  visible.off();
   if (native()) {
-    popup.setAttribute('popover', 'auto');
-    popup.addEventListener('toggle', ({ newState }) => {
-      visible = newState === 'open';
+    el.setAttribute('popover', 'auto');
+    el.addEventListener('toggle', ({ newState }) => {
+      visible.value = newState === 'open';
     });
   } else {
-    popup.hidden = true;
+    el.hidden = true;
   }
-  document.body.append(popup);
-  return popup;
+  document.body.append(el);
+  return el;
 }
 
 function show() {
   if (native()) {
-    popup.showPopover();
+    popup.value.showPopover();
   } else {
-    popup.hidden = false;
+    popup.value.hidden = false;
     document.addEventListener('mousedown', outside, true);
     document.addEventListener('keydown', escape, true);
   }
-  visible = true;
+  visible.on();
 }
 
 export function close() {
   hideNote();
-  if (!visible || !popup) return;
-  visible = false;
+  if (!visible.value || !popup.value) return;
+  visible.off();
   if (native()) {
-    popup.hidePopover();
+    popup.value.hidePopover();
   } else {
-    popup.hidden = true;
+    popup.value.hidden = true;
     document.removeEventListener('mousedown', outside, true);
     document.removeEventListener('keydown', escape, true);
   }
@@ -144,7 +147,7 @@ function mount(list, user, reference) {
 
 export function open(user, { clientX: x, clientY: y }, reference) {
   close();
-  if (toast) toast.close('opened');
+  toast.value?.close('opened');
   const el = getPopup();
   const { card, buttons: list } = createCard(user, $(reference).data('infos')?.user);
   el.replaceChildren(card);
@@ -190,8 +193,8 @@ function onClick(event) {
 }
 
 function mark({ id, user }, room) {
-  let info = $(`#${room} #message-${id} #info-${user.id}`);
-  if (!info.length) info = $(`#${room} #message-${id} #info-${id}`);
+  const byUser = $(`#${room} #message-${id} #info-${user.id}`);
+  const info = byUser.length ? byUser : $(`#${room} #message-${id} #info-${id}`);
   info.attr(attribute, user.id);
 }
 
@@ -209,10 +212,10 @@ eventManager.on('Chat:getMessage', function parse(data) {
 });
 
 eventManager.on('ChatDetected', () => {
-  toast = infoToast({
+  toast.value = infoToast({
     text: Translation.Toast('ignore.info'),
     onClose: () => {
-      toast = null;
+      toast.reset();
     },
   }, 'underscript.ignoreNotice', '1');
 });

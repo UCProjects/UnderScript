@@ -5,8 +5,9 @@ import { infoToast } from 'src/utils/2.toasts';
 import plugin from 'src/utils/underscript';
 import { commandSetting } from 'src/utils/chatCommands';
 import Translation from 'src/structures/constants/translation';
+import VarStore from 'src/utils/VarStore';
 
-let toast;
+const toast = new VarStore();
 
 const setting = commandSetting('spectate', { note: Translation.Command('spectate.note') });
 
@@ -19,16 +20,16 @@ plugin.commands.register({
       this.canceled = true;
       return;
     }
-    if (toast) toast.close();
+    toast.value?.close();
     command.output = `${$('#yourUsername').text()} vs ${$('#enemyUsername').text()}: ${location.origin}/Spectate?gameId=${global('gameId')}&playerId=${global('userId')}${command.text ? ` - ${command.text}` : ''}`;
   },
 });
 
 eventManager.on('GameStart', () => {
-  toast = infoToast({
+  toast.value = infoToast({
     text: 'You can send a spectate URL in chat by typing /spectate',
     onClose() {
-      toast = null;
+      toast.reset();
     },
   }, 'underscript.notice.spectatecommand', '1');
 });

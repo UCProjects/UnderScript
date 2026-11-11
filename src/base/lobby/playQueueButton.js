@@ -1,18 +1,20 @@
 import eventManager from 'src/utils/eventManager';
 import onPage from 'src/utils/onPage';
 import * as hover from 'src/utils/hover';
+import Toggle from 'src/utils/Toggle';
+import VarStore from 'src/utils/VarStore';
 
 onPage('Play', () => {
-  let queues;
-  let disable = true;
-  let restarting = false;
+  const queues = new VarStore();
+  const disable = new Toggle(true);
+  const restarting = new Toggle();
 
   eventManager.on('jQuery', function onPlay() {
-    restarting = $('p.infoMessage[data-i18n-custom="header-info-restart"]').length !== 0;
-    if (disable || restarting) {
-      queues = $('#standard-mode, #ranked-mode, button.btn.btn-primary');
+    restarting.value = $('p.infoMessage[data-i18n-custom="header-info-restart"]').length !== 0;
+    if (disable.value || restarting.value) {
+      queues.value = $('#standard-mode, #ranked-mode, button.btn.btn-primary');
       // TODO: translation
-      closeQueues(restarting ? 'Joining is disabled due to server restart.' : 'Waiting for connection to be established.');
+      closeQueues(restarting.value ? 'Joining is disabled due to server restart.' : 'Waiting for connection to be established.');
     }
   });
 
@@ -27,22 +29,22 @@ onPage('Play', () => {
   }, 10000);
 
   function checkButton() {
-    disable = false;
+    disable.off();
     clearTimeout(timeout);
-    if (queues && !restarting) {
-      queues.off('.script');
-      queues.toggleClass('closed', false);
+    if (queues.value && !restarting.value) {
+      queues.value.off('.script');
+      queues.value.toggleClass('closed', false);
       hover.hide();
     }
   }
 
   function closeQueues(message) {
-    queues.toggleClass('closed', true);
+    queues.value.toggleClass('closed', true);
     applyMessage(message);
   }
 
   function applyMessage(message) {
-    queues
+    queues.value
       .on('mouseenter.script', hover.show(message))
       .on('mouseleave.script', () => hover.hide());
   }

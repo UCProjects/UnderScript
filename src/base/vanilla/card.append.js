@@ -8,30 +8,30 @@ import VarStore from 'src/utils/VarStore';
 
 const PREFIX = 'appendCard';
 const internal = eventEmitter();
-let event = PREFIX;
-let data = [];
+const event = new VarStore(PREFIX);
+const data = new VarStore([]);
 const extras = new VarStore();
 
 internal.on('set', (e = PREFIX) => {
-  event = e;
+  event.value = e;
 }).on('pre', (...args) => {
-  eventManager.emit(`pre:func:${event}`, ...args);
-  if (event !== PREFIX) eventManager.emit(`pre:func:${PREFIX}`, ...args);
+  eventManager.emit(`pre:func:${event.value}`, ...args);
+  if (event.value !== PREFIX) eventManager.emit(`pre:func:${PREFIX}`, ...args);
 }).on('post', (...args) => {
-  if (event === PREFIX || !args.length) {
+  if (event.value === PREFIX || !args.length) {
     const eventData = [
-      ...data,
+      ...data.value,
       ...args,
     ];
     if (eventData.length) {
-      eventManager.emit(`func:${event}`, ...eventData);
-      if (event !== PREFIX) eventManager.emit(`func:${PREFIX}`, ...eventData);
+      eventManager.emit(`func:${event.value}`, ...eventData);
+      if (event.value !== PREFIX) eventManager.emit(`func:${PREFIX}`, ...eventData);
     }
-    data = [];
-    event = PREFIX; // Reset
+    data.value = [];
+    event.reset();
   } else {
-    data = args;
-    if (extras.isSet()) data.push(...extras.consume());
+    data.value = args;
+    if (extras.isSet()) data.value.push(...extras.consume());
   }
 });
 
