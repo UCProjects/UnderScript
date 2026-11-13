@@ -6,6 +6,7 @@ import style from 'src/utils/style';
 import $el from 'src/utils/elementHelper';
 import { fetch } from 'src/utils/quests';
 import Translation from 'src/structures/constants/translation';
+import compound from 'src/utils/compoundEvent';
 
 wrap(() => {
   const setting = settings.register({
@@ -47,8 +48,10 @@ wrap(() => {
     highlightQuest();
   }
 
-  if (onPage('') && !clear.value() && !skip.value()) { // TODO: If logged in
-    fetch(({ quests }) => quests && updateQuests(quests), false);
+  if (!clear.value() && !skip.value()) {
+    compound(':load:', 'underscript:ready', 'login', () => {
+      fetch(({ quests }) => quests && updateQuests(quests), false);
+    });
   }
 
   eventManager.on('questProgress', updateQuests);

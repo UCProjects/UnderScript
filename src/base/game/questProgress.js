@@ -64,5 +64,7 @@ onPage('Game', () => {
     }
   }
 
-  fetch(({ quests }) => quests && setup(quests), false);
+  eventManager.on('underscript:ready', () => {
+    fetch(({ quests }) => quests && setup(quests), false);
+  });
 });
