@@ -55,10 +55,12 @@ function setup(delay = 10000) {
 }
 
 onPage('', function refreshGameList() {
-  // Restart refresh sequence when returning to page
-  document.addEventListener('visibilitychange', refresh);
-  // Queue initial refresh
-  setup();
-  const text = Translation.Toast('gamelist.refresh');
-  infoToast(text, 'underscript.notice.refreshIndex', '1');
+  eventManager.on('underscript:ready', () => {
+    // Restart refresh sequence when returning to page
+    document.addEventListener('visibilitychange', refresh);
+    // Queue initial refresh
+    setup();
+    const text = Translation.Toast('gamelist.refresh');
+    infoToast(text, 'underscript.notice.refreshIndex', '1');
+  });
 });
