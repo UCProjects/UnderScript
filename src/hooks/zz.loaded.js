@@ -5,7 +5,13 @@ import sleep from 'src/utils/sleep';
 
 const page = getPageName();
 
+function isCloudflareChallengePage() {
+  // eslint-disable-next-line no-underscore-dangle
+  return typeof window._cf_chl_opt?.cType === 'string';
+}
+
 function loaded() {
+  if (isCloudflareChallengePage()) return;
   if (eventManager.emit({ singleton: true }, ':loaded').ran) {
     console.warn('`:loaded` event is depricated, please migrate to `:preload`.');
   }
@@ -16,6 +22,7 @@ function loaded() {
   eventManager.emit({ singleton: true }, `:preload:${page}`);
 }
 function done() {
+  if (isCloudflareChallengePage()) return;
   eventManager.emit({ singleton: true }, ':load');
   eventManager.emit({ singleton: true }, `:load:${page}`);
 }
